@@ -2,7 +2,7 @@ package kuroodo.discordbot.chatcommands.moderator;
 
 import kuroodo.discordbot.Init;
 import kuroodo.discordbot.entities.ChatCommand;
-import kuroodo.discordbot.helpers.ChatHelper;
+import kuroodo.discordbot.helpers.JDAHelper;
 import net.dv8tion.jda.entities.User;
 import net.dv8tion.jda.events.message.guild.GuildMessageReceivedEvent;
 
@@ -20,55 +20,54 @@ public class CommandKick extends ChatCommand {
 			return;
 		}
 
-		User user = ChatHelper.getUserByID(ChatHelper.splitString(commandParameters)[0]);
+		User userToKick = JDAHelper.getUserByID(JDAHelper.splitString(commandParameters)[0]);
 
-		if (user == null) {
-			System.out.println("Null1");
-			user = ChatHelper.getUserByUsername(ChatHelper.splitString(commandParameters)[0]);
-			if (user == null) {
-				System.out.println("Null2");
-				user = event.getMessage().getMentionedUsers().get(0);
+		if (userToKick == null) {
+			userToKick = JDAHelper.getUserByUsername(JDAHelper.splitString(commandParameters)[0]);
+			if (userToKick == null) {
+				userToKick = event.getMessage().getMentionedUsers().get(0);
 			}
 		}
 
-		String reason = ChatHelper.splitString(commandParameters)[1];
+		String reasonForKick = JDAHelper.splitString(commandParameters)[1];
 
-		if (user != null) {
+		if (userToKick != null) {
 			// Check if trying to kick bot
-			if (user == Init.getJDA().getSelfInfo()) {
+			if (userToKick == Init.getJDA().getSelfInfo()) {
 
 				Init.getServerOwner().getPrivateChannel()
-						.sendMessage(event.getAuthor().getUsername() + " Just tried to kick me!");
-				event.getChannel().sendMessage(event.getAuthor().getAsMention() + " You dare to conspire against me?");
+						.sendMessageAsync(event.getAuthor().getUsername() + " Just tried to kick me!", null);
+				event.getChannel()
+						.sendMessageAsync(event.getAuthor().getAsMention() + " You dare to conspire against me?", null);
 
 				// Check if trying to kick server owner
-			} else if (user == Init.getServerOwner()) {
+			} else if (userToKick == Init.getServerOwner()) {
 
 				Init.getServerOwner().getPrivateChannel()
-						.sendMessage(event.getAuthor().getUsername() + " Just tried to kick you!");
-				event.getChannel()
-						.sendMessage(event.getAuthor().getAsMention() + " You dare to conspire against the server?");
+						.sendMessageAsync(event.getAuthor().getUsername() + " Just tried to kick you!", null);
+				event.getChannel().sendMessageAsync(
+						event.getAuthor().getAsMention() + " You dare to conspire against the server?", null);
 
-			} else if (ChatHelper.isUserAdmin(event.getAuthor())) {
+			} else if (JDAHelper.isUserAdmin(event.getAuthor())) {
 
-				user.getPrivateChannel()
-						.sendMessage("You have been kicked from " + ChatHelper.getGuild().getName() + " for " + reason);
-				ChatHelper.getGuild().getManager().kick(user);
+				userToKick.getPrivateChannel().sendMessageAsync(
+						"You have been kicked from " + JDAHelper.getGuild().getName() + " for " + reasonForKick, null);
+				JDAHelper.getGuild().getManager().kick(userToKick);
 
-			} else if (ChatHelper.isUserModerator(event.getAuthor())) {
-
+			} else if (JDAHelper.isUserModerator(event.getAuthor())) {
 				// Check if moderator is trying to kick an admin
-				if (ChatHelper.isUserAdmin(user)) {
+				if (JDAHelper.isUserAdmin(userToKick)) {
 					Init.getServerOwner().getPrivateChannel()
-							.sendMessage(event.getAuthor().getUsername() + " Just tried to kick an admin");
+							.sendMessageAsync(event.getAuthor().getUsername() + " Just tried to kick an admin", null);
+					event.getChannel().sendMessageAsync(
+							event.getAuthor().getAsMention() + " Moderators cannot kick admins!", null);
 				} else {
-					user.getPrivateChannel().sendMessage(
-							"You have been kicked from " + ChatHelper.getGuild().getName() + " for " + reason);
-					ChatHelper.getGuild().getManager().kick(user);
+					userToKick.getPrivateChannel().sendMessageAsync(
+							"You have been kicked from " + JDAHelper.getGuild().getName() + " for " + reasonForKick,
+							null);
+					JDAHelper.getGuild().getManager().kick(userToKick);
 				}
 			}
-		}else{
-			System.out.println("StillNull");
 		}
 		event.getMessage().deleteMessage();
 	}

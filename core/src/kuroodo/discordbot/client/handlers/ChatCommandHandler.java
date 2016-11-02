@@ -13,7 +13,6 @@ public class ChatCommandHandler {
 
 	public static Collection<Class> getCommands() {
 		return commands.values();
-
 	}
 
 	public static Class getCommand(String commandName) {

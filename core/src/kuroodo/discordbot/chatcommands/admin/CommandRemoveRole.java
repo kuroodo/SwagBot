@@ -1,7 +1,7 @@
 package kuroodo.discordbot.chatcommands.admin;
 
 import kuroodo.discordbot.entities.ChatCommand;
-import kuroodo.discordbot.helpers.ChatHelper;
+import kuroodo.discordbot.helpers.JDAHelper;
 import net.dv8tion.jda.entities.Role;
 import net.dv8tion.jda.entities.User;
 import net.dv8tion.jda.events.message.guild.GuildMessageReceivedEvent;
@@ -21,34 +21,27 @@ public class CommandRemoveRole extends ChatCommand {
 			return;
 		}
 
-		GuildManager guildManager = ChatHelper.getGuild().getManager();
+		GuildManager guildManager = JDAHelper.getGuild().getManager();
 
-		Role role = ChatHelper.getRoleByName(ChatHelper.splitString(commandParameters)[0]);
-		User user = ChatHelper.getUserByID(ChatHelper.splitString(commandParameters)[1]);
+		Role role = JDAHelper.getRoleByName(JDAHelper.splitString(commandParameters)[0]);
+		User user = JDAHelper.getUserByID(JDAHelper.splitString(commandParameters)[1]);
 
 		if (user == null) {
-			user = ChatHelper.getUserByUsername(ChatHelper.splitString(commandParameters)[1]);
+			user = JDAHelper.getUserByUsername(JDAHelper.splitString(commandParameters)[1]);
 			if (user == null) {
 				user = event.getMessage().getMentionedUsers().get(0);
 			}
 		}
 
-		// if (user == null) {
-		// user =
-		// ChatHelper.getUserByUsername(ChatHelper.splitString(commandParameters)[1]);
-		// }
-		// Final check
-		if (user == null || role == null) {
+		if (user != null && role != null) {
+			guildManager.removeRoleFromUser(user, role).update();
+
+			JDAHelper.getTextChannelByName("headquarters").sendMessageAsync(event.getAuthor().getAsMention()
+					+ " just removed " + user.getUsername() + "'s role: " + role.getName(), null);
+		} else {
 			sendPrivateMessage(" the role or user you have inputted do not exist, or not in case sensitive!");
-			// ChatHelper.getTextChannelByName("headquarters").sendMessage(event.getAuthor().getAsMention()
-			// + " the role or user you have inputted do not exist, or not in
-			// case sensitive!");
 		}
 
-		guildManager.removeRoleFromUser(user, role).update();
-
-		ChatHelper.getTextChannelByName("headquarters").sendMessage(event.getAuthor().getAsMention() + " just removed "
-				+ user.getUsername() + "'s role: " + role.getName());
 	}
 
 	@Override

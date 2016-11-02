@@ -8,7 +8,7 @@ import kuroodo.discordbot.entities.GameSession;
 import kuroodo.discordbot.entities.JDAListener;
 import kuroodo.discordbot.games.TestGame;
 import kuroodo.discordbot.games.tictactoe.GameTicTacToe;
-import kuroodo.discordbot.helpers.ChatHelper;
+import kuroodo.discordbot.helpers.JDAHelper;
 import net.dv8tion.jda.Permission;
 import net.dv8tion.jda.entities.Message;
 import net.dv8tion.jda.entities.Role;
@@ -47,7 +47,7 @@ public class GameManager extends JDAListener {
 
 		GameManagerHandler.addGameManager("session" + sessionID, this);
 
-		final ChannelManager chManager = ChatHelper.getGuild().createTextChannel("gamesession_" + sessionId);
+		final ChannelManager chManager = JDAHelper.getGuild().createTextChannel("gamesession_" + sessionId);
 		chManager.update();
 
 		setUpPermissions(chManager);
@@ -118,7 +118,7 @@ public class GameManager extends JDAListener {
 			}
 
 		} else if (message.startsWith("!game")) {
-			gameSession.recievePlayerInput(sender, ChatHelper.splitString(message)[1], eventMessage);
+			gameSession.recievePlayerInput(sender, JDAHelper.splitString(message)[1], eventMessage);
 		}
 	}
 
@@ -142,9 +142,9 @@ public class GameManager extends JDAListener {
 	}
 
 	private void setUpPermissions(ChannelManager chManager) {
-		Role role = ChatHelper.getRoleByName("gameroleexample");
+		Role role = JDAHelper.getRoleByName("gameroleexample");
 
-		final RoleManager roleManager = ChatHelper.getGuild().createRole();
+		final RoleManager roleManager = JDAHelper.getGuild().createRole();
 		roleManager.setName("session" + sessionID);
 
 		for (Permission permission : roleManager.getRole().getPermissions()) {
@@ -162,14 +162,14 @@ public class GameManager extends JDAListener {
 		chManager.getChannel().createPermissionOverride(sessionRole).grant(Permission.MESSAGE_READ)
 				.grant(Permission.MESSAGE_WRITE).grant(Permission.MESSAGE_TTS).update();
 
-		chManager.getChannel().createPermissionOverride(ChatHelper.getRoleByName("@everyone"))
+		chManager.getChannel().createPermissionOverride(JDAHelper.getRoleByName("@everyone"))
 				.deny(Permission.CREATE_INSTANT_INVITE).deny(Permission.MESSAGE_WRITE).deny(Permission.MESSAGE_READ)
 				.deny(Permission.MESSAGE_MANAGE).update();
 
-		chManager.getChannel().createPermissionOverride(ChatHelper.getRoleByName("Admin"))
+		chManager.getChannel().createPermissionOverride(JDAHelper.getRoleByName("Admin"))
 				.deny(Permission.MANAGE_PERMISSIONS).deny(Permission.MESSAGE_READ).update();
 
-		final GuildManager gManager = ChatHelper.getGuild().getManager();
+		final GuildManager gManager = JDAHelper.getGuild().getManager();
 
 		for (User player : players) {
 			gManager.addRoleToUser(player, sessionRole);
@@ -207,7 +207,7 @@ public class GameManager extends JDAListener {
 	private void endMatch() {
 		final ChannelManager chManager = gameChannel.getManager();
 		chManager.delete();
-		final RoleManager roleManager = ChatHelper.getRoleByName("session" + sessionID).getManager();
+		final RoleManager roleManager = JDAHelper.getRoleByName("session" + sessionID).getManager();
 		roleManager.delete();
 
 		GameManagerHandler.endGameManager("session" + sessionID);

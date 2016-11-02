@@ -4,7 +4,7 @@ import java.util.ArrayList;
 
 import kuroodo.discordbot.Init;
 import kuroodo.discordbot.entities.ChatCommand;
-import kuroodo.discordbot.helpers.ChatHelper;
+import kuroodo.discordbot.helpers.JDAHelper;
 import net.dv8tion.jda.MessageHistory;
 import net.dv8tion.jda.entities.Message;
 import net.dv8tion.jda.entities.TextChannel;
@@ -12,7 +12,7 @@ import net.dv8tion.jda.entities.User;
 import net.dv8tion.jda.events.message.guild.GuildMessageReceivedEvent;
 
 public class CommandClearChat extends ChatCommand {
-
+	// TODO: Properly implement this feature and make code clean
 	public CommandClearChat() {
 		isModCommand = true;
 	}
@@ -61,10 +61,10 @@ public class CommandClearChat extends ChatCommand {
 
 			sendMessage("Deleted " + totalMessages + " messages!");
 		} else {
-			User user = ChatHelper.getUserByID(commandParams);
+			User user = JDAHelper.getUserByID(commandParams);
 
 			if (user == null) {
-				user = ChatHelper.getUserByUsername(commandParams);
+				user = JDAHelper.getUserByUsername(commandParams);
 
 				if (user == null) {
 					if (!event.getMessage().getMentionedUsers().isEmpty()) {

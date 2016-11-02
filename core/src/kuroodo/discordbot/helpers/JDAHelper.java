@@ -17,7 +17,7 @@ import net.dv8tion.jda.entities.User;
 import net.dv8tion.jda.entities.VoiceChannel;
 import net.dv8tion.jda.managers.GuildManager;
 
-public class ChatHelper {
+public class JDAHelper {
 
 	public static TextChannel getTextChannelByName(String channelName) {
 		for (TextChannel channel : getGuild().getTextChannels()) {
@@ -25,6 +25,7 @@ public class ChatHelper {
 				return channel;
 			}
 		}
+		System.out.println("ERROR Could not get text channel by name");
 		return null;
 	}
 
@@ -36,6 +37,16 @@ public class ChatHelper {
 		return getGuild().getTextChannels();
 	}
 
+	public static VoiceChannel getVoiceChannelByName(String channelName) {
+		for (VoiceChannel channel : getGuild().getVoiceChannels()) {
+			if (channel.getName().equals(channelName)) {
+				return channel;
+			}
+		}
+		System.out.println("ERROR Could not get voice channel by name");
+		return null;
+	}
+	
 	/**
 	 * Gets the voice channel a specific user is in
 	 * 
@@ -94,25 +105,11 @@ public class ChatHelper {
 	}
 
 	public static User getUserByID(String ID) {
-		for (User user : getGuild().getUsers()) {
-			if (user.getAsMention().equals(ID)) {
-				return user;
-			}
-		}
-
-		System.out.println("ERROR, COULD NOT GET USERNAME BY ID");
-		return null;
+		return getGuild().getUserById(ID);
 	}
 
 	public static String getUsernameById(String ID) {
-		for (User user : getGuild().getUsers()) {
-			if (user.getAsMention().equals(ID)) {
-				return user.getUsername();
-			}
-		}
-
-		System.out.println("ERROR, COULD NOT GET USERNAME BY ID");
-		return ID;
+		return getUserByID(ID).getUsername();
 	}
 
 	public static User getRandomOnlineUser() {
@@ -133,16 +130,16 @@ public class ChatHelper {
 	public static User getRandomUser() {
 		Random rand = new Random();
 		rand.setSeed(System.nanoTime());
-
 		return getUsers().get(rand.nextInt(getUserCount()));
 	}
 
 	public static void giveRoleToUser(Role role, User user) {
-		GuildManager guildManager = getGuild().getManager();
-
 		if (user == null || role == null) {
 			System.out.println("ERROR: COULD NOT GIVE USER A ROLE");
+			return;
 		}
+
+		GuildManager guildManager = getGuild().getManager();
 
 		guildManager.addRoleToUser(user, role).update();
 	}
@@ -203,11 +200,6 @@ public class ChatHelper {
 	 * @return Whether it was an audioqueue or not (true/false)
 	 */
 	public static boolean isMessageAnAudioQueue(String message) {
-		// for (AudioQueue e : AudioQueue.values()) {
-		// if (message.equals("!" + e.toString().toLowerCase())) {
-		// return true;
-		// }
-		// }
 		try {
 			return new File("sounds/" + message.substring(1) + ".mp3").exists();
 		} catch (Exception e) {
@@ -216,13 +208,9 @@ public class ChatHelper {
 	}
 
 	public static GuildManager removeUsersRoles(User user, GuildManager manager) {
-		ArrayList<Role> rolesToRemove = new ArrayList<Role>();
+		ArrayList<Role> usersRoles = new ArrayList<Role>(getGuild().getRolesForUser(user));
 
-		for (Role role : getGuild().getRolesForUser(user)) {
-			rolesToRemove.add(role);
-		}
-		
-		for (Role role : rolesToRemove) {
+		for (Role role : usersRoles) {
 			manager.removeRoleFromUser(user, role);
 		}
 		return manager;
@@ -248,5 +236,4 @@ public class ChatHelper {
 
 		return splittedMessage;
 	}
-
 }

@@ -14,7 +14,7 @@ import javax.sound.sampled.UnsupportedAudioFileException;
 
 import kuroodo.discordbot.Init;
 import kuroodo.discordbot.entities.JDAListener;
-import kuroodo.discordbot.helpers.ChatHelper;
+import kuroodo.discordbot.helpers.JDAHelper;
 import net.dv8tion.jda.audio.player.FilePlayer;
 import net.dv8tion.jda.audio.player.Player;
 import net.dv8tion.jda.audio.player.URLPlayer;
@@ -37,7 +37,7 @@ public class AudioPlayer extends JDAListener {
 
 	public void update(float delta) {
 
-		if (Init.getJDA().getAudioManager(ChatHelper.getGuild()).isConnected()) {
+		if (Init.getJDA().getAudioManager(JDAHelper.getGuild()).isConnected()) {
 			connected = true;
 		}
 		// Calculate time that bot isn't used. If idle for more than
@@ -47,7 +47,7 @@ public class AudioPlayer extends JDAListener {
 				currentIdleTime += delta;
 
 				if (currentIdleTime >= maxIdleTime && !player.isPlaying() && !player.isPaused()) {
-					Init.getJDA().getAudioManager(ChatHelper.getGuild()).closeAudioConnection();
+					Init.getJDA().getAudioManager(JDAHelper.getGuild()).closeAudioConnection();
 					resetIdleCount();
 					connected = false;
 				} else if (player.isPlaying()) {
@@ -64,11 +64,11 @@ public class AudioPlayer extends JDAListener {
 		try {
 
 			// Start an audio connection with a VoiceChannel
-			if (message.startsWith("!join ") || ChatHelper.isMessageAnAudioQueue(message)) {
+			if (message.startsWith("!join ") || JDAHelper.isMessageAnAudioQueue(message)) {
 				// Make sure it's an audioQueue
 
-				if (ChatHelper.isMessageAnAudioQueue(message)) {
-					chanName = ChatHelper.getUserVoiceChannel(event.getAuthor().getUsername()).getName();
+				if (JDAHelper.isMessageAnAudioQueue(message)) {
+					chanName = JDAHelper.getUserVoiceChannel(event.getAuthor().getUsername()).getName();
 				} else {
 					// Separates the name of the channel so that we can search
 					// for
@@ -101,20 +101,20 @@ public class AudioPlayer extends JDAListener {
 					}
 				}
 
-				if (!event.getJDA().getAudioManager(ChatHelper.getGuild()).isConnected()) {
+				if (!event.getJDA().getAudioManager(JDAHelper.getGuild()).isConnected()) {
 					System.out.println("Try");
-					event.getJDA().getAudioManager(ChatHelper.getGuild()).openAudioConnection(channel);
+					event.getJDA().getAudioManager(JDAHelper.getGuild()).openAudioConnection(channel);
 					resetIdleCount();
 				} else {
-					if (event.getJDA().getAudioManager(ChatHelper.getGuild()).getConnectedChannel() != channel) {
-						event.getJDA().getAudioManager(ChatHelper.getGuild()).moveAudioConnection(channel);
+					if (event.getJDA().getAudioManager(JDAHelper.getGuild()).getConnectedChannel() != channel) {
+						event.getJDA().getAudioManager(JDAHelper.getGuild()).moveAudioConnection(channel);
 						resetIdleCount();
 					}
 				}
 			}
 			// Disconnect the audio connection with the VoiceChannel.
 			if (message.equals("!leave")) {
-				event.getJDA().getAudioManager(ChatHelper.getGuild()).closeAudioConnection();
+				event.getJDA().getAudioManager(JDAHelper.getGuild()).closeAudioConnection();
 				resetIdleCount();
 			}
 
@@ -126,28 +126,28 @@ public class AudioPlayer extends JDAListener {
 			String audioSourceType = "";
 			String audioLocation = "";
 
-			command = ChatHelper.splitString(message)[0];
-			String secondString = ChatHelper.splitString(message)[1];
+			command = JDAHelper.splitString(message)[0];
+			String secondString = JDAHelper.splitString(message)[1];
 
-			audioSourceType = ChatHelper.splitString(secondString)[0];
-			audioLocation = ChatHelper.splitString(secondString)[1];
+			audioSourceType = JDAHelper.splitString(secondString)[0];
+			audioLocation = JDAHelper.splitString(secondString)[1];
 
 			// System.out.println("Command: " + command);
 			// System.out.println("source: " + audioSourceType);
 			// System.out.println("location: " + audioLocation);
 
-			if (command.equals("!play") || ChatHelper.isMessageAnAudioQueue(message)) {
+			if (command.equals("!play") || JDAHelper.isMessageAnAudioQueue(message)) {
 				// If the player didn't exist or new audio command,
 				// create it and start playback.
 				if (player == null || audioSourceType.equals("url") || audioSourceType.equals("file")
-						|| ChatHelper.isMessageAnAudioQueue(message)) {
+						|| JDAHelper.isMessageAnAudioQueue(message)) {
 					stopPlayer();
 					player = null;
 					File audioFile = null;
 					URL audioUrl = null;
 
 					try {
-						if (ChatHelper.isMessageAnAudioQueue(message)) {
+						if (JDAHelper.isMessageAnAudioQueue(message)) {
 							audioFile = new File("sounds/" + message.substring(1) + ".mp3");
 
 							player = new FilePlayer(audioFile);
@@ -179,7 +179,7 @@ public class AudioPlayer extends JDAListener {
 						// an
 						// audio connection,
 						// but it probably would be good to do.
-						event.getJDA().getAudioManager(ChatHelper.getGuild()).setSendingHandler(player);
+						event.getJDA().getAudioManager(JDAHelper.getGuild()).setSendingHandler(player);
 
 						// Start playback. This will only start after the
 						// AudioConnection has completely connected.

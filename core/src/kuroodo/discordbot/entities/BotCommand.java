@@ -31,35 +31,18 @@ public abstract class BotCommand implements Command {
 		}
 
 		this.commandParameters = commandParams;
-
-		// System.out.println("Execture: " + commandParameters);
 	}
 
 	@Override
 	public abstract String info();
 
 	protected void sendMessage(String message) {
-		// try {
-		// event.getChannel().sendMessage(message);
-		// } catch (RateLimitedException e) {
-		// Init.getActionScheduler()
-		// .addTopPriorityAction(new ActionSendPublicMessage(event.getChannel(),
-		// message, true, 3.5f));
-		// }
-
 		event.getChannel().sendMessageAsync(message, null);
 	}
 
 	protected void sendPrivateMessage(String message) {
-		// try {
-		// event.getAuthor().getPrivateChannel().sendMessage(message);
-		// } catch (RateLimitedException e) {
-		// Init.getActionScheduler().addTopPriorityAction(
-		// new ActionSendPrivateMessage(event.getAuthor().getPrivateChannel(),
-		// message, true, 3.5f));
-		// }
-		event.getAuthor().getPrivateChannel().sendMessageAsync(message, null);
 
+		event.getAuthor().getPrivateChannel().sendMessageAsync(message, null);
 	}
 
 	public String commandName() {

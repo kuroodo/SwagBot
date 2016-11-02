@@ -14,7 +14,6 @@ public class BotCommandHandler {
 
 	public static Collection<Class> getCommands() {
 		return botCommands.values();
-
 	}
 
 	public static Class getCommand(String commandName) {
@@ -24,5 +23,4 @@ public class BotCommandHandler {
 	public static boolean isContainsCommand(String commandName) {
 		return botCommands.containsKey(commandName);
 	}
-
 }

@@ -5,7 +5,7 @@ package kuroodo.discordbot.listeners;
 
 import kuroodo.discordbot.Init;
 import kuroodo.discordbot.entities.JDAListener;
-import kuroodo.discordbot.helpers.ChatHelper;
+import kuroodo.discordbot.helpers.JDAHelper;
 import net.dv8tion.jda.entities.Role;
 import net.dv8tion.jda.events.DisconnectEvent;
 import net.dv8tion.jda.events.ReconnectedEvent;
@@ -23,7 +23,6 @@ import net.dv8tion.jda.events.guild.role.GuildRoleUpdatePermissionEvent;
 public class ServerListener extends JDAListener {
 
 	public void update(float Delta) {
-
 	}
 
 	@Override
@@ -45,14 +44,14 @@ public class ServerListener extends JDAListener {
 		final String WELCOME_CHANNEL_NAME = "general";
 
 		// TODO: Create variable for the role to give
-		ChatHelper.giveRoleToUser(ChatHelper.getRoleByName("Member"), event.getUser());
+		JDAHelper.giveRoleToUser(JDAHelper.getRoleByName("Member"), event.getUser());
 
 		String message = " User " + event.getUser().getUsername() + " joined the server";
 		System.out.println(message);
 		Init.getServerOwner().getPrivateChannel().sendMessageAsync(message, null);
 
 		message = "Welcome " + event.getUser().getAsMention();
-		ChatHelper.getTextChannelByName(WELCOME_CHANNEL_NAME).sendMessageAsync(message, null);
+		JDAHelper.getTextChannelByName(WELCOME_CHANNEL_NAME).sendMessageAsync(message, null);
 
 		super.onGuildMemberJoin(event);
 	}
@@ -60,7 +59,6 @@ public class ServerListener extends JDAListener {
 	@Override
 	public void onGuildMemberBan(GuildMemberBanEvent event) {
 		String message = "User " + event.getUser().getUsername() + " was banned from the server";
-
 		System.out.println(message);
 		Init.getServerOwner().getPrivateChannel().sendMessageAsync(message, null);
 	}
@@ -68,7 +66,6 @@ public class ServerListener extends JDAListener {
 	@Override
 	public void onGuildMemberUnban(GuildMemberUnbanEvent event) {
 		final String message = "User " + event.getUser().getUsername() + " was unbanned from the server";
-
 		System.out.println(message);
 		Init.getServerOwner().getPrivateChannel().sendMessageAsync(message, null);
 	}
@@ -76,7 +73,6 @@ public class ServerListener extends JDAListener {
 	@Override
 	public void onGuildMemberLeave(GuildMemberLeaveEvent event) {
 		final String message = "User " + event.getUser().getUsername() + " has left server, or been kicked";
-
 		System.out.println(message);
 		Init.getServerOwner().getPrivateChannel().sendMessageAsync(message, null);
 	}

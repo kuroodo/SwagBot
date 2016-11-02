@@ -26,14 +26,14 @@ import kuroodo.discordbot.chatcommands.moderator.CommandTempBan;
 import kuroodo.discordbot.client.handlers.ChatCommandHandler;
 import kuroodo.discordbot.entities.ChatCommand;
 import kuroodo.discordbot.entities.JDAListener;
-import kuroodo.discordbot.helpers.ChatHelper;
+import kuroodo.discordbot.helpers.JDAHelper;
 import net.dv8tion.jda.events.message.guild.GuildMessageReceivedEvent;
 
 public class ChatCommandListener extends JDAListener {
-	private ArrayList<ChatCommand> commandUpdateQueue;
+	private ArrayList<ChatCommand> commandsToUpdateQueue;
 
 	public ChatCommandListener() {
-		commandUpdateQueue = new ArrayList<>();
+		commandsToUpdateQueue = new ArrayList<>();
 		registerCommands();
 	}
 
@@ -41,7 +41,7 @@ public class ChatCommandListener extends JDAListener {
 	public void onGuildMessageReceived(GuildMessageReceivedEvent event) {
 		super.onGuildMessageReceived(event);
 
-		String commandName = ChatHelper.splitString(event.getMessage().getRawContent())[0].toLowerCase();
+		String commandName = JDAHelper.splitString(event.getMessage().getRawContent())[0].toLowerCase();
 
 		try {
 			if (event.getMessage().getRawContent().substring(0, 1).equals("!")
@@ -66,15 +66,15 @@ public class ChatCommandListener extends JDAListener {
 		try {
 
 			command = (ChatCommand) ChatCommandHandler
-					.getCommand(ChatHelper.splitString(event.getMessage().getContent())[0].toLowerCase()).newInstance();
+					.getCommand(JDAHelper.splitString(event.getMessage().getContent())[0].toLowerCase()).newInstance();
 
 			// System.out.println("CommandListener: " +
 			// ChatHelper.splitString(event.getMessage().getRawContent())[1]);
 
 			// Execute command and give it any parameters specified by user
-			command.executeCommand(ChatHelper.splitString(event.getMessage().getRawContent())[1], event);
+			command.executeCommand(JDAHelper.splitString(event.getMessage().getRawContent())[1], event);
 			if (command.shouldUpdate()) {
-				commandUpdateQueue.add(command);
+				commandsToUpdateQueue.add(command);
 			}
 
 		} catch (InstantiationException | IllegalAccessException e) {
@@ -85,12 +85,12 @@ public class ChatCommandListener extends JDAListener {
 
 	public void update(float delta) {
 		try {
-			for (ChatCommand command : commandUpdateQueue) {
+			for (ChatCommand command : commandsToUpdateQueue) {
 				// Check if we should continue calling update on command
 				if (command.shouldUpdate()) {
 					command.update(delta);
 				} else {
-					commandUpdateQueue.remove(command);
+					commandsToUpdateQueue.remove(command);
 				}
 			}
 		} catch (ConcurrentModificationException e) {

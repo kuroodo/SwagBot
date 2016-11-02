@@ -9,7 +9,7 @@ import kuroodo.discordbot.entities.ChatCommand;
 import kuroodo.discordbot.enums.ECommands;
 import kuroodo.discordbot.enums.ECommands.AdminCommands;
 import kuroodo.discordbot.enums.ECommands.ModeratorCommands;
-import kuroodo.discordbot.helpers.ChatHelper;
+import kuroodo.discordbot.helpers.JDAHelper;
 import kuroodo.discordbot.helpers.JSonReader;
 import net.dv8tion.jda.JDAInfo;
 import net.dv8tion.jda.events.message.guild.GuildMessageReceivedEvent;
@@ -23,12 +23,11 @@ public class CommandHelp extends ChatCommand {
 		String message = event.getMessage().getRawContent();
 
 		if (message.startsWith("!help")) {
-			// Print out commands
 			if (commandParameters.isEmpty()) {
 				printUserCommands();
-				if (ChatHelper.isUserAdmin(event.getAuthor())) {
+				if (JDAHelper.isUserAdmin(event.getAuthor())) {
 					printAdminCommands();
-				} else if (ChatHelper.isUserModerator(event.getAuthor())) {
+				} else if (JDAHelper.isUserModerator(event.getAuthor())) {
 					printModeratorCommands();
 				}
 			} else {
@@ -41,18 +40,20 @@ public class CommandHelp extends ChatCommand {
 	}
 
 	private void printUserCommands() {
+		String message = "```\n";
 		String commands = "";
 		// Gather and print user commands
 		for (ECommands e : ECommands.values()) {
 			commands = commands + " " + e.name().toLowerCase() + ";";
 		}
 
-		sendPrivateMessage(
-				"For help with a specific command, use !help [commandname] (!help slap)\n\n");
-		sendPrivateMessage("List of commands (don't use the semi-colons): " + commands);
+		message = message + "For help with a specific command, use !help [commandname] (!help slap)\n\n";
+		message = message + "List of commands (don't use the semi-colons): " + commands + "\n```";
+		sendPrivateMessage(message);
 	}
 
 	private void printAdminCommands() {
+		String message = "```\n";
 		String adminCommands = "";
 		for (AdminCommands e : AdminCommands.values()) {
 			adminCommands = adminCommands + " " + e.name().toLowerCase() + ";";
@@ -62,54 +63,53 @@ public class CommandHelp extends ChatCommand {
 			adminCommands = adminCommands + " " + e.name().toLowerCase() + ";";
 		}
 
-		sendPrivateMessage(
-				"For help with a specific command, use !help [commandname] (!help slap))\n\n");
-		sendPrivateMessage("List of Admin commands (don't use the semi-colons): " + adminCommands);
+		message = message + "For help with a specific command, use !help [commandname] (!help slap)\n\n";
+		message = message + "List of **Admin** commands (don't use the semi-colons): " + adminCommands + "\n```";
+		sendPrivateMessage(message);
 	}
 
 	private void printModeratorCommands() {
+		String message = "```\n";
 		String modCommands = "";
 
 		for (ModeratorCommands e : ModeratorCommands.values()) {
 			modCommands = modCommands + " " + e.name().toLowerCase() + ";";
 		}
 
-		sendPrivateMessage(
-				"For help with a specific command, use !help [commandname] (!help slap)\n\n");
-		sendPrivateMessage("List of moderator commands (don't use the semi-colons): " + modCommands);
+		message = message + "For help with a specific command, use !help [commandname] (!help slap)\n\n";
+		message = message + "List of **Moderator** commands (don't use the semi-colons): " + modCommands + "\n```";
+		sendPrivateMessage(message);
 	}
 
 	private void sendCommandInfo() {
 		String commandWord = "";
-		// If command name has a !
+		// If specified command name in users message has a !
 		if (commandParameters.substring(0, 1).equals("!")) {
 			commandWord = commandParameters;
 		} else {
 			commandWord = "!" + commandParameters;
 		}
 
-		if (ChatCommandHandler.getCommands().contains(ChatCommandHandler.getCommand(commandWord))) {
+		if (ChatCommandHandler.isContainsCommand(commandWord)) {
 			ChatCommand command;
 			try {
 				command = (ChatCommand) ChatCommandHandler.getCommand(commandWord).newInstance();
-				System.out.println(userHasAccessToCommand(command));
-
-				if (userHasAccessToCommand(command)) {
+				if (command.checkUserHasAccessToCommand(event)) {
 					sendPrivateMessage(command.info());
 				} else {
+					// Do nothing if user does not have access
 					return;
 				}
-
 			} catch (InstantiationException | IllegalAccessException | NullPointerException e) {
-				printMiscCommands(commandWord);
+				printHiddenCommands(commandWord);
 				e.printStackTrace();
 			}
 		} else {
-			printMiscCommands(commandWord);
+			printHiddenCommands(commandWord);
 		}
 	}
 
-	private void printMiscCommands(String commandWord) {
+	private void printHiddenCommands(String commandWord) {
 		switch (commandWord) {
 		case "!join":
 		case "!play":
@@ -183,16 +183,4 @@ public class CommandHelp extends ChatCommand {
 	public String info() {
 		return "This command gives useful information and stuff";
 	}
-
-	private boolean userHasAccessToCommand(ChatCommand command) {
-		if (command.isAdminCommand() && !ChatHelper.isUserAdmin(event.getAuthor())) {
-			return false;
-		} else if (isModCommand
-				&& (!ChatHelper.isUserModerator(event.getAuthor()) && !ChatHelper.isUserAdmin(event.getAuthor()))) {
-			return false;
-		}
-
-		return true;
-	}
-
 }

@@ -3,7 +3,7 @@ package kuroodo.discordbot.chatcommands.admin;
 import java.awt.Color;
 
 import kuroodo.discordbot.entities.ChatCommand;
-import kuroodo.discordbot.helpers.ChatHelper;
+import kuroodo.discordbot.helpers.JDAHelper;
 import net.dv8tion.jda.events.message.guild.GuildMessageReceivedEvent;
 
 public class CommandEditRoleColor extends ChatCommand {
@@ -21,19 +21,18 @@ public class CommandEditRoleColor extends ChatCommand {
 		}
 		
 		
-		String roleName = ChatHelper.splitString(commandParameters)[0];
-		String roleColor = ChatHelper.splitString(commandParameters)[1];
+		String roleName = JDAHelper.splitString(commandParameters)[0];
+		String roleColor = JDAHelper.splitString(commandParameters)[1];
 
-		if (ChatHelper.getRoleByName(roleName) == null || roleName.equals("Admin") || roleName.equals("Moderator")
-				|| roleName.equals("testkek")) {
-			ChatHelper.getTextChannelByName("headquarters").sendMessage(event.getAuthor().getAsMention()
-					+ " The role named " + roleName + "doesn't exist, or you tried editting a locked role");
+		if (JDAHelper.getRoleByName(roleName) == null || roleName.equals("Admin") || roleName.equals("Moderator")) {
+			JDAHelper.getTextChannelByName("headquarters").sendMessageAsync(event.getAuthor().getAsMention()
+					+ " The role named " + roleName + "doesn't exist, or you tried editting a locked role", null);
 		} else {
 			try {
-				ChatHelper.getRoleByName(roleName).getManager().setColor(Color.decode(roleColor)).update();
+				JDAHelper.getRoleByName(roleName).getManager().setColor(Color.decode(roleColor)).update();
 			} catch (NumberFormatException e) {
-				ChatHelper.getTextChannelByName("headquarters").sendMessage(event.getAuthor().getAsMention()
-						+ " Make sure you set the color to be a hex number. Example: !editrolecolor roleName #003CFF");
+				JDAHelper.getTextChannelByName("headquarters").sendMessageAsync(event.getAuthor().getAsMention()
+						+ " Make sure you set the color to be a hex number. Example: !editrolecolor roleName #003CFF", null);
 			}
 		}
 	}

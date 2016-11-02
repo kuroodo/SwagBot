@@ -1,7 +1,7 @@
 package kuroodo.discordbot.entities;
 
 import kuroodo.discordbot.Init;
-import kuroodo.discordbot.helpers.ChatHelper;
+import kuroodo.discordbot.helpers.JDAHelper;
 import net.dv8tion.jda.events.message.guild.GuildMessageReceivedEvent;
 import net.dv8tion.jda.events.message.priv.PrivateMessageReceivedEvent;
 
@@ -26,26 +26,12 @@ public abstract class ChatCommand implements Command {
 	public void executeCommand(String commandParams, GuildMessageReceivedEvent event) {
 		this.event = event;
 
-		if (isAdminCommand && !ChatHelper.isUserAdmin(event.getAuthor())
-				&& event.getAuthor() != Init.getServerOwner()) {
-			isUserAuthorized = false;
-			shouldUpdate = false;
-			sendPrivateMessage(event.getAuthor().getAsMention() + " You do not have access to that command!");
-			return;
-		} else if (isModCommand
-				&& (!ChatHelper.isUserModerator(event.getAuthor()) && !ChatHelper.isUserAdmin(event.getAuthor()))
-				&& event.getAuthor() != Init.getServerOwner()) {
-			isUserAuthorized = false;
-			shouldUpdate = false;
-			sendPrivateMessage(event.getAuthor().getAsMention() + " You do not have access to that command!");
-			return;
-		}
-
 		this.commandParameters = commandParams;
+
+		checkUserHasAccessToCommand();
 
 		// System.out.println("Command Params [executeParams - ChatCommand]: " +
 		// commandParameters);
-
 		sortSubText();
 	}
 
@@ -105,6 +91,36 @@ public abstract class ChatCommand implements Command {
 
 	public boolean isModCommand() {
 		return isModCommand;
+	}
+
+	public boolean checkUserHasAccessToCommand() {
+		if (isAdminCommand && !JDAHelper.isUserAdmin(event.getAuthor()) && event.getAuthor() != Init.getServerOwner()) {
+			isUserAuthorized = false;
+			shouldUpdate = false;
+			sendPrivateMessage(event.getAuthor().getAsMention() + " You do not have access to that command!");
+		} else if (isModCommand
+				&& (!JDAHelper.isUserModerator(event.getAuthor()) && !JDAHelper.isUserAdmin(event.getAuthor()))
+				&& event.getAuthor() != Init.getServerOwner()) {
+			isUserAuthorized = false;
+			shouldUpdate = false;
+			sendPrivateMessage(event.getAuthor().getAsMention() + " You do not have access to that command!");
+		}
+
+		return isUserAuthorized;
+	}
+
+	public boolean checkUserHasAccessToCommand(GuildMessageReceivedEvent event) {
+		if (isAdminCommand && !JDAHelper.isUserAdmin(event.getAuthor()) && event.getAuthor() != Init.getServerOwner()) {
+			isUserAuthorized = false;
+			shouldUpdate = false;
+		} else if (isModCommand
+				&& (!JDAHelper.isUserModerator(event.getAuthor()) && !JDAHelper.isUserAdmin(event.getAuthor()))
+				&& event.getAuthor() != Init.getServerOwner()) {
+			isUserAuthorized = false;
+			shouldUpdate = false;
+		}
+
+		return isUserAuthorized;
 	}
 
 	public String commandName() {

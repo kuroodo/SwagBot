@@ -4,13 +4,15 @@ import java.util.Random;
 
 import kuroodo.discordbot.Init;
 import kuroodo.discordbot.entities.ChatCommand;
-import kuroodo.discordbot.helpers.ChatHelper;
+import kuroodo.discordbot.helpers.JDAHelper;
 import net.dv8tion.jda.entities.User;
 import net.dv8tion.jda.events.message.guild.GuildMessageReceivedEvent;
 
 public class CommandMagicBall extends ChatCommand {
 	private Random rand;
 
+	// TODO: Move/manage responses via XML/Json file instead of hardcoding
+	
 	// Total response counts for each response types. Used to generate a random
 	// integer with a range of the count
 	public int responseCountWhy = 11, responseCountHow = 11, responseCountIs = 16, responseCountWhen = 13,
@@ -62,56 +64,6 @@ public class CommandMagicBall extends ChatCommand {
 		} else {
 			answerBlank(rand.nextInt(responseCountBlank));
 		}
-		// switch (x) {
-		// case 0:
-		// event.getChannel().sendMessage("Yes!");
-		// break;
-		// case 1:
-		// event.getChannel().sendMessage("Perhaps in the foreseeable future.");
-		// break;
-		// case 2:
-		// event.getChannel().sendMessage("Maybe.");
-		// break;
-		// case 3:
-		// event.getChannel().sendMessage("don't count on it!");
-		// break;
-		// case 4:
-		// event.getChannel().sendMessage("Look deep into your heart and you
-		// will find the answer");
-		// break;
-		// case 5:
-		// event.getChannel().sendMessage("With a little bit of luck perhaps");
-		// break;
-		// case 6:
-		// boolean exit = false;
-		// do {
-		// User user = ChatHelper.getRandomOnlineUser(event);
-		//
-		// if(user != Init.getJDA().getSelfInfo()){
-		// event.getChannel().sendMessage(("Perhaps " + user.getAsMention()
-		// + " has the answer to that?"));
-		//
-		// exit = true;
-		// }
-		// } while (!exit);
-		// break;
-		// case 7:
-		// event.getChannel().sendMessage("How about fugg off m8");
-		// break;
-		// case 8:
-		// event.getChannel().sendMessage("Without a fucking doubt!");
-		// break;
-		//
-		// case 9:
-		// event.getChannel().sendMessage("No too bad you're an asshore");
-		// break;
-		//
-		// case 10:
-		// event.getChannel().sendMessage("I must say no");
-		// break;
-		//
-		// }
-
 	}
 
 	private void answerBlank(int randomNumber) {
@@ -157,7 +109,7 @@ public class CommandMagicBall extends ChatCommand {
 		case 6:
 			boolean exit = false;
 			do {
-				User user = ChatHelper.getRandomOnlineUser();
+				User user = JDAHelper.getRandomOnlineUser();
 
 				if (user.getUsername().equals(Init.getBotName())) {
 					sendMessage(("Perhaps " + user.getAsMention() + " has the answer to that?"));
@@ -211,7 +163,7 @@ public class CommandMagicBall extends ChatCommand {
 		case 6:
 			boolean exit = false;
 			do {
-				User user = ChatHelper.getRandomOnlineUser();
+				User user = JDAHelper.getRandomOnlineUser();
 
 				if (user.getUsername().equals(Init.getBotName())) {
 					sendMessage((user.getAsMention()));
@@ -262,7 +214,7 @@ public class CommandMagicBall extends ChatCommand {
 		case 6:
 			boolean exit = false;
 			do {
-				User user = ChatHelper.getRandomOnlineUser();
+				User user = JDAHelper.getRandomOnlineUser();
 
 				if (user.getUsername().equals(Init.getBotName())) {
 					sendMessage(("Perhaps " + user.getAsMention() + " has the answer to that?"));
@@ -314,7 +266,7 @@ public class CommandMagicBall extends ChatCommand {
 			boolean exit = false;
 			int loopCount = 0;
 			do {
-				User user = ChatHelper.getRandomOnlineUser();
+				User user = JDAHelper.getRandomOnlineUser();
 
 				if (user != Init.getJDA().getSelfInfo() && user != event.getAuthor()) {
 					sendMessage(("Perhaps " + user.getAsMention() + " has the answer to that?"));
@@ -373,7 +325,7 @@ public class CommandMagicBall extends ChatCommand {
 			boolean exit = false;
 			int loopCount = 0;
 			do {
-				User user = ChatHelper.getRandomOnlineUser();
+				User user = JDAHelper.getRandomOnlineUser();
 
 				if (user != Init.getJDA().getSelfInfo() && user != event.getAuthor()) {
 					sendMessage(("Perhaps " + user.getAsMention() + " has the answer to that?"));
@@ -441,7 +393,7 @@ public class CommandMagicBall extends ChatCommand {
 			boolean exit = false;
 			int loopCount = 0;
 			do {
-				User user = ChatHelper.getRandomOnlineUser();
+				User user = JDAHelper.getRandomOnlineUser();
 
 				if (user != Init.getJDA().getSelfInfo() && user != event.getAuthor()) {
 					sendMessage(("Perhaps " + user.getAsMention() + " has the answer to that?"));
@@ -511,7 +463,7 @@ public class CommandMagicBall extends ChatCommand {
 			boolean exit = false;
 			int loopCount = 0;
 			do {
-				User user = ChatHelper.getRandomOnlineUser();
+				User user = JDAHelper.getRandomOnlineUser();
 
 				if (user != Init.getJDA().getSelfInfo() && user != event.getAuthor()) {
 					sendMessage(("Perhaps " + user.getAsMention() + " has the answer to that?"));
@@ -587,7 +539,7 @@ public class CommandMagicBall extends ChatCommand {
 			boolean exit = false;
 			int loopCount = 0;
 			do {
-				User user = ChatHelper.getRandomOnlineUser();
+				User user = JDAHelper.getRandomOnlineUser();
 
 				if (user != Init.getJDA().getSelfInfo() && user != event.getAuthor()) {
 					sendMessage(("Perhaps " + user.getAsMention() + " has the answer to that?"));
@@ -691,7 +643,7 @@ public class CommandMagicBall extends ChatCommand {
 		case 6:
 			boolean exit = false;
 			do {
-				User user = ChatHelper.getRandomOnlineUser();
+				User user = JDAHelper.getRandomOnlineUser();
 
 				if (user.getUsername().equals(Init.getBotName())) {
 					sendMessage(("Perhaps " + user.getAsMention() + " has the answer to that?"));

@@ -5,7 +5,7 @@ import kuroodo.discordbot.client.handlers.GameManager;
 import kuroodo.discordbot.client.handlers.GameManagerHandler;
 import kuroodo.discordbot.entities.ChatCommand;
 import kuroodo.discordbot.enums.EGameList;
-import kuroodo.discordbot.helpers.ChatHelper;
+import kuroodo.discordbot.helpers.JDAHelper;
 import net.dv8tion.jda.entities.User;
 import net.dv8tion.jda.events.message.guild.GuildMessageReceivedEvent;
 
@@ -21,9 +21,9 @@ public class CommandPlayGame extends ChatCommand {
 			return;
 		}
 		// Did user specify anything after command?
-		if (!ChatHelper.splitString(commandParameters)[0].isEmpty()) {
+		if (!JDAHelper.splitString(commandParameters)[0].isEmpty()) {
 
-			String gameName = ChatHelper.splitString(commandParameters)[0];
+			String gameName = JDAHelper.splitString(commandParameters)[0];
 
 			if (!doesGameExist(gameName)) {
 				sendPrivateMessage("The game you specified does not exist!");
@@ -31,13 +31,13 @@ public class CommandPlayGame extends ChatCommand {
 			}
 
 			// Check if user specified a user to player with
-			if (!ChatHelper.splitString(commandParameters)[1].isEmpty()) {
+			if (!JDAHelper.splitString(commandParameters)[1].isEmpty()) {
 
 				// Check if the specified user is a real user
-				User multiPlayerUser = ChatHelper.getUserByID(ChatHelper.splitString(commandParameters)[1]);
+				User multiPlayerUser = JDAHelper.getUserByID(JDAHelper.splitString(commandParameters)[1]);
 
 				if (multiPlayerUser == null) {
-					multiPlayerUser = ChatHelper.getUserByUsername(commandParameters);
+					multiPlayerUser = JDAHelper.getUserByUsername(commandParameters);
 					if (multiPlayerUser == null) {
 						if (!event.getMessage().getMentionedUsers().isEmpty()) {
 							multiPlayerUser = event.getMessage().getMentionedUsers().get(0);

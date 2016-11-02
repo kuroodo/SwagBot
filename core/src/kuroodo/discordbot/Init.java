@@ -9,8 +9,8 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.GL20;
 
 import kuroodo.discordbot.entities.JDAListener;
-import kuroodo.discordbot.helpers.ChatHelper;
 import kuroodo.discordbot.helpers.ChatLogger;
+import kuroodo.discordbot.helpers.JDAHelper;
 import kuroodo.discordbot.helpers.JSonReader;
 import kuroodo.discordbot.listeners.AudioPlayer;
 import kuroodo.discordbot.listeners.BotCommandListener;
@@ -24,7 +24,7 @@ import net.dv8tion.jda.entities.User;
 
 public class Init extends ApplicationAdapter {
 
-	public static final String SUPERUSER_PASSWORD = JSonReader.getSuperUserPassword(), VERSION = "1.9.2";
+	public static final String SUPERUSER_PASSWORD = JSonReader.getSuperUserPassword(), VERSION = "1.9.21";
 	// Users that have special bot commands and access
 	public static final ArrayList<User> SUPER_USERS = new ArrayList<>();
 
@@ -52,21 +52,13 @@ public class Init extends ApplicationAdapter {
 			jda = new JDABuilder().setBotToken(BOTTOKEN).buildBlocking();
 			botName = jda.getSelfInfo().getUsername();
 			System.out.println("Hello, I Am " + botName + " v" + VERSION);
-			findServerOwner();
+
+			storeServerOwner();
 
 			// jda.getAccountManager().setGame("Type !help For Help (;");
 			jda.getAccountManager().setGame("Undergoing Testing");
 
-			listeners.add(new ChatCommandListener());
-			listeners.add(new BotCommandListener());
-			listeners.add(new ChatListener());
-			listeners.add(new ServerListener());
-			listeners.add(new ChannelListener());
-			listeners.add(audioPlayer);
-
-			for (JDAListener listener : listeners) {
-				jda.addEventListener(listener);
-			}
+			setupListeners();
 		} catch (InterruptedException | LoginException e) {
 			System.out.println("ERROR: " + e.getMessage());
 		}
@@ -85,15 +77,28 @@ public class Init extends ApplicationAdapter {
 		}
 	}
 
-	private static void findServerOwner() {
-		String ownerID = ChatHelper.getGuild().getOwnerId();
+	private static void storeServerOwner() {
+		String ownerID = JDAHelper.getGuild().getOwnerId();
 
-		for (User user : ChatHelper.getUsers()) {
+		for (User user : JDAHelper.getUsers()) {
 			if (user.getId().equals(ownerID)) {
 				serverOwner = user;
 			}
 		}
 		SUPER_USERS.add(serverOwner);
+	}
+
+	private static void setupListeners() {
+		listeners.add(new ChatCommandListener());
+		listeners.add(new BotCommandListener());
+		listeners.add(new ChatListener());
+		listeners.add(new ServerListener());
+		listeners.add(new ChannelListener());
+		listeners.add(audioPlayer);
+
+		for (JDAListener listener : listeners) {
+			jda.addEventListener(listener);
+		}
 	}
 
 	public static User getServerOwner() {
@@ -108,6 +113,7 @@ public class Init extends ApplicationAdapter {
 		return botName;
 	}
 
+	// TODO: Move these voice channel methods to planned "botsettings" class
 	public static void blockVoiceChannel(String channelName) {
 		audioPlayer.blockVoiceChannel(channelName);
 	}

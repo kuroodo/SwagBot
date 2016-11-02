@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.Random;
 
 import kuroodo.discordbot.entities.ChatCommand;
-import kuroodo.discordbot.helpers.ChatHelper;
+import kuroodo.discordbot.helpers.JDAHelper;
 import net.dv8tion.jda.entities.Role;
 import net.dv8tion.jda.events.message.guild.GuildMessageReceivedEvent;
 import net.dv8tion.jda.managers.GuildManager;
@@ -20,10 +20,6 @@ public class CommandRoulette extends ChatCommand {
 
 	private ArrayList<Role> usersRoles;
 
-	// private Timer timer;
-
-	// private TimerTask task;
-
 	public CommandRoulette() {
 		super();
 		usersRoles = new ArrayList<>();
@@ -34,36 +30,24 @@ public class CommandRoulette extends ChatCommand {
 	public void update(float delta) {
 		super.update(delta);
 		currentCoolTime += delta;
-		checkRoulette();
+		updateRoulette();
 	}
 
 	@Override
 	public void executeCommand(String commandParams, GuildMessageReceivedEvent event) {
 		super.executeCommand(commandParams, event);
-		checkRoulette();
+		updateRoulette();
 	}
 
-	private void checkRoulette() {
+	private void updateRoulette() {
 		if (!dead) {
+			// phase 1
 			if (currentCoolTime >= 1 && currentCoolTime <= 2 && !phase1) {
 				sendMessage(event.getAuthor().getAsMention() + " raises a revolver to their head");
 				phase1 = true;
+				// phase 2
 			} else if (currentCoolTime >= 4 && currentCoolTime <= 6 && !phase2) {
-				Random rand = new Random(System.nanoTime());
-				int randomNumber = rand.nextInt(SHOTS);
-
-				if (randomNumber == 1) {
-					dead = true;
-					currentCoolTime = 0;
-					sendMessage(event.getAuthor().getAsMention()
-							+ " pulls the trigger and BAM! Their brain splatters all over the place!");
-					changeUserRoles();
-				} else {
-					sendMessage(event.getAuthor().getAsMention() + " pulls the trigger and survives to tell the tale!");
-					shouldUpdate = false;
-				}
-				phase2 = true;
-
+				playRoulette();
 			}
 		} else if (currentCoolTime >= DEATHCOOLDOWN) {
 			resetRoles();
@@ -71,31 +55,48 @@ public class CommandRoulette extends ChatCommand {
 		}
 	}
 
-	public void changeUserRoles() {
-		GuildManager manager = ChatHelper.getGuild().getManager();
+	private void playRoulette() {
+		Random rand = new Random(System.nanoTime());
+		int randomNumber = rand.nextInt(SHOTS);
 
-		if (ChatHelper.isUserAdmin(event.getAuthor()) || ChatHelper.isUserModerator(event.getAuthor())) {
-			manager.addRoleToUser(event.getAuthor(), ChatHelper.getRoleByName(DEATHROLENAME)).update();
+		if (randomNumber == 1) {
+			dead = true;
+			currentCoolTime = 0;
+			sendMessage(event.getAuthor().getAsMention()
+					+ " pulls the trigger and BAM! Their brain splatters all over the place!");
+			changeUserRoles();
+		} else {
+			sendMessage(event.getAuthor().getAsMention() + " pulls the trigger and survives to tell the tale!");
+			shouldUpdate = false;
+		}
+		phase2 = true;
+	}
+
+	private void changeUserRoles() {
+		GuildManager manager = JDAHelper.getGuild().getManager();
+
+		if (JDAHelper.isUserAdmin(event.getAuthor()) || JDAHelper.isUserModerator(event.getAuthor())) {
+			manager.addRoleToUser(event.getAuthor(), JDAHelper.getRoleByName(DEATHROLENAME)).update();
 			System.out.println("isadmin");
 		} else {
 			System.out.println("NOT ADMIN");
-			for (Role role : ChatHelper.getGuild().getRolesForUser(event.getAuthor())) {
+			for (Role role : JDAHelper.getGuild().getRolesForUser(event.getAuthor())) {
 				usersRoles.add(role);
 			}
 
-			ChatHelper.removeUsersRoles(event.getAuthor(), manager);
-			manager.addRoleToUser(event.getAuthor(), ChatHelper.getRoleByName(DEATHROLENAME));
+			JDAHelper.removeUsersRoles(event.getAuthor(), manager);
+			manager.addRoleToUser(event.getAuthor(), JDAHelper.getRoleByName(DEATHROLENAME));
 
 			manager.update();
 		}
 	}
 
-	public void resetRoles() {
-		GuildManager manager = ChatHelper.getGuild().getManager();
-		if (ChatHelper.isUserAdmin(event.getAuthor()) || ChatHelper.isUserModerator(event.getAuthor())) {
-			manager.removeRoleFromUser(event.getAuthor(), ChatHelper.getRoleByName(DEATHROLENAME)).update();
+	private void resetRoles() {
+		GuildManager manager = JDAHelper.getGuild().getManager();
+		if (JDAHelper.isUserAdmin(event.getAuthor()) || JDAHelper.isUserModerator(event.getAuthor())) {
+			manager.removeRoleFromUser(event.getAuthor(), JDAHelper.getRoleByName(DEATHROLENAME)).update();
 		} else {
-			ChatHelper.removeUsersRoles(event.getAuthor(), manager);
+			JDAHelper.removeUsersRoles(event.getAuthor(), manager);
 			for (Role role : usersRoles) {
 				manager.addRoleToUser(event.getAuthor(), role);
 			}
@@ -108,5 +109,4 @@ public class CommandRoulette extends ChatCommand {
 	public String info() {
 		return "Play a game of Russian Roulette. Usage !roulette";
 	}
-
 }

@@ -11,7 +11,7 @@ import kuroodo.discordbot.botcommands.BotCommandUnblock;
 import kuroodo.discordbot.client.handlers.BotCommandHandler;
 import kuroodo.discordbot.entities.BotCommand;
 import kuroodo.discordbot.entities.JDAListener;
-import kuroodo.discordbot.helpers.ChatHelper;
+import kuroodo.discordbot.helpers.JDAHelper;
 import net.dv8tion.jda.events.message.priv.PrivateMessageReceivedEvent;
 
 public class BotCommandListener extends JDAListener {
@@ -26,7 +26,7 @@ public class BotCommandListener extends JDAListener {
 	public void onPrivateMessageReceived(PrivateMessageReceivedEvent event) {
 		super.onPrivateMessageReceived(event);
 
-		String commandName = ChatHelper.splitString(event.getMessage().getRawContent())[0].toLowerCase();
+		String commandName = JDAHelper.splitString(event.getMessage().getRawContent())[0].toLowerCase();
 
 		try {
 			if (event.getMessage().getRawContent().substring(0, 1).equals("!")
@@ -48,13 +48,13 @@ public class BotCommandListener extends JDAListener {
 		BotCommand command;
 		try {
 			command = (BotCommand) BotCommandHandler
-					.getCommand(ChatHelper.splitString(event.getMessage().getContent())[0].toLowerCase()).newInstance();
+					.getCommand(JDAHelper.splitString(event.getMessage().getContent())[0].toLowerCase()).newInstance();
 
 			// System.out.println("CommandListener: " +
 			// ChatHelper.splitString(event.getMessage().getRawContent())[1]);
 
 			// Execute command and give it any parameters specified by user
-			command.executeCommand(ChatHelper.splitString(event.getMessage().getRawContent())[1], event);
+			command.executeCommand(JDAHelper.splitString(event.getMessage().getRawContent())[1], event);
 			if (command.shouldUpdate()) {
 				commandUpdateQueue.add(command);
 			}

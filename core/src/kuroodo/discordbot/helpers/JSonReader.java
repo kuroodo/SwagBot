@@ -29,19 +29,19 @@ public class JSonReader {
 	}
 
 	public static String getSuperUserPassword() {
-		String authPassword = "";
+		String superUserPassword = "";
 
 		Reader reader;
 		try {
 			reader = new FileReader("config.json");
 			JsonObject object = Json.parse(reader).asObject();
 
-			authPassword = object.get("superuserpass").asString();
+			superUserPassword = object.get("superuserpass").asString();
 		} catch (IOException e) {
 			System.out.println("Could not read/get super user password!");
 		}
 
-		return authPassword;
+		return superUserPassword;
 	}
 
 	public static String getSourceCodeLink() {
