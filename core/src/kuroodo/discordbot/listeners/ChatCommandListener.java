@@ -48,10 +48,10 @@ public class ChatCommandListener extends JDAListener {
 					&& ChatCommandHandler.isContainsCommand(commandName)) {
 				startupCommand(event);
 
-				// If user mentioned the bot
+				// If user mentioned the bot at the beginning of message
 			} else if (!event.getMessage().getMentionedUsers().isEmpty()
+					&& event.getMessage().getRawContent().substring(0, 1).equals("@")
 					&& event.getMessage().getMentionedUsers().get(0) == Init.getJDA().getSelfInfo()) {
-				System.out.println("command listener");
 				startupCommand(event);
 			}
 		} catch (StringIndexOutOfBoundsException e) {
