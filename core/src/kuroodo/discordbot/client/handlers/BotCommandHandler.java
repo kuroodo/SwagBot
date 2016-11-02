@@ -20,5 +20,9 @@ public class BotCommandHandler {
 	public static Class getCommand(String commandName) {
 		return botCommands.get(commandName);
 	}
+	
+	public static boolean isContainsCommand(String commandName) {
+		return botCommands.containsKey(commandName);
+	}
 
 }

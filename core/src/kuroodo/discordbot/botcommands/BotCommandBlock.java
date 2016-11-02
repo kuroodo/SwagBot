@@ -33,8 +33,7 @@ public class BotCommandBlock extends BotCommand {
 
 	@Override
 	public String info() {
-		// TODO Auto-generated method stub
-		return null;
+		return "";
 	}
 
 }

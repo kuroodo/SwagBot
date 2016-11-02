@@ -25,10 +25,13 @@ public class BotCommandListener extends JDAListener {
 	@Override
 	public void onPrivateMessageReceived(PrivateMessageReceivedEvent event) {
 		super.onPrivateMessageReceived(event);
+
+		String commandName = ChatHelper.splitString(event.getMessage().getRawContent())[0].toLowerCase();
+
 		try {
 			if (event.getMessage().getRawContent().substring(0, 1).equals("!")
-					&& BotCommandHandler.getCommands().contains(BotCommandHandler
-							.getCommand(ChatHelper.splitString(event.getMessage().getRawContent())[0].toLowerCase()))) {
+					&& BotCommandHandler.isContainsCommand(commandName)) {
+				
 				if (Init.SUPER_USERS.contains(event.getAuthor())) {
 					startupCommand(event);
 				}
@@ -42,8 +45,6 @@ public class BotCommandListener extends JDAListener {
 
 	// Create new instance of command based on class
 	private void startupCommand(PrivateMessageReceivedEvent event) {
-		// System.out.println("command: " +
-		// ChatHelper.splitString(event.getMessage().getRawContent())[1]);
 		BotCommand command;
 		try {
 			command = (BotCommand) BotCommandHandler
@@ -52,6 +53,7 @@ public class BotCommandListener extends JDAListener {
 			// System.out.println("CommandListener: " +
 			// ChatHelper.splitString(event.getMessage().getRawContent())[1]);
 
+			// Execute command and give it any parameters specified by user
 			command.executeCommand(ChatHelper.splitString(event.getMessage().getRawContent())[1], event);
 			if (command.shouldUpdate()) {
 				commandUpdateQueue.add(command);
@@ -66,6 +68,7 @@ public class BotCommandListener extends JDAListener {
 	public void update(float delta) {
 		try {
 			for (BotCommand command : commandUpdateQueue) {
+				// Check if we should continue calling update on command
 				if (command.shouldUpdate()) {
 					command.update(delta);
 				} else {

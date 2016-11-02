@@ -19,4 +19,8 @@ public class ChatCommandHandler {
 	public static Class getCommand(String commandName) {
 		return commands.get(commandName);
 	}
+	
+	public static boolean isContainsCommand(String commandName){
+		return commands.containsKey(commandName);
+	}
 }

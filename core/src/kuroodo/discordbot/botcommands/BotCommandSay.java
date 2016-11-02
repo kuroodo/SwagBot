@@ -22,8 +22,7 @@ public class BotCommandSay extends BotCommand {
 
 	@Override
 	public String info() {
-		// TODO Auto-generated method stub
-		return null;
+		return "";
 	}
 
 }

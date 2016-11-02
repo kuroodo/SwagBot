@@ -12,7 +12,7 @@ public abstract class ChatCommand implements Command {
 	protected String commandName = "";
 	protected String commandParameters = "";
 
-	protected boolean shouldUpdate = false, isAdminCommand = false, isModCommand = false, isUserAuthorized = false;
+	protected boolean shouldUpdate = false, isAdminCommand = false, isModCommand = false, isUserAuthorized = true;
 
 	public ChatCommand() {
 
@@ -28,22 +28,23 @@ public abstract class ChatCommand implements Command {
 
 		if (isAdminCommand && !ChatHelper.isUserAdmin(event.getAuthor())
 				&& event.getAuthor() != Init.getServerOwner()) {
+			isUserAuthorized = false;
 			shouldUpdate = false;
-			sendMessage(event.getAuthor().getAsMention() + " You do not have access to that command!");
+			sendPrivateMessage(event.getAuthor().getAsMention() + " You do not have access to that command!");
 			return;
 		} else if (isModCommand
 				&& (!ChatHelper.isUserModerator(event.getAuthor()) && !ChatHelper.isUserAdmin(event.getAuthor()))
 				&& event.getAuthor() != Init.getServerOwner()) {
+			isUserAuthorized = false;
 			shouldUpdate = false;
-			sendMessage(event.getAuthor().getAsMention() + " You do not have access to that command!");
+			sendPrivateMessage(event.getAuthor().getAsMention() + " You do not have access to that command!");
 			return;
-		} else {
-			isUserAuthorized = true;
 		}
 
 		this.commandParameters = commandParams;
 
-		// System.out.println("Execture: " + commandParameters);
+		// System.out.println("Command Params [executeParams - ChatCommand]: " +
+		// commandParameters);
 
 		sortSubText();
 	}
@@ -57,29 +58,14 @@ public abstract class ChatCommand implements Command {
 	public abstract String info();
 
 	protected void sendMessage(String message) {
-		// try {
-		// event.getChannel().sendMessage(message);
-		// } catch (RateLimitedException e) {
-		// Init.getActionScheduler()
-		// .addTopPriorityAction(new ActionSendPublicMessage(event.getChannel(),
-		// message, true, 3.5f));
-		// }
-
 		event.getChannel().sendMessageAsync(message, null);
 	}
 
 	protected void sendPrivateMessage(String message) {
-		// try {
-		// event.getAuthor().getPrivateChannel().sendMessage(message);
-		// } catch (RateLimitedException e) {
-		// Init.getActionScheduler().addTopPriorityAction(
-		// new ActionSendPrivateMessage(event.getAuthor().getPrivateChannel(),
-		// message, true, 3.5f));
-		// }
 		event.getAuthor().getPrivateChannel().sendMessageAsync(message, null);
-
 	}
 
+	// Method being kept for temporary reference
 	protected void sortSubText() {
 		// Check if a user is being mentioned, then convert mention to a
 		// username (string)

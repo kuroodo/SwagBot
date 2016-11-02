@@ -40,49 +40,53 @@ public class ChatCommandListener extends JDAListener {
 	@Override
 	public void onGuildMessageReceived(GuildMessageReceivedEvent event) {
 		super.onGuildMessageReceived(event);
+
+		String commandName = ChatHelper.splitString(event.getMessage().getRawContent())[0].toLowerCase();
+
 		try {
 			if (event.getMessage().getRawContent().substring(0, 1).equals("!")
-					&& ChatCommandHandler.getCommands().contains(ChatCommandHandler
-							.getCommand(ChatHelper.splitString(event.getMessage().getRawContent())[0].toLowerCase()))) {
+					&& ChatCommandHandler.isContainsCommand(commandName)) {
 				startupCommand(event);
 
 				// If user mentioned the bot
-			} else if (event.getMessage().getContent().startsWith("@" + Init.getJDA().getSelfInfo().getUsername())) {
+			} else if (!event.getMessage().getMentionedUsers().isEmpty()
+					&& event.getMessage().getMentionedUsers().get(0) == Init.getJDA().getSelfInfo()) {
+				System.out.println("command listener");
 				startupCommand(event);
 			}
 		} catch (StringIndexOutOfBoundsException e) {
 			System.out.println("[" + event.getChannel().getName() + "]" + "[" + event.getAuthor().getUsername() + "] "
 					+ " has sent an image/file or some other form of media or unsupported text");
 		}
-
 	}
 
-	// Create new instance of command based on class
+	// Create new instance of command based on its class
 	private void startupCommand(GuildMessageReceivedEvent event) {
-		// System.out.println("command: " +
-		// ChatHelper.splitString(event.getMessage().getRawContent())[1]);
 		ChatCommand command;
 		try {
+
 			command = (ChatCommand) ChatCommandHandler
 					.getCommand(ChatHelper.splitString(event.getMessage().getContent())[0].toLowerCase()).newInstance();
 
 			// System.out.println("CommandListener: " +
 			// ChatHelper.splitString(event.getMessage().getRawContent())[1]);
 
+			// Execute command and give it any parameters specified by user
 			command.executeCommand(ChatHelper.splitString(event.getMessage().getRawContent())[1], event);
 			if (command.shouldUpdate()) {
 				commandUpdateQueue.add(command);
 			}
 
 		} catch (InstantiationException | IllegalAccessException e) {
-			System.out.println("Error getting command class!");
 			e.printStackTrace();
+			System.out.println("Error getting command class! Application Will Not Crash");
 		}
 	}
 
 	public void update(float delta) {
 		try {
 			for (ChatCommand command : commandUpdateQueue) {
+				// Check if we should continue calling update on command
 				if (command.shouldUpdate()) {
 					command.update(delta);
 				} else {

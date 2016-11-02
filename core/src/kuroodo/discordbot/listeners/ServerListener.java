@@ -40,7 +40,7 @@ public class ServerListener extends JDAListener {
 	@Override
 	public void onGuildMemberJoin(GuildMemberJoinEvent event) {
 
-		// TODO: Put this string in a better scope. Lok at todo in
+		// TODO: Put this string in a better scope. Look at todo in
 		// DesktopLauncher
 		final String WELCOME_CHANNEL_NAME = "general";
 
