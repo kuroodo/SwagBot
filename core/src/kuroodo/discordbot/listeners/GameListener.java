@@ -1,9 +1,10 @@
-package kuroodo.discordbot.client.handlers;
+package kuroodo.discordbot.listeners;
 
 import java.util.ArrayList;
 
 import kuroodo.discordbot.Init;
 import kuroodo.discordbot.chatcommands.moderator.CommandClearChat;
+import kuroodo.discordbot.client.handlers.GlobalGameManager;
 import kuroodo.discordbot.entities.GameSession;
 import kuroodo.discordbot.entities.JDAListener;
 import kuroodo.discordbot.games.ExampleGame;

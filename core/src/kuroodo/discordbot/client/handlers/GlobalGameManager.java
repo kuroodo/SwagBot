@@ -3,6 +3,7 @@ package kuroodo.discordbot.client.handlers;
 import java.util.HashMap;
 
 import kuroodo.discordbot.Init;
+import kuroodo.discordbot.listeners.GameListener;
 import net.dv8tion.jda.entities.User;
 
 public class GlobalGameManager {

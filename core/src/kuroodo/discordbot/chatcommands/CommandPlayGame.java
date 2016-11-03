@@ -1,11 +1,11 @@
 package kuroodo.discordbot.chatcommands;
 
 import kuroodo.discordbot.Init;
-import kuroodo.discordbot.client.handlers.GameListener;
 import kuroodo.discordbot.client.handlers.GlobalGameManager;
 import kuroodo.discordbot.entities.ChatCommand;
 import kuroodo.discordbot.enums.EGameList;
 import kuroodo.discordbot.helpers.JDAHelper;
+import kuroodo.discordbot.listeners.GameListener;
 import net.dv8tion.jda.entities.User;
 import net.dv8tion.jda.events.message.guild.GuildMessageReceivedEvent;
 
