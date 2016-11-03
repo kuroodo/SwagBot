@@ -132,6 +132,7 @@ public class Init extends ApplicationAdapter {
 
 	@Override
 	public void dispose() {
+		// TODO: End any active game sessions
 		if (jda != null) {
 			jda.getAccountManager().setIdle(true);
 			jda.getAccountManager().setGame("Shutting Down...");

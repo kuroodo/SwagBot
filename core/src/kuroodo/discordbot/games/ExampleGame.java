@@ -7,11 +7,12 @@ import net.dv8tion.jda.entities.Message;
 import net.dv8tion.jda.entities.TextChannel;
 import net.dv8tion.jda.entities.User;
 
-public class TestGame extends GameSession {
+public class ExampleGame extends GameSession {
 
-	User player1, player2;
+	private User player1, player2;
+	private String magicword = "java";
 
-	public TestGame(ArrayList<User> players, boolean hasMultiPLayer, TextChannel gameChannel) {
+	public ExampleGame(ArrayList<User> players, boolean hasMultiPLayer, TextChannel gameChannel) {
 		super(players, hasMultiPLayer, gameChannel);
 		player1 = currentPlayer;
 
@@ -30,9 +31,10 @@ public class TestGame extends GameSession {
 		if (isInputValid) {
 			sendMessage("You said " + input);
 
-			String magicword = "ok";
-			if (input.equals(magicword)) {
+			if (input.toLowerCase().equals(magicword)) {
 				sendMessage("That's the magic word!");
+			} else {
+				sendMessage("That's NOT the magic word!");
 			}
 
 			if (isMultiplayer) {
@@ -61,17 +63,16 @@ public class TestGame extends GameSession {
 
 	@Override
 	public void endGame() {
-		sendMessage("ENDING!");
 	}
 
 	private void currentTurnMsg() {
-		sendMessage("It is " + getCurrentTurnPlayer().getAsMention() + "'s turn!");
+		sendMessage("It is " + getCurrentPlayer().getAsMention() + "'s turn!");
 	}
 
 	@Override
 	public void gameStart() {
 		sendMessage(
-				"Welcome to TestGame! Find the retarded word you idiot\n Play game by typing: !game [word] Example: !game faggot\nType !gamehelp for help!");
+				"Welcome to TestGame! Guess the magic word\n Play game by typing: !game [word] Example: !game apple\nType !gamehelp for help!");
 		if (isMultiplayer) {
 			currentTurnMsg();
 		}
@@ -79,7 +80,7 @@ public class TestGame extends GameSession {
 
 	@Override
 	public void gameHelpInfo() {
-		sendMessage("Find the retarded word you retard\n Play game by typing: !game [word] Example: !game faggot");
+		sendMessage("Find the magic word \n Play game by typing: !game [word] Example: !game apple");
 	}
 
 }

@@ -10,12 +10,13 @@ import net.dv8tion.jda.managers.ChannelManager;
 
 public abstract class GameSession implements Game {
 	protected ArrayList<User> players;
+	// The player having the turn or action and input focus
 	protected User currentPlayer;
 
 	protected TextChannel gameChannel;
 	protected Message latestMessage;
 
-	protected boolean finished = false, isMultiplayer = false;
+	protected boolean gameFinished = false, isMultiplayer = false;
 
 	protected boolean isInputValid;
 
@@ -26,17 +27,17 @@ public abstract class GameSession implements Game {
 
 		// Setup starting players
 		Random rand = new Random(System.nanoTime());
-		int size = rand.nextInt(players.size());
-		currentPlayer = players.get(size);
+		int playerCount = rand.nextInt(players.size());
+		currentPlayer = players.get(playerCount);
 	}
 
 	@Override
 	public abstract void update(float delta);
 
 	@Override
-	public void recievePlayerInput(User player, String input, Message inputMessage) {
+	public void recievePlayerInput(User playerWhoSentInput, String input, Message inputMessage) {
 		latestMessage = inputMessage;
-		if (player != currentPlayer) {
+		if (playerWhoSentInput != currentPlayer) {
 			isInputValid = false;
 		} else {
 			isInputValid = true;
@@ -44,14 +45,6 @@ public abstract class GameSession implements Game {
 	}
 
 	protected void sendMessage(String message) {
-		// try {
-		// gameChannel.sendMessage(message);
-		// } catch (RateLimitedException e) {
-		// Init.getActionScheduler()
-		// .addTopPriorityAction(new ActionSendPublicMessage(gameChannel,
-		// message, true, 3.5f));
-		// }
-
 		gameChannel.sendMessageAsync(message, null);
 	}
 
@@ -62,7 +55,7 @@ public abstract class GameSession implements Game {
 
 	@Override
 	public boolean isgameFinished() {
-		return finished;
+		return gameFinished;
 	}
 
 	protected void setCurrentPlayer(User player) {
@@ -70,7 +63,7 @@ public abstract class GameSession implements Game {
 	}
 
 	@Override
-	public User getCurrentTurnPlayer() {
+	public User getCurrentPlayer() {
 		return currentPlayer;
 	}
 

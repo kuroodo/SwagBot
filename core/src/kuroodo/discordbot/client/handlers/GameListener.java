@@ -6,7 +6,7 @@ import kuroodo.discordbot.Init;
 import kuroodo.discordbot.chatcommands.moderator.CommandClearChat;
 import kuroodo.discordbot.entities.GameSession;
 import kuroodo.discordbot.entities.JDAListener;
-import kuroodo.discordbot.games.TestGame;
+import kuroodo.discordbot.games.ExampleGame;
 import kuroodo.discordbot.games.tictactoe.GameTicTacToe;
 import kuroodo.discordbot.helpers.JDAHelper;
 import net.dv8tion.jda.Permission;
@@ -19,7 +19,7 @@ import net.dv8tion.jda.managers.ChannelManager;
 import net.dv8tion.jda.managers.GuildManager;
 import net.dv8tion.jda.managers.RoleManager;
 
-public class GameManager extends JDAListener {
+public class GameListener extends JDAListener {
 	private TextChannel gameChannel;
 	private GameSession gameSession;
 
@@ -29,15 +29,10 @@ public class GameManager extends JDAListener {
 	private boolean isMP = false;
 	private String gameName;
 
-	public GameManager(String gameName, User playerOne, User playerTwo, int sessionId, boolean isMP) {
+	public GameListener(String gameName, User playerOne, User playerTwo, int sessionId, boolean isMP) {
 		this.sessionID = sessionId;
 		this.gameName = gameName;
 		this.isMP = isMP;
-
-		// if (getNewGameInstance(gameName, false) == null) {
-		//
-		// }
-
 		// System.out.println("Bot: " + playerOne.getUsername());
 		// System.out.println("Self: " + playerTwo.getUsername());
 
@@ -45,95 +40,63 @@ public class GameManager extends JDAListener {
 		players.add(playerOne);
 		players.add(playerTwo);
 
-		GameManagerHandler.addGameManager("session" + sessionID, this);
+		GlobalGameManager.addGameListener("session" + sessionID, this);
 
-		final ChannelManager chManager = JDAHelper.getGuild().createTextChannel("gamesession_" + sessionId);
-		chManager.update();
-
-		setUpPermissions(chManager);
-
-		gameChannel = (TextChannel) chManager.getChannel();
+		setUpGameChannel(sessionId);
 
 		if (isMP) {
-			gameSession = getNewGameInstance(gameName, true);
-
 			final String message = playerTwo.getAsMention() + "You have been challanged to a game of " + gameName
 					+ " by " + playerOne.getAsMention() + "\n type !accept to join!";
 
 			sendMessage(message);
 		} else {
-			gameSession = getNewGameInstance(gameName, false);
-			gameSession.gameStart();
+			startSPSession();
 		}
-
 	}
-
-	// Single Player
-	// public GameManager(String gameName, User playerOne, int sessionId) {
-	// this.sessionID = sessionId;
-	// this.gameName = gameName;
-	//
-	// players = new ArrayList<>();
-	// players.add(playerOne);
-	//
-	// GameManagerHandler.addGameManager("session" + sessionID, this);
-	//
-	// final ChannelManager chManager =
-	// ChatHelper.getGuild().createTextChannel("session" + sessionId);
-	// chManager.update();
-	//
-	// setUpPermissions(chManager);
-	//
-	// gameChannel = (TextChannel) chManager.getChannel();
-	//
-	// gameSession = getNewGameInstance(gameName, false);
-	// gameSession.gameStart();
-	// }
 
 	@Override
 	public void onGuildMessageReceived(GuildMessageReceivedEvent event) {
 		super.onGuildMessageReceived(event);
 
 		if (event.getChannel() == gameChannel) {
-			// Maybe check if author is a player?
+			// TODO: Maybe check if author of message is a player?
 			if (event.getMessage().getRawContent().startsWith("!end")) {
-				endMatch();
+				endGameSession();
 				return;
 			} else if (event.getMessage().getRawContent().startsWith("!gamehelp") && gameSession != null) {
 				gameSession.gameHelpInfo();
 				return;
+			} else {
+				sendGameInput(event.getAuthor(), event.getMessage().getRawContent(), event.getMessage());
 			}
-
-			sendGameInput(event.getAuthor(), event.getMessage().getRawContent(), event.getMessage());
 		}
-
 	}
 
 	private void sendGameInput(User sender, String message, Message eventMessage) {
-		if (isMP && message.equals("!accept")) {
-			if (sender == players.get(1)) {
-				gameSession = getNewGameInstance(gameName, true);
-				deleteMessages();
-				gameSession.gameStart();
+		if (gameSession != null) {
+			if (message.startsWith("!game")) {
+				// send everything after !game
+				gameSession.recievePlayerInput(sender, JDAHelper.splitString(message)[1], eventMessage);
 			}
-
-		} else if (message.startsWith("!game")) {
-			gameSession.recievePlayerInput(sender, JDAHelper.splitString(message)[1], eventMessage);
+		} else if (isMP && message.equals("!accept")) {
+			if (sender == players.get(1)) {
+				startMPSession();
+			}
 		}
 	}
 
-	// private void singePlayerInput(User sender, String message, Message
-	// eventMessage) {
-	// if (message.startsWith("!game")) {
-	// gameSession.recievePlayerInput(sender,
-	// ChatHelper.splitString(message)[1], eventMessage);
-	// }
-	// }
+	public void update(float delta) {
+		if (gameSession != null) {
+			gameSession.update(delta);
+		}
+	}
 
 	private GameSession getNewGameInstance(String gameName, boolean multiplayer) {
+		// TODO: Use EGameList and think of better way to store and get the
+		// gameInstance
 		switch (gameName.toLowerCase()) {
-		case "testgame":
-			return new TestGame(players, multiplayer, gameChannel);
+		case "examplegame":
+			return new ExampleGame(players, multiplayer, gameChannel);
 		case "tictactoe":
 			return new GameTicTacToe(players, multiplayer, gameChannel);
 		default:
@@ -141,7 +104,16 @@ public class GameManager extends JDAListener {
 		}
 	}
 
-	private void setUpPermissions(ChannelManager chManager) {
+	private void setUpGameChannel(int sessionId) {
+		final ChannelManager chManager = JDAHelper.getGuild().createTextChannel("gamesession_" + sessionId);
+		chManager.update();
+
+		setUpChannelPermissions(chManager);
+
+		gameChannel = (TextChannel) chManager.getChannel();
+	}
+
+	private void setUpChannelPermissions(ChannelManager chManager) {
 		Role role = JDAHelper.getRoleByName("gameroleexample");
 
 		final RoleManager roleManager = JDAHelper.getGuild().createRole();
@@ -179,10 +151,15 @@ public class GameManager extends JDAListener {
 		gManager.update();
 	}
 
-	public void update(float delta) {
-		if (gameSession != null) {
-			gameSession.update(delta);
-		}
+	private void startMPSession() {
+		gameSession = getNewGameInstance(gameName, true);
+		deleteMessages();
+		gameSession.gameStart();
+	}
+
+	private void startSPSession() {
+		gameSession = getNewGameInstance(gameName, false);
+		gameSession.gameStart();
 	}
 
 	private void sendMessage(String message) {
@@ -196,22 +173,24 @@ public class GameManager extends JDAListener {
 		chatClearer.executeCommand("all", gameChannel);
 	}
 
+	private void endGameSession() {
+		final ChannelManager chManager = gameChannel.getManager();
+		chManager.delete();
+		final RoleManager roleManager = JDAHelper.getRoleByName("session" + sessionID).getManager();
+		roleManager.delete();
+
+		GlobalGameManager.removeGameListener("session" + sessionID);
+
+		if (gameSession != null) {
+			gameSession.endGame();
+		}
+	}
+
 	public int getSessionID() {
 		return sessionID;
 	}
 
 	public ArrayList<User> getPlayers() {
 		return players;
-	}
-
-	private void endMatch() {
-		final ChannelManager chManager = gameChannel.getManager();
-		chManager.delete();
-		final RoleManager roleManager = JDAHelper.getRoleByName("session" + sessionID).getManager();
-		roleManager.delete();
-
-		GameManagerHandler.endGameManager("session" + sessionID);
-
-		gameSession.endGame();
 	}
 }
