@@ -24,7 +24,7 @@ import net.dv8tion.jda.entities.User;
 
 public class Init extends ApplicationAdapter {
 
-	public static final String SUPERUSER_PASSWORD = JSonReader.getSuperUserPassword(), VERSION = "1.9.3";
+	public static final String SUPERUSER_PASSWORD = JSonReader.getSuperUserPassword(), VERSION = "1.9.31";
 	// Users that have special bot commands and access
 	public static final ArrayList<User> SUPER_USERS = new ArrayList<>();
 
@@ -55,8 +55,8 @@ public class Init extends ApplicationAdapter {
 
 			storeServerOwner();
 
-			// jda.getAccountManager().setGame("Type !help For Help (;");
-			jda.getAccountManager().setGame("Undergoing Testing");
+			jda.getAccountManager().setGame("Type !help For Help (;");
+			// jda.getAccountManager().setGame("Undergoing Testing");
 
 			setupListeners();
 		} catch (InterruptedException | LoginException e) {

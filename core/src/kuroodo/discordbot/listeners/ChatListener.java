@@ -24,7 +24,7 @@ public class ChatListener extends JDAListener {
 			String message = "[" + event.getGuild().getName() + " [" + channelName + "]" + "] " + event.getAuthorName()
 					+ ":" + event.getMessage().getContent();
 
-			System.out.printf(message);
+			System.out.println(message);
 			ChatLogger.logMessage(message);
 
 		} catch (StringIndexOutOfBoundsException e) {
