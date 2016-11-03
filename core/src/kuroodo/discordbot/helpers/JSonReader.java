@@ -37,7 +37,7 @@ public class JSonReader {
 			JsonObject object = Json.parse(reader).asObject();
 
 			superUserPassword = object.get("superuserpass").asString();
-		} catch (IOException e) {
+		} catch (IOException | NullPointerException e) {
 			System.out.println("Could not read/get super user password!");
 		}
 
