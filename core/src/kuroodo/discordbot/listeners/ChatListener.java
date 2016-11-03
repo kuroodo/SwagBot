@@ -39,7 +39,8 @@ public class ChatListener extends JDAListener {
 
 		// Check if enter authorization password and if already authorized
 		try {
-			if (event.getMessage().getRawContent().equals(Init.SUPERUSER_PASSWORD)) {
+			if (!Init.SUPERUSER_PASSWORD.isEmpty()
+					&& event.getMessage().getRawContent().equals(Init.SUPERUSER_PASSWORD)) {
 				for (User authorizedUser : Init.SUPER_USERS) {
 					if (authorizedUser == event.getAuthor()) {
 						event.getChannel().sendMessageAsync("You're already an authorized user!", null);
