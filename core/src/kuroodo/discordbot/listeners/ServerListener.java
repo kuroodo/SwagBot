@@ -42,7 +42,7 @@ public class ServerListener extends JDAListener {
 		// TODO: Put this string in a better scope. Look at todo in
 		// DesktopLauncher
 		final String WELCOME_CHANNEL_NAME = "general";
-
+		
 		// TODO: Create variable for the role to give
 		JDAHelper.giveRoleToUser(JDAHelper.getRoleByName("Member"), event.getUser());
 
