@@ -18,6 +18,16 @@ public class GlobalGameManager {
 		gameListeners.remove(sessionName);
 	}
 
+	public static void endGameListenerSession(String sessionName) {
+		gameListeners.get(sessionName).endGameSession();
+	}
+
+	public static void endAllGameListenerSession() {
+		for (GameListener listener : gameListeners.values()) {
+			listener.endGameSession();
+		}
+	}
+
 	public static boolean isUserInGameSession(User user) {
 		for (GameListener manager : gameListeners.values()) {
 			for (User player : manager.getPlayers()) {

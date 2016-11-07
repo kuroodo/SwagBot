@@ -8,6 +8,7 @@ import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.GL20;
 
+import kuroodo.discordbot.client.handlers.GlobalGameManager;
 import kuroodo.discordbot.entities.JDAListener;
 import kuroodo.discordbot.helpers.ChatLogger;
 import kuroodo.discordbot.helpers.JDAHelper;
@@ -135,10 +136,15 @@ public class Init extends ApplicationAdapter {
 
 	@Override
 	public void dispose() {
-		// TODO: End any active game sessions
+
+		System.out.println("Ending all gamesessions");
+		GlobalGameManager.endAllGameListenerSession();
+
 		if (jda != null) {
+			System.out.println("Shutting Down JDA");
 			jda.getAccountManager().setIdle(true);
 			jda.getAccountManager().setGame("Shutting Down...");
+			System.out.println("Disposing and clearing all listeners");
 			for (JDAListener listener : listeners) {
 				listener.dispose();
 			}

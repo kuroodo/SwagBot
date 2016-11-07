@@ -176,7 +176,7 @@ public class GameListener extends JDAListener {
 		chatClearer.executeCommand("all", gameChannel);
 	}
 
-	private void endGameSession() {
+	public void endGameSession() {
 		final ChannelManager chManager = gameChannel.getManager();
 		chManager.delete();
 		final RoleManager roleManager = JDAHelper.getRoleByName("session" + sessionID).getManager();
