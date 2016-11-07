@@ -6,6 +6,7 @@ package kuroodo.discordbot.listeners;
 import kuroodo.discordbot.Init;
 import kuroodo.discordbot.entities.JDAListener;
 import kuroodo.discordbot.helpers.JDAHelper;
+import kuroodo.discordbot.helpers.JSonReader;
 import net.dv8tion.jda.entities.Role;
 import net.dv8tion.jda.events.DisconnectEvent;
 import net.dv8tion.jda.events.ReconnectedEvent;
@@ -39,19 +40,33 @@ public class ServerListener extends JDAListener {
 	@Override
 	public void onGuildMemberJoin(GuildMemberJoinEvent event) {
 
-		// TODO: Put this string in a better scope. Look at todo in
-		// DesktopLauncher
-		final String WELCOME_CHANNEL_NAME = "general";
-		
-		// TODO: Create variable for the role to give
-		JDAHelper.giveRoleToUser(JDAHelper.getRoleByName("Member"), event.getUser());
+		// Give new member a role if permitted
+		if (JSonReader.getPreferencesValue("givenewmemberrole").equalsIgnoreCase("true")) {
+			final Role roleToGive = JDAHelper.getRoleByName(JSonReader.getPreferencesValue("newmemberrolename"));
+			if (roleToGive != null) {
+				JDAHelper.giveRoleToUser(roleToGive, event.getUser());
+			} else {
+				System.out
+						.println("ERROR: Role to give to new member does not exist! Check the name in prefernces.json");
+			}
+		}
 
 		String message = " User " + event.getUser().getUsername() + " joined the server";
 		System.out.println(message);
 		Init.getServerOwner().getPrivateChannel().sendMessageAsync(message, null);
 
-		message = "Welcome " + event.getUser().getAsMention();
-		JDAHelper.getTextChannelByName(WELCOME_CHANNEL_NAME).sendMessageAsync(message, null);
+		// Send welcome message to channel if permitted
+		if (JSonReader.getPreferencesValue("sendwelcomemessage").equalsIgnoreCase("true")) {
+			final String WELCOME_CHANNEL_NAME = JSonReader.getPreferencesValue("welcomechannel");
+
+			if (JDAHelper.getTextChannelByName(WELCOME_CHANNEL_NAME) != null) {
+				message = event.getUser().getAsMention() + " " + JSonReader.getPreferencesValue("welcomemessage");
+				JDAHelper.getTextChannelByName(WELCOME_CHANNEL_NAME).sendMessageAsync(message, null);
+			} else {
+				System.out.println(
+						"ERROR: Channel to welcome new users in does not exist! Check the name in prefernces.json");
+			}
+		}
 
 		super.onGuildMemberJoin(event);
 	}
