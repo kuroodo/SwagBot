@@ -28,6 +28,22 @@ public class JSonReader {
 		return botToken;
 	}
 
+	public static boolean getIsDevMode() {
+		boolean isDevMode = false;
+
+		Reader reader;
+		try {
+			reader = new FileReader("config.json");
+			JsonObject object = Json.parse(reader).asObject();
+
+			isDevMode = object.get("devmode").asBoolean();
+		} catch (IOException | NullPointerException e) {
+			System.out.println("Could not read/get dev mode boolean!");
+		}
+
+		return isDevMode;
+	}
+
 	public static String getSuperUserPassword() {
 		String superUserPassword = "";
 

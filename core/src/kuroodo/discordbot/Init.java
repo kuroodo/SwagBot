@@ -55,8 +55,11 @@ public class Init extends ApplicationAdapter {
 
 			storeServerOwner();
 
-			jda.getAccountManager().setGame("Type !help For Help (;");
-			// jda.getAccountManager().setGame("Undergoing Testing");
+			if (!JSonReader.getIsDevMode()) {
+				jda.getAccountManager().setGame("Type !help For Help (;");
+			} else {
+				jda.getAccountManager().setGame("Undergoing Testing");
+			}
 
 			setupListeners();
 		} catch (InterruptedException | LoginException e) {
