@@ -41,22 +41,22 @@ public class ChatCommandListener extends JDAListener {
 	public void onGuildMessageReceived(GuildMessageReceivedEvent event) {
 		super.onGuildMessageReceived(event);
 
-		String commandName = JDAHelper.splitString(event.getMessage().getRawContent())[0].toLowerCase();
+		if (event.getAuthor() != null) {
+			String commandName = JDAHelper.splitString(event.getMessage().getRawContent())[0].toLowerCase();
 
-		try {
-			if (event.getMessage().getRawContent().substring(0, 1).equals("!")
-					&& ChatCommandHandler.isContainsCommand(commandName)) {
-				startupCommand(event);
+			try {
+				if (event.getMessage().getRawContent().substring(0, 1).equals("!")
+						&& ChatCommandHandler.isContainsCommand(commandName)) {
+					startupCommand(event);
 
-				// If user mentioned the bot at the beginning of message
-			} else if (!event.getMessage().getMentionedUsers().isEmpty()
-					&& event.getMessage().getRawContent().substring(0, 1).equals("@")
-					&& event.getMessage().getMentionedUsers().get(0) == Init.getJDA().getSelfInfo()) {
-				startupCommand(event);
+					// If user mentioned the bot at the beginning of message
+				} else if (!event.getMessage().getMentionedUsers().isEmpty()
+						&& event.getMessage().getRawContent().substring(0, 1).equals("@")
+						&& event.getMessage().getMentionedUsers().get(0) == Init.getJDA().getSelfInfo()) {
+					startupCommand(event);
+				}
+			} catch (StringIndexOutOfBoundsException e) {
 			}
-		} catch (StringIndexOutOfBoundsException e) {
-			System.out.println("[" + event.getChannel().getName() + "]" + "[" + event.getAuthor().getUsername() + "] "
-					+ " has sent an image/file or some other form of media or unsupported text");
 		}
 	}
 

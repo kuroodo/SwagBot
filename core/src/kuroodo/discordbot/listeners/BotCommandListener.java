@@ -26,19 +26,22 @@ public class BotCommandListener extends JDAListener {
 	public void onPrivateMessageReceived(PrivateMessageReceivedEvent event) {
 		super.onPrivateMessageReceived(event);
 
-		String commandName = JDAHelper.splitString(event.getMessage().getRawContent())[0].toLowerCase();
+		if (event.getAuthor() != null) {
+			String commandName = JDAHelper.splitString(event.getMessage().getRawContent())[0].toLowerCase();
 
-		try {
-			if (event.getMessage().getRawContent().substring(0, 1).equals("!")
-					&& BotCommandHandler.isContainsCommand(commandName)) {
-				
-				if (Init.SUPER_USERS.contains(event.getAuthor())) {
-					startupCommand(event);
+			try {
+
+				if (event.getMessage().getRawContent().substring(0, 1).equals("!")
+						&& BotCommandHandler.isContainsCommand(commandName)) {
+
+					if (Init.SUPER_USERS.contains(event.getAuthor())) {
+						startupCommand(event);
+					}
 				}
+			} catch (StringIndexOutOfBoundsException e) {
+				System.out.println("[PRIVATE MESSAGE]" + "[" + event.getAuthor().getUsername() + "] "
+						+ " has sent an image/file or some other form of media or unsupported text");
 			}
-		} catch (StringIndexOutOfBoundsException e) {
-			System.out.println("[PRIVATE MESSAGE]" + "[" + event.getAuthor().getUsername() + "] "
-					+ " has sent an image/file or some other form of media or unsupported text");
 		}
 
 	}

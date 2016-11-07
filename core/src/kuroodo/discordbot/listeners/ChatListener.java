@@ -21,19 +21,26 @@ public class ChatListener extends JDAListener {
 			// Use some magic to remove uneccesary characters. Only get letters
 			String channelName = event.getChannel().toString().replaceAll("[^A-za-z]+", "");
 
-			String message = "[" + event.getGuild().getName() + " [" + channelName + "]" + "] " + event.getAuthorName()
-					+ ":" + event.getMessage().getContent();
+			String message = "";
+
+			if (event.getAuthor() != null) {
+				message = "[" + event.getGuild().getName() + " [" + channelName + "]" + "] " + event.getAuthorName()
+						+ ":" + event.getMessage().getContent();
+			} else {
+				message = "[" + event.getGuild().getName() + " [" + channelName + "]" + "] "
+						+ "Null User Or Unknown Bot" + ":" + event.getMessage().getContent();
+			}
 
 			System.out.println(message);
 			ChatLogger.logMessage(message);
 
-		} catch (StringIndexOutOfBoundsException | NullPointerException e) {
+		} catch (StringIndexOutOfBoundsException e) {
 			if (event.getAuthor() == null) {
 				System.out.println(
 						"[" + event.getChannel().getName() + "]" + "A null user or unknown bot has sent a message");
-			}else{
-			System.out.println("[" + event.getChannel().getName() + "]" + "[" + event.getAuthor().getUsername() + "] "
-					+ " has sent an image/file or some other form of media or unsupported text");
+			} else {
+				System.out.println("[" + event.getChannel().getName() + "]" + "[" + event.getAuthor().getUsername()
+						+ "] " + " has sent an image/file or some other form of media or unsupported text");
 			}
 		}
 	}

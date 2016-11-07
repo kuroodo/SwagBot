@@ -59,16 +59,18 @@ public class GameListener extends JDAListener {
 	public void onGuildMessageReceived(GuildMessageReceivedEvent event) {
 		super.onGuildMessageReceived(event);
 
-		if (event.getChannel() == gameChannel) {
-			// TODO: Maybe check if author of message is a player?
-			if (event.getMessage().getRawContent().startsWith("!end")) {
-				endGameSession();
-				return;
-			} else if (event.getMessage().getRawContent().startsWith("!gamehelp") && gameSession != null) {
-				gameSession.gameHelpInfo();
-				return;
-			} else {
-				sendGameInput(event.getAuthor(), event.getMessage().getRawContent(), event.getMessage());
+		if (event.getAuthor() != null) {
+			if (event.getChannel() == gameChannel) {
+				// TODO: Maybe check if author of message is a player?
+				if (event.getMessage().getRawContent().startsWith("!end")) {
+					endGameSession();
+					return;
+				} else if (event.getMessage().getRawContent().startsWith("!gamehelp") && gameSession != null) {
+					gameSession.gameHelpInfo();
+					return;
+				} else {
+					sendGameInput(event.getAuthor(), event.getMessage().getRawContent(), event.getMessage());
+				}
 			}
 		}
 	}
