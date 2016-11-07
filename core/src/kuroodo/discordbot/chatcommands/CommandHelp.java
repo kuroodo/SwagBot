@@ -2,6 +2,7 @@ package kuroodo.discordbot.chatcommands;
 
 import java.io.File;
 import java.io.FilenameFilter;
+import java.util.ArrayList;
 
 import kuroodo.discordbot.Init;
 import kuroodo.discordbot.client.handlers.ChatCommandHandler;
@@ -127,6 +128,7 @@ public class CommandHelp extends ChatCommand {
 					+ "!restart plays the audio stream from the beginning");
 			break;
 		case "!soundboard":
+			ArrayList<String> soundList = new ArrayList<>();
 			String sounds = "There are currently no sounds available";
 			String message = "A hidden command, these commands are for playing special sounds with the audioplayer."
 					+ " (see more: !help play)" + "\nUsage: !soundname (example !bradberry)\n" + "List of sounds\n\n";
@@ -150,11 +152,31 @@ public class CommandHelp extends ChatCommand {
 			if (files != null) {
 				if (files.length == 0) {
 					System.out.println("No MP3 files found");
+
 				} else {
 					sounds = "";
+					int stringLength = 0;
+					// Limit message to around 1700 characters
+					int characterLimit = 1700;
 					for (File file : files) {
 						// Get the name of the sound file without .mp3 extension
 						sounds = sounds + "!" + file.getName().toLowerCase().replaceFirst("[.][^.]+$", "") + " ";
+						stringLength = sounds.length();
+
+						if (stringLength >= characterLimit) {
+							System.out.println("Debug: soundboard string size" + stringLength);
+							soundList.add(sounds);
+							sounds = "";
+						}
+
+					}
+
+					if (!soundList.isEmpty()) {
+						sendPrivateMessage(message);
+						for (String soundString : soundList) {
+							sendPrivateMessage(soundString);
+						}
+						break;
 					}
 				}
 			}

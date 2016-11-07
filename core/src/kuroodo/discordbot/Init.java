@@ -24,7 +24,7 @@ import net.dv8tion.jda.entities.User;
 
 public class Init extends ApplicationAdapter {
 
-	public static final String SUPERUSER_PASSWORD = JSonReader.getSuperUserPassword(), VERSION = "1.9.31";
+	public static final String SUPERUSER_PASSWORD = JSonReader.getSuperUserPassword(), VERSION = "1.9.35";
 	// Users that have special bot commands and access
 	public static final ArrayList<User> SUPER_USERS = new ArrayList<>();
 
