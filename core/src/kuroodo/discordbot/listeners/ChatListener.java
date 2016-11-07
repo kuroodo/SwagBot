@@ -27,9 +27,14 @@ public class ChatListener extends JDAListener {
 			System.out.println(message);
 			ChatLogger.logMessage(message);
 
-		} catch (StringIndexOutOfBoundsException e) {
+		} catch (StringIndexOutOfBoundsException | NullPointerException e) {
+			if (event.getAuthor() == null) {
+				System.out.println(
+						"[" + event.getChannel().getName() + "]" + "A null user or unknown bot has sent a message");
+			}else{
 			System.out.println("[" + event.getChannel().getName() + "]" + "[" + event.getAuthor().getUsername() + "] "
 					+ " has sent an image/file or some other form of media or unsupported text");
+			}
 		}
 	}
 
