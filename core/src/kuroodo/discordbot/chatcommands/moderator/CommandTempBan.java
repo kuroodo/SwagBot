@@ -3,6 +3,8 @@ package kuroodo.discordbot.chatcommands.moderator;
 import kuroodo.discordbot.Init;
 import kuroodo.discordbot.entities.ChatCommand;
 import kuroodo.discordbot.helpers.JDAHelper;
+import kuroodo.discordbot.helpers.JSonReader;
+import net.dv8tion.jda.entities.TextChannel;
 import net.dv8tion.jda.entities.User;
 import net.dv8tion.jda.events.message.guild.GuildMessageReceivedEvent;
 import net.dv8tion.jda.managers.GuildManager;
@@ -13,6 +15,7 @@ public class CommandTempBan extends ChatCommand {
 		isModCommand = true;
 	}
 
+	// TODO: Cleanup some of this code by putting it into methods
 	@Override
 	public void executeCommand(String commandParams, GuildMessageReceivedEvent event) {
 		super.executeCommand(commandParams, event);
@@ -42,11 +45,8 @@ public class CommandTempBan extends ChatCommand {
 						event.getAuthor().getAsMention() + " You dare to conspire against the server?", null);
 
 			} else if (JDAHelper.isUserAdmin(event.getAuthor())) {
-
-				userToTempBan.getPrivateChannel().sendMessageAsync("You have been temporarily banned/silenced from "
-						+ JDAHelper.getGuild().getName() + " for " + reasonForTempBan, null);
+				sendBanNotifications(userToTempBan, reasonForTempBan);
 				tempBanUser(userToTempBan);
-
 			} else if (JDAHelper.isUserModerator(event.getAuthor())) {
 
 				// Check if moderator is trying to ban an admin
@@ -56,8 +56,7 @@ public class CommandTempBan extends ChatCommand {
 					event.getChannel().sendMessageAsync(
 							event.getAuthor().getAsMention() + " Moderators cannot kick admins!", null);
 				} else {
-					userToTempBan.getPrivateChannel().sendMessageAsync("You have been temporarily banned/silenced from "
-							+ JDAHelper.getGuild().getName() + " for " + reasonForTempBan, null);
+					sendBanNotifications(userToTempBan, reasonForTempBan);
 					tempBanUser(userToTempBan);
 				}
 			}
@@ -68,13 +67,24 @@ public class CommandTempBan extends ChatCommand {
 
 	private void tempBanUser(User user) {
 		final String DEATHROLENAME = "TempBan";
-
 		GuildManager manager = JDAHelper.getGuild().getManager();
 
 		JDAHelper.removeUsersRoles(user, manager);
 		manager.addRoleToUser(user, JDAHelper.getRoleByName(DEATHROLENAME));
 
 		manager.update();
+	}
+
+	private void sendBanNotifications(User user, String reason) {
+		TextChannel adminChannel = JDAHelper.getTextChannelByName(JSonReader.getPreferencesValue("adminchannel"));
+
+		if (adminChannel != null) {
+			adminChannel.sendMessageAsync(user.getUsername() + " has been banned for " + reason, null);
+		}
+
+		user.getPrivateChannel().sendMessageAsync(
+				"You have been temporarily banned/silenced from " + JDAHelper.getGuild().getName() + " for " + reason,
+				null);
 	}
 
 	@Override

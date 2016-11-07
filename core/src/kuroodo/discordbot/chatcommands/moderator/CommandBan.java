@@ -3,6 +3,8 @@ package kuroodo.discordbot.chatcommands.moderator;
 import kuroodo.discordbot.Init;
 import kuroodo.discordbot.entities.ChatCommand;
 import kuroodo.discordbot.helpers.JDAHelper;
+import kuroodo.discordbot.helpers.JSonReader;
+import net.dv8tion.jda.entities.TextChannel;
 import net.dv8tion.jda.entities.User;
 import net.dv8tion.jda.events.message.guild.GuildMessageReceivedEvent;
 
@@ -14,6 +16,7 @@ public class CommandBan extends ChatCommand {
 		isModCommand = true;
 	}
 
+	// TODO: Cleanup some of this code by putting it into methods
 	@Override
 	public void executeCommand(String commandParams, GuildMessageReceivedEvent event) {
 		super.executeCommand(commandParams, event);
@@ -34,6 +37,8 @@ public class CommandBan extends ChatCommand {
 		String banReason = JDAHelper.splitString(commandParameters)[1];
 
 		if (userToBan != null) {
+			TextChannel adminChannel = JDAHelper.getTextChannelByName(JSonReader.getPreferencesValue("adminchannel"));
+
 			// Check if trying to ban bot
 			if (userToBan == Init.getJDA().getSelfInfo()) {
 
@@ -52,6 +57,10 @@ public class CommandBan extends ChatCommand {
 
 			} else if (JDAHelper.isUserAdmin(event.getAuthor())) {
 
+				if (adminChannel != null) {
+					adminChannel.sendMessageAsync(userToBan.getUsername() + " has been banned for " + banReason, null);
+				}
+
 				userToBan.getPrivateChannel().sendMessageAsync(
 						"You have been banned from " + JDAHelper.getGuild().getName() + " for " + banReason, null);
 				JDAHelper.getGuild().getManager().ban(userToBan, BAN_DAYS);
@@ -65,6 +74,12 @@ public class CommandBan extends ChatCommand {
 					event.getChannel().sendMessageAsync(
 							event.getAuthor().getAsMention() + " Moderators cannot ban admins!", null);
 				} else {
+
+					if (adminChannel != null) {
+						adminChannel.sendMessageAsync(userToBan.getUsername() + " has been banned for " + banReason,
+								null);
+					}
+
 					userToBan.getPrivateChannel().sendMessageAsync(
 							"You have been banned from " + JDAHelper.getGuild().getName() + " for " + banReason, null);
 					JDAHelper.getGuild().getManager().ban(userToBan, BAN_DAYS);
