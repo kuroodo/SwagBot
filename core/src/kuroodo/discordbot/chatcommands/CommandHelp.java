@@ -127,7 +127,9 @@ public class CommandHelp extends ChatCommand {
 					+ "!restart plays the audio stream from the beginning");
 			break;
 		case "!soundboard":
-			String sounds = "";
+			String sounds = "There are currently no sounds available";
+			String message = "A hidden command, these commands are for playing special sounds with the audioplayer."
+					+ " (see more: !help play)" + "\nUsage: !soundname (example !bradberry)\n" + "List of sounds\n\n";
 
 			FilenameFilter mp3Filter = new FilenameFilter() {
 				@Override
@@ -145,16 +147,19 @@ public class CommandHelp extends ChatCommand {
 			File dir = new File(filePath);
 			File[] files = dir.listFiles(mp3Filter);
 
-			if (files.length == 0) {
-				System.out.println("No MP3 files found");
-			} else {
-				for (File file : files) {
-					sounds = sounds + "!" + file.getName().toLowerCase().replaceFirst("[.][^.]+$", "") + " ";
+			if (files != null) {
+				if (files.length == 0) {
+					System.out.println("No MP3 files found");
+				} else {
+					sounds = "";
+					for (File file : files) {
+						// Get the name of the sound file without .mp3 extension
+						sounds = sounds + "!" + file.getName().toLowerCase().replaceFirst("[.][^.]+$", "") + " ";
+					}
 				}
 			}
-			sendPrivateMessage("A hidden command, these commands are for playing special sounds with the audioplayer."
-					+ " (see more: !help play)" + "\nUsage: !soundname (example !bradberry)\n" + "List of sounds\n\n"
-					+ sounds);
+
+			sendPrivateMessage(message + sounds);
 			break;
 		default:
 			break;
