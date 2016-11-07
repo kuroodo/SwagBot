@@ -18,8 +18,3 @@ public class DesktopLauncher {
 // TODO: Server owner can enabled a permanent voice channel block command
 // (unblockable by others)
 // TODO: Add super-users to json file
-
-// Idea:
-// TODO: Create a "BotSettings" class that will store custom settings
-// Settings like the welcome message/channel and such
-// Some settings should+ be read via json or xml

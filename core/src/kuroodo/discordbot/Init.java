@@ -116,7 +116,7 @@ public class Init extends ApplicationAdapter {
 		return botName;
 	}
 
-	// TODO: Move these voice channel methods to planned "botsettings" class
+	// TODO: Find a better place for these methods
 	public static void blockVoiceChannel(String channelName) {
 		audioPlayer.blockVoiceChannel(channelName);
 	}
