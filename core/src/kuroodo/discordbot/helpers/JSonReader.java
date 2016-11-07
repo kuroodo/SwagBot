@@ -76,4 +76,20 @@ public class JSonReader {
 		return sourceLink;
 	}
 
+	public static String getPreferencesValue(String keyName) {
+		String retrievedValue = "";
+
+		Reader reader;
+		try {
+			reader = new FileReader("preferences.json");
+			JsonObject object = Json.parse(reader).asObject();
+
+			retrievedValue = object.get(keyName).asString();
+		} catch (IOException e) {
+			System.out.println("Could not get preference key: " + keyName);
+		}
+
+		return retrievedValue;
+	}
+
 }

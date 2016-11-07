@@ -66,3 +66,4 @@ build/
 # project config file
 config.json
 html/
+desktop/preferences.json
