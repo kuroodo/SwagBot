@@ -2,7 +2,9 @@ package kuroodo.discordbot.chatcommands.admin;
 
 import kuroodo.discordbot.entities.ChatCommand;
 import kuroodo.discordbot.helpers.JDAHelper;
+import kuroodo.discordbot.helpers.JSonReader;
 import net.dv8tion.jda.Permission;
+import net.dv8tion.jda.entities.TextChannel;
 import net.dv8tion.jda.events.message.guild.GuildMessageReceivedEvent;
 
 public class CommandMakeRole extends ChatCommand {
@@ -14,11 +16,13 @@ public class CommandMakeRole extends ChatCommand {
 	@Override
 	public void executeCommand(String commandParams, GuildMessageReceivedEvent event) {
 		super.executeCommand(commandParams, event);
-		
+
 		if (!isUserAuthorized) {
 			return;
 		}
-		
+
+		TextChannel adminChannel = JDAHelper.getTextChannelByName(JSonReader.getPreferencesValue("adminchannel"));
+
 		if (JDAHelper.getRoleByName(commandParameters) == null) {
 			JDAHelper.getGuild().createRole().setName(commandParameters).update();
 
@@ -27,11 +31,15 @@ public class CommandMakeRole extends ChatCommand {
 				JDAHelper.getRoleByName(commandParameters).getManager().revoke(permission).update();
 			}
 
-			JDAHelper.getTextChannelByName("headquarters")
-					.sendMessageAsync(event.getAuthor().getAsMention() + " created a new role called " + commandParameters, null);
+			if (adminChannel != null) {
+				adminChannel.sendMessageAsync(
+						event.getAuthor().getAsMention() + " created a new role called " + commandParameters, null);
+			}
 		} else {
-			JDAHelper.getTextChannelByName("headquarters").sendMessageAsync(event.getAuthor().getAsMention()
-					+ " A role with the name " + commandParameters + " already exists", null);
+			if (adminChannel != null) {
+				adminChannel.sendMessageAsync(event.getAuthor().getAsMention() + " A role with the name "
+						+ commandParameters + " already exists", null);
+			}
 		}
 	}
 

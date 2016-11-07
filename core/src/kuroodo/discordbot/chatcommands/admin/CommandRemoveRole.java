@@ -2,7 +2,9 @@ package kuroodo.discordbot.chatcommands.admin;
 
 import kuroodo.discordbot.entities.ChatCommand;
 import kuroodo.discordbot.helpers.JDAHelper;
+import kuroodo.discordbot.helpers.JSonReader;
 import net.dv8tion.jda.entities.Role;
+import net.dv8tion.jda.entities.TextChannel;
 import net.dv8tion.jda.entities.User;
 import net.dv8tion.jda.events.message.guild.GuildMessageReceivedEvent;
 import net.dv8tion.jda.managers.GuildManager;
@@ -21,6 +23,7 @@ public class CommandRemoveRole extends ChatCommand {
 			return;
 		}
 
+		TextChannel adminChannel = JDAHelper.getTextChannelByName(JSonReader.getPreferencesValue("adminchannel"));
 		GuildManager guildManager = JDAHelper.getGuild().getManager();
 
 		Role role = JDAHelper.getRoleByName(JDAHelper.splitString(commandParameters)[0]);
@@ -36,8 +39,10 @@ public class CommandRemoveRole extends ChatCommand {
 		if (user != null && role != null) {
 			guildManager.removeRoleFromUser(user, role).update();
 
-			JDAHelper.getTextChannelByName("headquarters").sendMessageAsync(event.getAuthor().getAsMention()
-					+ " just removed " + user.getUsername() + "'s role: " + role.getName(), null);
+			if (adminChannel != null) {
+				adminChannel.sendMessageAsync(event.getAuthor().getAsMention() + " just removed " + user.getUsername()
+						+ "'s role: " + role.getName(), null);
+			}
 		} else {
 			sendPrivateMessage(" the role or user you have inputted do not exist, or not in case sensitive!");
 		}
