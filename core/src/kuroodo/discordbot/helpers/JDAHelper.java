@@ -9,13 +9,14 @@ import java.util.List;
 import java.util.Random;
 
 import kuroodo.discordbot.Init;
-import net.dv8tion.jda.OnlineStatus;
-import net.dv8tion.jda.entities.Guild;
-import net.dv8tion.jda.entities.Role;
-import net.dv8tion.jda.entities.TextChannel;
-import net.dv8tion.jda.entities.User;
-import net.dv8tion.jda.entities.VoiceChannel;
-import net.dv8tion.jda.managers.GuildManager;
+import net.dv8tion.jda.core.OnlineStatus;
+import net.dv8tion.jda.core.entities.Guild;
+import net.dv8tion.jda.core.entities.Member;
+import net.dv8tion.jda.core.entities.Role;
+import net.dv8tion.jda.core.entities.TextChannel;
+import net.dv8tion.jda.core.entities.User;
+import net.dv8tion.jda.core.entities.VoiceChannel;
+import net.dv8tion.jda.core.managers.GuildController;
 
 public class JDAHelper {
 
@@ -46,7 +47,7 @@ public class JDAHelper {
 		System.out.println("ERROR Could not get voice channel by name");
 		return null;
 	}
-	
+
 	/**
 	 * Gets the voice channel a specific user is in
 	 * 
@@ -56,8 +57,8 @@ public class JDAHelper {
 	 */
 	public static VoiceChannel getUserVoiceChannel(String username) {
 		for (VoiceChannel channel : getGuild().getVoiceChannels()) {
-			for (User user : channel.getUsers()) {
-				if (user.getUsername().equals(username)) {
+			for (Member member : channel.getMembers()) {
+				if (member.getUser().getName().equals(username)) {
 					return channel;
 				}
 			}
@@ -82,8 +83,8 @@ public class JDAHelper {
 	 */
 	public static Integer getUserVoiceChannelIndex(String username) {
 		for (int voiceChannelIndex = 0; voiceChannelIndex < getVoiceChannelCount(); voiceChannelIndex++) {
-			for (User user : getVoiceChannels().get(voiceChannelIndex).getUsers()) {
-				if (user.getUsername().equals(username)) {
+			for (Member member : getVoiceChannels().get(voiceChannelIndex).getMembers()) {
+				if (member.getUser().getName().equals(username)) {
 					return voiceChannelIndex;
 				}
 			}
@@ -94,9 +95,9 @@ public class JDAHelper {
 	}
 
 	public static User getUserByUsername(String username) {
-		for (User user : getGuild().getUsers()) {
-			if (user.getUsername().equals(username)) {
-				return user;
+		for (Member member : getGuild().getMembers()) {
+			if (member.getUser().getName().equals(username)) {
+				return member.getUser();
 			}
 		}
 
@@ -105,11 +106,11 @@ public class JDAHelper {
 	}
 
 	public static User getUserByID(String ID) {
-		return getGuild().getUserById(ID);
+		return getGuild().getMemberById(ID).getUser();
 	}
 
 	public static String getUsernameById(String ID) {
-		return getUserByID(ID).getUsername();
+		return getUserByID(ID).getName();
 	}
 
 	public static User getRandomOnlineUser() {
@@ -118,9 +119,9 @@ public class JDAHelper {
 
 		ArrayList<User> onlineUsers = new ArrayList<User>();
 
-		for (User user : getGuild().getUsers()) {
-			if (user.getOnlineStatus() == OnlineStatus.ONLINE) {
-				onlineUsers.add(user);
+		for (Member member : getGuild().getMembers()) {
+			if (member.getOnlineStatus() == OnlineStatus.ONLINE) {
+				onlineUsers.add(member.getUser());
 			}
 		}
 
@@ -130,18 +131,17 @@ public class JDAHelper {
 	public static User getRandomUser() {
 		Random rand = new Random();
 		rand.setSeed(System.nanoTime());
-		return getUsers().get(rand.nextInt(getUserCount()));
+		return getMembers().get(rand.nextInt(getUserCount())).getUser();
 	}
 
-	public static void giveRoleToUser(Role role, User user) {
-		if (user == null || role == null) {
+	public static void giveRoleToMember(Role role, Member member) {
+		if (member == null || role == null) {
 			System.out.println("ERROR: COULD NOT GIVE USER A ROLE");
 			return;
 		}
-
-		GuildManager guildManager = getGuild().getManager();
-
-		guildManager.addRoleToUser(user, role).update();
+		getGuild().getController().addRolesToMember(member, role);
+		// GuildController guilControllerr = getGuild().getController();
+		// guildManager.addRoleToUser(user, role).update();
 	}
 
 	public static Role getRoleByName(String roleName) {
@@ -154,8 +154,8 @@ public class JDAHelper {
 		return null;
 	}
 
-	public static Boolean isUserAdmin(User user) {
-		for (Role role : getGuild().getRolesForUser(user)) {
+	public static Boolean isUserAdmin(Member member) {
+		for (Role role : member.getRoles()) {
 			if (role.getName().equals("Admin")) {
 				return true;
 			}
@@ -164,13 +164,12 @@ public class JDAHelper {
 		return false;
 	}
 
-	public static Boolean isUserModerator(User user) {
-		for (Role role : getGuild().getRolesForUser(user)) {
+	public static Boolean isUserModerator(Member member) {
+		for (Role role : member.getRoles()) {
 			if (role.getName().equals("Moderator")) {
 				return true;
 			}
 		}
-
 		return false;
 	}
 
@@ -179,11 +178,11 @@ public class JDAHelper {
 	}
 
 	public static int getUserCount() {
-		return getGuild().getUsers().size();
+		return getGuild().getMembers().size();
 	}
 
-	public static List<User> getUsers() {
-		return getGuild().getUsers();
+	public static List<Member> getMembers() {
+		return getGuild().getMembers();
 	}
 
 	public static Guild getGuild() {
@@ -207,13 +206,11 @@ public class JDAHelper {
 		}
 	}
 
-	public static GuildManager removeUsersRoles(User user, GuildManager manager) {
-		ArrayList<Role> usersRoles = new ArrayList<Role>(getGuild().getRolesForUser(user));
+	public static GuildController removeUsersRoles(Member member, GuildController controller) {
+		ArrayList<Role> membersRoles = new ArrayList<Role>(member.getRoles());
 
-		for (Role role : usersRoles) {
-			manager.removeRoleFromUser(user, role);
-		}
-		return manager;
+		controller.removeRolesFromMember(member, membersRoles);
+		return controller;
 	}
 
 	// Split a string in 2
