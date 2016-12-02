@@ -1,7 +1,7 @@
 package kuroodo.discordbot.entities;
 
 import kuroodo.discordbot.Init;
-import net.dv8tion.jda.hooks.ListenerAdapter;
+import net.dv8tion.jda.core.hooks.ListenerAdapter;
 
 public abstract class JDAListener extends ListenerAdapter {
 	public abstract void update(float delta);

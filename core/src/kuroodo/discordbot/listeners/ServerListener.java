@@ -7,19 +7,20 @@ import kuroodo.discordbot.Init;
 import kuroodo.discordbot.entities.JDAListener;
 import kuroodo.discordbot.helpers.JDAHelper;
 import kuroodo.discordbot.helpers.JSonReader;
-import net.dv8tion.jda.entities.Role;
-import net.dv8tion.jda.events.DisconnectEvent;
-import net.dv8tion.jda.events.ReconnectedEvent;
-import net.dv8tion.jda.events.guild.member.GuildMemberBanEvent;
-import net.dv8tion.jda.events.guild.member.GuildMemberJoinEvent;
-import net.dv8tion.jda.events.guild.member.GuildMemberLeaveEvent;
-import net.dv8tion.jda.events.guild.member.GuildMemberRoleAddEvent;
-import net.dv8tion.jda.events.guild.member.GuildMemberRoleRemoveEvent;
-import net.dv8tion.jda.events.guild.member.GuildMemberUnbanEvent;
-import net.dv8tion.jda.events.guild.role.GuildRoleCreateEvent;
-import net.dv8tion.jda.events.guild.role.GuildRoleDeleteEvent;
-import net.dv8tion.jda.events.guild.role.GuildRoleUpdateNameEvent;
-import net.dv8tion.jda.events.guild.role.GuildRoleUpdatePermissionEvent;
+import net.dv8tion.jda.core.entities.Game;
+import net.dv8tion.jda.core.entities.Role;
+import net.dv8tion.jda.core.events.DisconnectEvent;
+import net.dv8tion.jda.core.events.ReconnectedEvent;
+import net.dv8tion.jda.core.events.guild.GuildBanEvent;
+import net.dv8tion.jda.core.events.guild.GuildUnbanEvent;
+import net.dv8tion.jda.core.events.guild.member.GuildMemberJoinEvent;
+import net.dv8tion.jda.core.events.guild.member.GuildMemberLeaveEvent;
+import net.dv8tion.jda.core.events.guild.member.GuildMemberRoleAddEvent;
+import net.dv8tion.jda.core.events.guild.member.GuildMemberRoleRemoveEvent;
+import net.dv8tion.jda.core.events.role.RoleCreateEvent;
+import net.dv8tion.jda.core.events.role.RoleDeleteEvent;
+import net.dv8tion.jda.core.events.role.update.RoleUpdateNameEvent;
+import net.dv8tion.jda.core.events.role.update.RoleUpdatePermissionsEvent;
 
 public class ServerListener extends JDAListener {
 
@@ -33,7 +34,7 @@ public class ServerListener extends JDAListener {
 
 	@Override
 	public void onReconnect(ReconnectedEvent event) {
-		Init.getJDA().getAccountManager().setGame("Type !help For Help (;");
+		Init.getJDA().getPresence().setGame(Game.of("Type !help For Help (;"));
 		super.onReconnect(event);
 	}
 
@@ -44,24 +45,24 @@ public class ServerListener extends JDAListener {
 		if (JSonReader.getPreferencesValue("givenewmemberrole").equalsIgnoreCase("true")) {
 			final Role roleToGive = JDAHelper.getRoleByName(JSonReader.getPreferencesValue("newmemberrolename"));
 			if (roleToGive != null) {
-				JDAHelper.giveRoleToUser(roleToGive, event.getUser());
+				JDAHelper.giveRoleToMember(roleToGive, event.getMember());
 			} else {
 				System.out
 						.println("ERROR: Role to give to new member does not exist! Check the name in prefernces.json");
 			}
 		}
 
-		String message = " User " + event.getUser().getUsername() + " joined the server";
+		String message = " User " + event.getMember().getUser().getName() + " joined the server";
 		System.out.println(message);
-		Init.getServerOwner().getPrivateChannel().sendMessageAsync(message, null);
+		Init.getServerOwner().getPrivateChannel().sendMessage(message).queue();
 
 		// Send welcome message to channel if permitted
 		if (JSonReader.getPreferencesValue("sendwelcomemessage").equalsIgnoreCase("true")) {
 			final String WELCOME_CHANNEL_NAME = JSonReader.getPreferencesValue("welcomechannel");
 
 			if (JDAHelper.getTextChannelByName(WELCOME_CHANNEL_NAME) != null) {
-				message = event.getUser().getAsMention() + " " + JSonReader.getPreferencesValue("welcomemessage");
-				JDAHelper.getTextChannelByName(WELCOME_CHANNEL_NAME).sendMessageAsync(message, null);
+				message = event.getMember().getAsMention() + " " + JSonReader.getPreferencesValue("welcomemessage");
+				JDAHelper.getTextChannelByName(WELCOME_CHANNEL_NAME).sendMessage(message).queue();
 			} else {
 				System.out.println(
 						"ERROR: Channel to welcome new users in does not exist! Check the name in prefernces.json");
@@ -72,29 +73,30 @@ public class ServerListener extends JDAListener {
 	}
 
 	@Override
-	public void onGuildMemberBan(GuildMemberBanEvent event) {
-		String message = "User " + event.getUser().getUsername() + " was banned from the server";
+	public void onGuildBan(GuildBanEvent event) {
+		String message = "User " + event.getUser().getName() + " was banned from the server";
 		System.out.println(message);
-		Init.getServerOwner().getPrivateChannel().sendMessageAsync(message, null);
+		Init.getServerOwner().getPrivateChannel().sendMessage(message).queue();
 	}
 
 	@Override
-	public void onGuildMemberUnban(GuildMemberUnbanEvent event) {
-		final String message = "User " + event.getUser().getUsername() + " was unbanned from the server";
+	public void onGuildUnban(GuildUnbanEvent event) {
+		final String message = "User " + event.getUser().getName() + " was unbanned from the server";
 		System.out.println(message);
-		Init.getServerOwner().getPrivateChannel().sendMessageAsync(message, null);
+		Init.getServerOwner().getPrivateChannel().sendMessage(message).queue();
+		;
 	}
 
 	@Override
 	public void onGuildMemberLeave(GuildMemberLeaveEvent event) {
-		final String message = "User " + event.getUser().getUsername() + " has left server, or been kicked";
+		final String message = "User " + event.getMember().getUser().getName() + " has left server, or been kicked";
 		System.out.println(message);
-		Init.getServerOwner().getPrivateChannel().sendMessageAsync(message, null);
+		Init.getServerOwner().getPrivateChannel().sendMessage(message).queue();
 	}
 
 	@Override
 	public void onGuildMemberRoleAdd(GuildMemberRoleAddEvent event) {
-		String message = "User " + event.getUser().getUsername() + " was just given the following roles: ";
+		String message = "User " + event.getMember().getUser().getName() + " was just given the following roles: ";
 
 		for (Role role : event.getRoles()) {
 			message = message + role.getName();
@@ -104,52 +106,55 @@ public class ServerListener extends JDAListener {
 				String secondMsg = "Welcome to the staff team for " + event.getGuild().getName()
 						+ ". Please type !commands or !help in the server chat to review the available staff commands";
 
-				event.getUser().getPrivateChannel().sendMessageAsync(secondMsg, null);
+				event.getMember().getUser().getPrivateChannel().sendMessage(secondMsg).queue();
 			}
 		}
 		System.out.println(message);
-		Init.getServerOwner().getPrivateChannel().sendMessageAsync(message, null);
+		Init.getServerOwner().getPrivateChannel().sendMessage(message).queue();
 	}
 
 	@Override
 	public void onGuildMemberRoleRemove(GuildMemberRoleRemoveEvent event) {
-		String message = event.getUser().getUsername() + " just had the following roles removed: ";
+		String message = event.getMember().getUser().getName() + " just had the following roles removed: ";
 		for (Role r : event.getRoles()) {
 			message = message + r.getName() + ", ";
 		}
 
 		System.out.println(message);
-		Init.getServerOwner().getPrivateChannel().sendMessageAsync(message, null);
+		Init.getServerOwner().getPrivateChannel().sendMessage(message).queue();
+		;
 	}
 
 	@Override
-	public void onGuildRoleCreate(GuildRoleCreateEvent event) {
+	public void onRoleCreate(RoleCreateEvent event) {
 		final String message = "New role " + event.getRole().getName() + " has been created";
 		System.out.println(message);
-		Init.getServerOwner().getPrivateChannel().sendMessageAsync(message, null);
+		Init.getServerOwner().getPrivateChannel().sendMessage(message).queue();
+		;
 	}
 
 	@Override
-	public void onGuildRoleDelete(GuildRoleDeleteEvent event) {
+	public void onRoleDelete(RoleDeleteEvent event) {
 		final String message = "The following role was deleted  " + event.getGuild().getName();
 		System.out.println(message);
-		Init.getServerOwner().getPrivateChannel().sendMessageAsync(message, null);
+		Init.getServerOwner().getPrivateChannel().sendMessage(message).queue();
+		;
 	}
 
 	@Override
-	public void onGuildRoleUpdatePermission(GuildRoleUpdatePermissionEvent event) {
+	public void onRoleUpdatePermissions(RoleUpdatePermissionsEvent event) {
 		final String message = "The following role's permissions were changed  " + event.getRole().getName();
 		System.out.println(message);
-		Init.getServerOwner().getPrivateChannel().sendMessageAsync(message, null);
-		super.onGuildRoleUpdatePermission(event);
+		Init.getServerOwner().getPrivateChannel().sendMessage(message).queue();
 	}
 
 	@Override
-	public void onGuildRoleUpdateName(GuildRoleUpdateNameEvent event) {
+	public void onRoleUpdateName(RoleUpdateNameEvent event) {
 		final String message = "The following role has a new name" + event.getRole().getName();
 		System.out.println(message);
-		Init.getServerOwner().getPrivateChannel().sendMessageAsync(message, null);
-		super.onGuildRoleUpdateName(event);
+		Init.getServerOwner().getPrivateChannel().sendMessage(message).queue();
 	}
+
+	// TODO: Handle more role events
 
 }
