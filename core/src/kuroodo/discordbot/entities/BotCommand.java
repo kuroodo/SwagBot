@@ -1,8 +1,8 @@
 package kuroodo.discordbot.entities;
 
 import kuroodo.discordbot.Init;
-import net.dv8tion.jda.events.message.guild.GuildMessageReceivedEvent;
-import net.dv8tion.jda.events.message.priv.PrivateMessageReceivedEvent;
+import net.dv8tion.jda.core.events.message.guild.GuildMessageReceivedEvent;
+import net.dv8tion.jda.core.events.message.priv.PrivateMessageReceivedEvent;
 
 public abstract class BotCommand implements Command {
 
@@ -37,12 +37,12 @@ public abstract class BotCommand implements Command {
 	public abstract String info();
 
 	protected void sendMessage(String message) {
-		event.getChannel().sendMessageAsync(message, null);
+		event.getChannel().sendMessage(message).queue();
 	}
 
 	protected void sendPrivateMessage(String message) {
 
-		event.getAuthor().getPrivateChannel().sendMessageAsync(message, null);
+		event.getAuthor().getPrivateChannel().sendMessage(message).queue();
 	}
 
 	public String commandName() {

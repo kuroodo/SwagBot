@@ -2,8 +2,8 @@ package kuroodo.discordbot.entities;
 
 import kuroodo.discordbot.Init;
 import kuroodo.discordbot.helpers.JDAHelper;
-import net.dv8tion.jda.events.message.guild.GuildMessageReceivedEvent;
-import net.dv8tion.jda.events.message.priv.PrivateMessageReceivedEvent;
+import net.dv8tion.jda.core.events.message.guild.GuildMessageReceivedEvent;
+import net.dv8tion.jda.core.events.message.priv.PrivateMessageReceivedEvent;
 
 public abstract class ChatCommand implements Command {
 
@@ -44,11 +44,11 @@ public abstract class ChatCommand implements Command {
 	public abstract String info();
 
 	protected void sendMessage(String message) {
-		event.getChannel().sendMessageAsync(message, null);
+		event.getChannel().sendMessage(message).queue();
 	}
 
 	protected void sendPrivateMessage(String message) {
-		event.getAuthor().getPrivateChannel().sendMessageAsync(message, null);
+		event.getAuthor().getPrivateChannel().sendMessage(message).queue();
 	}
 
 	// Method being kept for temporary reference
@@ -94,12 +94,12 @@ public abstract class ChatCommand implements Command {
 	}
 
 	public boolean checkUserHasAccessToCommand() {
-		if (isAdminCommand && !JDAHelper.isUserAdmin(event.getAuthor()) && event.getAuthor() != Init.getServerOwner()) {
+		if (isAdminCommand && !JDAHelper.isUserAdmin(event.getMember()) && event.getAuthor() != Init.getServerOwner()) {
 			isUserAuthorized = false;
 			shouldUpdate = false;
 			sendPrivateMessage(event.getAuthor().getAsMention() + " You do not have access to that command!");
 		} else if (isModCommand
-				&& (!JDAHelper.isUserModerator(event.getAuthor()) && !JDAHelper.isUserAdmin(event.getAuthor()))
+				&& (!JDAHelper.isUserModerator(event.getMember()) && !JDAHelper.isUserAdmin(event.getMember()))
 				&& event.getAuthor() != Init.getServerOwner()) {
 			isUserAuthorized = false;
 			shouldUpdate = false;
@@ -110,11 +110,11 @@ public abstract class ChatCommand implements Command {
 	}
 
 	public boolean checkUserHasAccessToCommand(GuildMessageReceivedEvent event) {
-		if (isAdminCommand && !JDAHelper.isUserAdmin(event.getAuthor()) && event.getAuthor() != Init.getServerOwner()) {
+		if (isAdminCommand && !JDAHelper.isUserAdmin(event.getMember()) && event.getAuthor() != Init.getServerOwner()) {
 			isUserAuthorized = false;
 			shouldUpdate = false;
 		} else if (isModCommand
-				&& (!JDAHelper.isUserModerator(event.getAuthor()) && !JDAHelper.isUserAdmin(event.getAuthor()))
+				&& (!JDAHelper.isUserModerator(event.getMember()) && !JDAHelper.isUserAdmin(event.getMember()))
 				&& event.getAuthor() != Init.getServerOwner()) {
 			isUserAuthorized = false;
 			shouldUpdate = false;
