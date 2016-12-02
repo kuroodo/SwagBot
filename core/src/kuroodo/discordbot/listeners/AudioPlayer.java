@@ -31,6 +31,11 @@ public class AudioPlayer extends JDAListener {
 	private final float maxIdleTime = 60f;
 	private float currentIdleTime = 0f;
 
+	/*
+	 * This class is a complete mess. Thats because I originally did not know
+	 * how it worked or what I was doing. It will eventually be replaced by
+	 * JDA-Player
+	 */
 	public AudioPlayer() {
 		blockedChannels = new ArrayList<>();
 	}
@@ -66,8 +71,8 @@ public class AudioPlayer extends JDAListener {
 			try {
 
 				// Start an audio connection with a VoiceChannel
-				if (message.startsWith("!join ") || JDAHelper.isMessageAnAudioQueue(message)) {
-					// Make sure it's an audioQueue
+				if (message.startsWith("!")
+						&& (message.startsWith("!join ") || JDAHelper.isMessageAnAudioQueue(message))) {
 
 					if (JDAHelper.isMessageAnAudioQueue(message)) {
 						chanName = JDAHelper.getUserVoiceChannel(event.getAuthor().getUsername()).getName();

@@ -61,10 +61,10 @@ public class GameListener extends JDAListener {
 
 		if (event.getAuthor() != null) {
 			if (event.getChannel() == gameChannel) {
-				// TODO: Maybe check if author of message is a player?
-				if (event.getMessage().getRawContent().startsWith("!end")) {
+				if (event.getMessage().getRawContent().startsWith("!end") && players.contains(event.getAuthor())) {
 					endGameSession();
 					return;
+
 				} else if (event.getMessage().getRawContent().startsWith("!gamehelp") && gameSession != null) {
 					gameSession.gameHelpInfo();
 					return;
