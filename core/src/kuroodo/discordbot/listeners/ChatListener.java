@@ -6,9 +6,9 @@ package kuroodo.discordbot.listeners;
 import kuroodo.discordbot.Init;
 import kuroodo.discordbot.entities.JDAListener;
 import kuroodo.discordbot.helpers.ChatLogger;
-import net.dv8tion.jda.entities.User;
-import net.dv8tion.jda.events.message.guild.GuildMessageReceivedEvent;
-import net.dv8tion.jda.events.message.priv.PrivateMessageReceivedEvent;
+import net.dv8tion.jda.core.entities.User;
+import net.dv8tion.jda.core.events.message.guild.GuildMessageReceivedEvent;
+import net.dv8tion.jda.core.events.message.priv.PrivateMessageReceivedEvent;
 
 public class ChatListener extends JDAListener {
 
@@ -24,7 +24,7 @@ public class ChatListener extends JDAListener {
 			String message = "";
 
 			if (event.getAuthor() != null) {
-				message = "[" + event.getGuild().getName() + " [" + channelName + "]" + "] " + event.getAuthorName()
+				message = "[" + event.getGuild().getName() + " [" + channelName + "]" + "] " + event.getAuthor().getName()
 						+ ":" + event.getMessage().getContent();
 			} else {
 				message = "[" + event.getGuild().getName() + " [" + channelName + "]" + "] "
@@ -39,7 +39,7 @@ public class ChatListener extends JDAListener {
 				System.out.println(
 						"[" + event.getChannel().getName() + "]" + "A null user or unknown bot has sent a message");
 			} else {
-				System.out.println("[" + event.getChannel().getName() + "]" + "[" + event.getAuthor().getUsername()
+				System.out.println("[" + event.getChannel().getName() + "]" + "[" + event.getAuthor().getName()
 						+ "] " + " has sent an image/file or some other form of media or unsupported text");
 			}
 		}
@@ -55,7 +55,7 @@ public class ChatListener extends JDAListener {
 					&& event.getMessage().getRawContent().equals(Init.SUPERUSER_PASSWORD)) {
 				for (User authorizedUser : Init.SUPER_USERS) {
 					if (authorizedUser == event.getAuthor()) {
-						event.getChannel().sendMessageAsync("You're already an authorized user!", null);
+						event.getChannel().sendMessage("You're already an authorized user!").queue();
 						break;
 					} else {
 						Init.SUPER_USERS.add(event.getAuthor());
@@ -67,7 +67,7 @@ public class ChatListener extends JDAListener {
 		}
 
 		ChatLogger.logMessage(
-				"[PRIVATE MESSAGE] " + event.getAuthor().getUsername() + ":" + event.getMessage().getRawContent());
+				"[PRIVATE MESSAGE] " + event.getAuthor().getName() + ":" + event.getMessage().getRawContent());
 
 	}
 }

@@ -62,7 +62,7 @@ public class Init extends ApplicationAdapter {
 				jda.getPresence().setGame(Game.of("Undergoing Testing"));
 			}
 
-			// setupListeners();
+			 setupListeners();
 			System.out.println("All Done!");
 		} catch (InterruptedException | LoginException | RateLimitedException e) {
 			System.out.println("ERROR: " + e.getMessage());
@@ -88,8 +88,8 @@ public class Init extends ApplicationAdapter {
 	}
 
 	private static void setupListeners() {
-		listeners.add(new ChatCommandListener());
-		listeners.add(new BotCommandListener());
+		//listeners.add(new ChatCommandListener());
+		//listeners.add(new BotCommandListener());
 		listeners.add(new ChatListener());
 		listeners.add(new ServerListener());
 		listeners.add(new ChannelListener());
@@ -118,22 +118,22 @@ public class Init extends ApplicationAdapter {
 	@Override
 	public void dispose() {
 
-		System.out.println("Ending all gamesessions");
-		GlobalGameManager.endAllGameListenerSession();
-
-		if (jda != null) {
-			System.out.println("Shutting Down JDA");
-			jda.getPresence().setIdle(true);
-			jda.getPresence().setGame(Game.of("Shutting Down..."));
-			System.out.println("Disposing and clearing all listeners");
-			for (JDAListener listener : listeners) {
-				listener.dispose();
-			}
-			listeners.clear();
-			jda.shutdown(true);
-		}
-
-		ChatLogger.closeLog();
-		super.dispose();
+//		System.out.println("Ending all gamesessions");
+//		GlobalGameManager.endAllGameListenerSession();
+//
+//		if (jda != null) {
+//			System.out.println("Shutting Down JDA");
+//			jda.getPresence().setIdle(true);
+//			jda.getPresence().setGame(Game.of("Shutting Down..."));
+//			System.out.println("Disposing and clearing all listeners");
+//			for (JDAListener listener : listeners) {
+//				listener.dispose();
+//			}
+//			listeners.clear();
+//			jda.shutdown(true);
+//		}
+//
+//		ChatLogger.closeLog();
+//		super.dispose();
 	}
 }
