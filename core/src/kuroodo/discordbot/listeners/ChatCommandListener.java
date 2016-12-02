@@ -27,7 +27,7 @@ import kuroodo.discordbot.client.handlers.ChatCommandHandler;
 import kuroodo.discordbot.entities.ChatCommand;
 import kuroodo.discordbot.entities.JDAListener;
 import kuroodo.discordbot.helpers.JDAHelper;
-import net.dv8tion.jda.events.message.guild.GuildMessageReceivedEvent;
+import net.dv8tion.jda.core.events.message.guild.GuildMessageReceivedEvent;
 
 public class ChatCommandListener extends JDAListener {
 	private ArrayList<ChatCommand> commandsToUpdateQueue;
@@ -52,7 +52,7 @@ public class ChatCommandListener extends JDAListener {
 					// If user mentioned the bot at the beginning of message
 				} else if (!event.getMessage().getMentionedUsers().isEmpty()
 						&& event.getMessage().getRawContent().substring(0, 1).equals("@")
-						&& event.getMessage().getMentionedUsers().get(0) == Init.getJDA().getSelfInfo()) {
+						&& event.getMessage().getMentionedUsers().get(0) == Init.getJDA().getSelfUser()) {
 					startupCommand(event);
 				}
 			} catch (StringIndexOutOfBoundsException e) {
@@ -104,7 +104,7 @@ public class ChatCommandListener extends JDAListener {
 		ChatCommandHandler.registerCommand("!avatar", CommandAvatar.class);
 		ChatCommandHandler.registerCommand("!flipcoin", CommandFlipCoin.class);
 		ChatCommandHandler.registerCommand("!magicball", CommandMagicBall.class);
-		ChatCommandHandler.registerCommand("@" + Init.getJDA().getSelfInfo().getUsername().toLowerCase(),
+		ChatCommandHandler.registerCommand("@" + Init.getJDA().getSelfUser().getName().toLowerCase(),
 				CommandMagicBall.class);
 		ChatCommandHandler.registerCommand("!poke", CommandPoke.class);
 		ChatCommandHandler.registerCommand("!roast", CommandRoast.class);

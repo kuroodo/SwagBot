@@ -12,7 +12,7 @@ import kuroodo.discordbot.client.handlers.BotCommandHandler;
 import kuroodo.discordbot.entities.BotCommand;
 import kuroodo.discordbot.entities.JDAListener;
 import kuroodo.discordbot.helpers.JDAHelper;
-import net.dv8tion.jda.events.message.priv.PrivateMessageReceivedEvent;
+import net.dv8tion.jda.core.events.message.priv.PrivateMessageReceivedEvent;
 
 public class BotCommandListener extends JDAListener {
 	private ArrayList<BotCommand> commandUpdateQueue;
@@ -39,7 +39,7 @@ public class BotCommandListener extends JDAListener {
 					}
 				}
 			} catch (StringIndexOutOfBoundsException e) {
-				System.out.println("[PRIVATE MESSAGE]" + "[" + event.getAuthor().getUsername() + "] "
+				System.out.println("[PRIVATE MESSAGE]" + "[" + event.getAuthor().getName() + "] "
 						+ " has sent an image/file or some other form of media or unsupported text");
 			}
 		}
