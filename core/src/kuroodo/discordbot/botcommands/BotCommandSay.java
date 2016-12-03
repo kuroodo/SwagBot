@@ -2,7 +2,7 @@ package kuroodo.discordbot.botcommands;
 
 import kuroodo.discordbot.entities.BotCommand;
 import kuroodo.discordbot.helpers.JDAHelper;
-import net.dv8tion.jda.events.message.priv.PrivateMessageReceivedEvent;
+import net.dv8tion.jda.core.events.message.priv.PrivateMessageReceivedEvent;
 
 public class BotCommandSay extends BotCommand {
 
@@ -14,11 +14,11 @@ public class BotCommandSay extends BotCommand {
 			String channelName = JDAHelper.splitString(commandParameters)[0];
 			String messageToChannel = JDAHelper.splitString(commandParameters)[1];
 
-			JDAHelper.getTextChannelByName(channelName).sendMessageAsync(messageToChannel, null);
-			System.out.println("[" + event.getAuthor().getUsername() + "]" + "Used SwagBot to say something");
+			JDAHelper.getTextChannelByName(channelName).sendMessage(messageToChannel).queue();
+			System.out.println("[" + event.getAuthor().getName() + "]" + "Used SwagBot to say something");
 		} catch (NullPointerException e) {
-			event.getChannel().sendMessageAsync("[" + event.getAuthor().getUsername() + "]"
-					+ "Either you didn't specify a channel, or you tried to send a blank msg", null);
+			event.getChannel().sendMessage("[" + event.getAuthor().getName() + "]"
+					+ "Either you didn't specify a channel, or you tried to send a blank msg").queue();
 		}
 	}
 
