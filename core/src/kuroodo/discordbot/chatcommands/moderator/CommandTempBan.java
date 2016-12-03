@@ -4,12 +4,13 @@ import kuroodo.discordbot.Init;
 import kuroodo.discordbot.entities.ChatCommand;
 import kuroodo.discordbot.helpers.JDAHelper;
 import kuroodo.discordbot.helpers.JSonReader;
-import net.dv8tion.jda.entities.TextChannel;
-import net.dv8tion.jda.entities.User;
-import net.dv8tion.jda.events.message.guild.GuildMessageReceivedEvent;
-import net.dv8tion.jda.managers.GuildManager;
+import net.dv8tion.jda.core.entities.Member;
+import net.dv8tion.jda.core.entities.TextChannel;
+import net.dv8tion.jda.core.events.message.guild.GuildMessageReceivedEvent;
+import net.dv8tion.jda.core.managers.GuildController;
 
 public class CommandTempBan extends ChatCommand {
+	// TODO: Change command name to Silence
 	// TODO: Implement timer that un-tempbans user after specified time
 	public CommandTempBan() {
 		isModCommand = true;
@@ -24,40 +25,41 @@ public class CommandTempBan extends ChatCommand {
 			return;
 		}
 
-		User userToTempBan = event.getMessage().getMentionedUsers().get(0);// ChatHelper.getUserByID(ChatHelper.splitString(commandParameters)[0]);
+		Member memberToTempBan = JDAHelper.getGuild().getMember(event.getMessage().getMentionedUsers().get(0));// ChatHelper.getUserByID(ChatHelper.splitString(commandParameters)[0]);
 		String reasonForTempBan = JDAHelper.splitString(commandParameters)[1];
 
-		if (userToTempBan != null) {
+		if (memberToTempBan != null) {
 			// Check if trying to ban bot
-			if (userToTempBan == Init.getJDA().getSelfInfo()) {
+			if (memberToTempBan == Init.getJDA().getSelfUser()) {
 
 				Init.getServerOwner().getPrivateChannel()
-						.sendMessageAsync(event.getAuthor().getUsername() + " Just tried to temp ban me!", null);
-				event.getChannel()
-						.sendMessageAsync(event.getAuthor().getAsMention() + " You dare to conspire against me?", null);
+						.sendMessage(event.getAuthor().getName() + " Just tried to temp ban me!").queue();
+				event.getChannel().sendMessage(event.getAuthor().getAsMention() + " You dare to conspire against me?")
+						.queue();
 
 				// Check if trying to ban server owner
-			} else if (userToTempBan == Init.getServerOwner()) {
+			} else if (memberToTempBan == Init.getServerOwner()) {
 
 				Init.getServerOwner().getPrivateChannel()
-						.sendMessageAsync(event.getAuthor().getUsername() + " Just tried to TEMPban you!", null);
-				event.getChannel().sendMessageAsync(
-						event.getAuthor().getAsMention() + " You dare to conspire against the server?", null);
+						.sendMessage(event.getAuthor().getName() + " Just tried to temp ban you!").queue();
+				event.getChannel()
+						.sendMessage(event.getAuthor().getAsMention() + " You dare to conspire against the server?")
+						.queue();
 
-			} else if (JDAHelper.isUserAdmin(event.getAuthor())) {
-				sendBanNotifications(userToTempBan, reasonForTempBan);
-				tempBanUser(userToTempBan);
-			} else if (JDAHelper.isUserModerator(event.getAuthor())) {
+			} else if (JDAHelper.isMemberAdmin(JDAHelper.getGuild().getMember(event.getAuthor()))) {
+				sendBanNotifications(memberToTempBan, reasonForTempBan);
+				tempBanUser(memberToTempBan);
+			} else if (JDAHelper.isMemberModerator(JDAHelper.getGuild().getMember(event.getAuthor()))) {
 
 				// Check if moderator is trying to ban an admin
-				if (JDAHelper.isUserAdmin(userToTempBan)) {
-					Init.getServerOwner().getPrivateChannel().sendMessageAsync(
-							event.getAuthor().getUsername() + " Just tried to TEMPban an admin", null);
-					event.getChannel().sendMessageAsync(
-							event.getAuthor().getAsMention() + " Moderators cannot kick admins!", null);
+				if (JDAHelper.isMemberAdmin(memberToTempBan)) {
+					Init.getServerOwner().getPrivateChannel()
+							.sendMessage(event.getAuthor().getName() + " Just tried to temp ban an admin").queue();
+					event.getChannel().sendMessage(event.getAuthor().getAsMention() + " Moderators cannot temp ban admins!")
+							.queue();
 				} else {
-					sendBanNotifications(userToTempBan, reasonForTempBan);
-					tempBanUser(userToTempBan);
+					sendBanNotifications(memberToTempBan, reasonForTempBan);
+					tempBanUser(memberToTempBan);
 				}
 			}
 		}
@@ -65,26 +67,25 @@ public class CommandTempBan extends ChatCommand {
 
 	}
 
-	private void tempBanUser(User user) {
+	private void tempBanUser(Member member) {
 		final String DEATHROLENAME = "TempBan";
-		GuildManager manager = JDAHelper.getGuild().getManager();
+		GuildController controller = JDAHelper.getGuild().getController();
 
-		JDAHelper.removeUsersRoles(user, manager);
-		manager.addRoleToUser(user, JDAHelper.getRoleByName(DEATHROLENAME));
-
-		manager.update();
+		JDAHelper.removeUsersRoles(member, controller);
+		controller.addRolesToMember(member, JDAHelper.getRoleByName(DEATHROLENAME)).queue();
 	}
 
-	private void sendBanNotifications(User user, String reason) {
+	private void sendBanNotifications(Member member, String reason) {
 		TextChannel adminChannel = JDAHelper.getTextChannelByName(JSonReader.getPreferencesValue("adminchannel"));
 
 		if (adminChannel != null) {
-			adminChannel.sendMessageAsync(user.getUsername() + " has been banned for " + reason, null);
+			adminChannel.sendMessage(member.getUser().getName() + " has been temporarily banned for " + reason).queue();
 		}
 
-		user.getPrivateChannel().sendMessageAsync(
-				"You have been temporarily banned/silenced from " + JDAHelper.getGuild().getName() + " for " + reason,
-				null);
+		member.getUser().getPrivateChannel().sendMessage(
+				"You have been temporarily banned/silenced from " + JDAHelper.getGuild().getName() + " for " + reason)
+				.queue();
+		;
 	}
 
 	@Override

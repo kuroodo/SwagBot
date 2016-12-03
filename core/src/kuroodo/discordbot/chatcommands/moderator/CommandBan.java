@@ -4,9 +4,9 @@ import kuroodo.discordbot.Init;
 import kuroodo.discordbot.entities.ChatCommand;
 import kuroodo.discordbot.helpers.JDAHelper;
 import kuroodo.discordbot.helpers.JSonReader;
-import net.dv8tion.jda.entities.TextChannel;
-import net.dv8tion.jda.entities.User;
-import net.dv8tion.jda.events.message.guild.GuildMessageReceivedEvent;
+import net.dv8tion.jda.core.entities.Member;
+import net.dv8tion.jda.core.entities.TextChannel;
+import net.dv8tion.jda.core.events.message.guild.GuildMessageReceivedEvent;
 
 public class CommandBan extends ChatCommand {
 	// TODO: Able to specify ban days in parameters
@@ -25,68 +25,81 @@ public class CommandBan extends ChatCommand {
 			return;
 		}
 
-		User userToBan = JDAHelper.getUserByID(JDAHelper.splitString(commandParameters)[0]);
-
-		if (userToBan == null) {
-			userToBan = JDAHelper.getUserByUsername(JDAHelper.splitString(commandParameters)[0]);
-			if (userToBan == null) {
-				userToBan = event.getMessage().getMentionedUsers().get(0);
-			}
-		}
+		Member memberToBan = findMember();
 
 		String banReason = JDAHelper.splitString(commandParameters)[1];
 
-		if (userToBan != null) {
+		if (memberToBan != null) {
 			TextChannel adminChannel = JDAHelper.getTextChannelByName(JSonReader.getPreferencesValue("adminchannel"));
 
 			// Check if trying to ban bot
-			if (userToBan == Init.getJDA().getSelfInfo()) {
+			if (memberToBan == Init.getJDA().getSelfUser()) {
 
 				Init.getServerOwner().getPrivateChannel()
-						.sendMessageAsync(event.getAuthor().getUsername() + " Just tried to ban me!", null);
-				event.getChannel()
-						.sendMessageAsync(event.getAuthor().getAsMention() + " You dare to conspire against me?", null);
+						.sendMessage(event.getAuthor().getName() + " Just tried to ban me!").queue();
+				event.getChannel().sendMessage(event.getAuthor().getAsMention() + " You dare to conspire against me?")
+						.queue();
 
 				// Check if trying to ban server owner
-			} else if (userToBan == Init.getServerOwner()) {
+			} else if (memberToBan == Init.getServerOwner()) {
 
 				Init.getServerOwner().getPrivateChannel()
-						.sendMessageAsync(event.getAuthor().getUsername() + " Just tried to ban you!", null);
-				event.getChannel().sendMessageAsync(
-						event.getAuthor().getAsMention() + " You dare to conspire against the server?", null);
+						.sendMessage(event.getAuthor().getName() + " Just tried to ban you!").queue();
+				event.getChannel()
+						.sendMessage(event.getAuthor().getAsMention() + " You dare to conspire against the server?")
+						.queue();
 
-			} else if (JDAHelper.isUserAdmin(event.getAuthor())) {
+			} else if (JDAHelper.isMemberAdmin(JDAHelper.getGuild().getMember(event.getAuthor()))) {
 
 				if (adminChannel != null) {
-					adminChannel.sendMessageAsync(userToBan.getUsername() + " has been banned for " + banReason, null);
+					adminChannel.sendMessage(memberToBan.getUser().getName() + " has been banned for " + banReason)
+							.queue();
 				}
 
-				userToBan.getPrivateChannel().sendMessageAsync(
-						"You have been banned from " + JDAHelper.getGuild().getName() + " for " + banReason, null);
-				JDAHelper.getGuild().getManager().ban(userToBan, BAN_DAYS);
+				memberToBan.getUser().getPrivateChannel()
+						.sendMessage(
+								"You have been banned from " + JDAHelper.getGuild().getName() + " for " + banReason)
+						.queue();
 
-			} else if (JDAHelper.isUserModerator(event.getAuthor())) {
+				JDAHelper.getGuild().getController().ban(memberToBan, BAN_DAYS).queue();
+
+			} else if (JDAHelper.isMemberModerator(JDAHelper.getGuild().getMember(event.getAuthor()))) {
 
 				// Check if moderator is trying to ban an admin
-				if (JDAHelper.isUserAdmin(userToBan)) {
+				if (JDAHelper.isMemberAdmin(memberToBan)) {
 					Init.getServerOwner().getPrivateChannel()
-							.sendMessageAsync(event.getAuthor().getUsername() + " Just tried to ban an admin", null);
-					event.getChannel().sendMessageAsync(
-							event.getAuthor().getAsMention() + " Moderators cannot ban admins!", null);
+							.sendMessage(event.getAuthor().getName() + " Just tried to ban an admin").queue();
+
+					event.getChannel().sendMessage(event.getAuthor().getAsMention() + " Moderators cannot ban admins!")
+							.queue();
 				} else {
 
 					if (adminChannel != null) {
-						adminChannel.sendMessageAsync(userToBan.getUsername() + " has been banned for " + banReason,
-								null);
+						adminChannel.sendMessage(memberToBan.getUser().getName() + " has been banned for " + banReason)
+								.queue();
 					}
 
-					userToBan.getPrivateChannel().sendMessageAsync(
-							"You have been banned from " + JDAHelper.getGuild().getName() + " for " + banReason, null);
-					JDAHelper.getGuild().getManager().ban(userToBan, BAN_DAYS);
+					memberToBan.getUser().getPrivateChannel()
+							.sendMessage(
+									"You have been banned from " + JDAHelper.getGuild().getName() + " for " + banReason)
+							.queue();
+					JDAHelper.getGuild().getController().ban(memberToBan, BAN_DAYS).queue();
 				}
 			}
 		}
 		event.getMessage().deleteMessage();
+	}
+
+	private Member findMember() {
+		Member member = JDAHelper.getMemberByID(JDAHelper.splitString(commandParameters)[0]);
+
+		if (member == null) {
+			member = JDAHelper.getMemberByUsername(JDAHelper.splitString(commandParameters)[0]);
+			if (member == null) {
+				member = JDAHelper.getGuild().getMember(event.getMessage().getMentionedUsers().get(0));
+			}
+		}
+		return member;
 	}
 
 	@Override
