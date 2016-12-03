@@ -30,7 +30,7 @@ public class CommandTempBan extends ChatCommand {
 
 		if (memberToTempBan != null) {
 			// Check if trying to ban bot
-			if (memberToTempBan == Init.getJDA().getSelfUser()) {
+			if (memberToTempBan.getUser() == Init.getJDA().getSelfUser()) {
 
 				Init.getServerOwner().getPrivateChannel()
 						.sendMessage(event.getAuthor().getName() + " Just tried to temp ban me!").queue();
@@ -38,8 +38,7 @@ public class CommandTempBan extends ChatCommand {
 						.queue();
 
 				// Check if trying to ban server owner
-			} else if (memberToTempBan == Init.getServerOwner()) {
-
+			} else if (memberToTempBan.getUser() == Init.getServerOwner()) {
 				Init.getServerOwner().getPrivateChannel()
 						.sendMessage(event.getAuthor().getName() + " Just tried to temp ban you!").queue();
 				event.getChannel()

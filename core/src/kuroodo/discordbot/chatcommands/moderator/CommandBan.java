@@ -33,7 +33,7 @@ public class CommandBan extends ChatCommand {
 			TextChannel adminChannel = JDAHelper.getTextChannelByName(JSonReader.getPreferencesValue("adminchannel"));
 
 			// Check if trying to ban bot
-			if (memberToBan == Init.getJDA().getSelfUser()) {
+			if (memberToBan.getUser() == Init.getJDA().getSelfUser()) {
 
 				Init.getServerOwner().getPrivateChannel()
 						.sendMessage(event.getAuthor().getName() + " Just tried to ban me!").queue();
@@ -41,7 +41,7 @@ public class CommandBan extends ChatCommand {
 						.queue();
 
 				// Check if trying to ban server owner
-			} else if (memberToBan == Init.getServerOwner()) {
+			} else if (memberToBan.getUser() == Init.getServerOwner()) {
 
 				Init.getServerOwner().getPrivateChannel()
 						.sendMessage(event.getAuthor().getName() + " Just tried to ban you!").queue();

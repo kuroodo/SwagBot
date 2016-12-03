@@ -31,7 +31,7 @@ public class CommandKick extends ChatCommand {
 			TextChannel adminChannel = JDAHelper.getTextChannelByName(JSonReader.getPreferencesValue("adminchannel"));
 
 			// Check if trying to kick bot
-			if (member == Init.getJDA().getSelfUser()) {
+			if (member.getUser() == Init.getJDA().getSelfUser()) {
 
 				Init.getServerOwner().getPrivateChannel()
 						.sendMessage(event.getAuthor().getName() + " Just tried to kick me!").queue();
@@ -39,7 +39,7 @@ public class CommandKick extends ChatCommand {
 						.queue();
 
 				// Check if trying to kick server owner
-			} else if (member == Init.getServerOwner()) {
+			} else if (member.getUser() == Init.getServerOwner()) {
 
 				Init.getServerOwner().getPrivateChannel()
 						.sendMessage(event.getAuthor().getName() + " Just tried to kick you!").queue();
