@@ -104,7 +104,7 @@ public class JDAHelper {
 		System.out.println("ERROR Could Not Get User By Username");
 		return null;
 	}
-	
+
 	public static Member getMemberByUsername(String username) {
 		for (Member member : getGuild().getMembers()) {
 			if (member.getUser().getName().equals(username)) {
@@ -117,9 +117,15 @@ public class JDAHelper {
 	}
 
 	public static User getUserByID(String ID) {
-		return getGuild().getMemberById(ID).getUser();
+		Member memberToGet = getGuild().getMemberById(ID);
+		if (memberToGet != null) {
+			return getGuild().getMemberById(ID).getUser();
+		} else {
+			System.out.println("ERROR could not get user by ID!");
+			return null;
+		}
 	}
-	
+
 	public static Member getMemberByID(String ID) {
 		return getGuild().getMemberById(ID);
 	}
