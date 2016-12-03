@@ -99,7 +99,7 @@ public class ServerListener extends JDAListener {
 		String message = "User " + event.getMember().getUser().getName() + " was just given the following roles: ";
 
 		for (Role role : event.getRoles()) {
-			message = message + role.getName();
+			message = message + role.getName() + " ";
 
 			if (role.getName().equals("Admin") || role.getName().equals("Moderator")) {
 

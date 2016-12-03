@@ -160,7 +160,7 @@ public class JDAHelper {
 			System.out.println("ERROR: COULD NOT GIVE USER A ROLE");
 			return;
 		}
-		getGuild().getController().addRolesToMember(member, role);
+		getGuild().getController().addRolesToMember(member, role).queue();
 		// GuildController guilControllerr = getGuild().getController();
 		// guildManager.addRoleToUser(user, role).update();
 	}
@@ -227,9 +227,7 @@ public class JDAHelper {
 	}
 
 	public static GuildController removeUsersRoles(Member member, GuildController controller) {
-		ArrayList<Role> membersRoles = new ArrayList<Role>(member.getRoles());
-
-		controller.removeRolesFromMember(member, membersRoles).queue();
+		controller.removeRolesFromMember(member, member.getRoles()).queue();
 		return controller;
 	}
 
