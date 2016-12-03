@@ -3,8 +3,8 @@ package kuroodo.discordbot.chatcommands.admin;
 import kuroodo.discordbot.entities.ChatCommand;
 import kuroodo.discordbot.helpers.JDAHelper;
 import kuroodo.discordbot.helpers.JSonReader;
-import net.dv8tion.jda.entities.TextChannel;
-import net.dv8tion.jda.events.message.guild.GuildMessageReceivedEvent;
+import net.dv8tion.jda.core.entities.TextChannel;
+import net.dv8tion.jda.core.events.message.guild.GuildMessageReceivedEvent;
 
 public class CommandDeleteRole extends ChatCommand {
 
@@ -27,15 +27,15 @@ public class CommandDeleteRole extends ChatCommand {
 				|| commandParameters.equals("Moderator")) {
 
 			if (adminChannel != null) {
-				adminChannel.sendMessageAsync(event.getAuthor().getAsMention() + " A role with the name "
-						+ commandParameters + " doesn't exist or is locked", null);
+				adminChannel.sendMessage(event.getAuthor().getAsMention() + " A role with the name " + commandParameters
+						+ " doesn't exist or is locked").queue();
 			}
 		} else {
-			JDAHelper.getRoleByName(commandParameters).getManager().delete();
+			JDAHelper.getRoleByName(commandParameters).delete().queue();
 
 			if (adminChannel != null) {
-				adminChannel.sendMessageAsync(
-						event.getAuthor().getAsMention() + " deleted role called " + commandParameters, null);
+				adminChannel.sendMessage(event.getAuthor().getAsMention() + " deleted role called " + commandParameters)
+						.queue();
 			}
 		}
 	}

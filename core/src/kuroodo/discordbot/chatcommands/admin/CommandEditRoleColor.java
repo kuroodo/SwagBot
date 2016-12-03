@@ -5,8 +5,8 @@ import java.awt.Color;
 import kuroodo.discordbot.entities.ChatCommand;
 import kuroodo.discordbot.helpers.JDAHelper;
 import kuroodo.discordbot.helpers.JSonReader;
-import net.dv8tion.jda.entities.TextChannel;
-import net.dv8tion.jda.events.message.guild.GuildMessageReceivedEvent;
+import net.dv8tion.jda.core.entities.TextChannel;
+import net.dv8tion.jda.core.events.message.guild.GuildMessageReceivedEvent;
 
 public class CommandEditRoleColor extends ChatCommand {
 
@@ -29,16 +29,20 @@ public class CommandEditRoleColor extends ChatCommand {
 
 		if (JDAHelper.getRoleByName(roleName) == null || roleName.equals("Admin") || roleName.equals("Moderator")) {
 			if (adminChannel != null) {
-				adminChannel.sendMessageAsync(event.getAuthor().getAsMention() + " The role named " + roleName
-						+ "doesn't exist, or you tried editting a locked role", null);
+				adminChannel.sendMessage(event.getAuthor().getAsMention() + " The role named " + roleName
+						+ "doesn't exist, or you tried editting a locked role").queue();
+				;
 			}
 		} else {
 			try {
-				JDAHelper.getRoleByName(roleName).getManager().setColor(Color.decode(roleColor)).update();
+				JDAHelper.getRoleByName(roleName).getManager().setColor(Color.decode(roleColor)).queue();
 			} catch (NumberFormatException e) {
 				if (adminChannel != null) {
-					adminChannel.sendMessageAsync(event.getAuthor().getAsMention()
-							+ " Make sure you set the color to be a hex number. Example: !editrolecolor roleName #003CFF", null);
+					adminChannel
+							.sendMessage(event.getAuthor().getAsMention()
+									+ " Make sure you set the color to be a hex number. Example: !editrolecolor roleName #003CFF")
+							.queue();
+					;
 				}
 			}
 		}
