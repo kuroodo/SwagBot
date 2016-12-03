@@ -8,7 +8,6 @@ import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.GL20;
 
-import kuroodo.discordbot.client.handlers.GlobalGameManager;
 import kuroodo.discordbot.entities.JDAListener;
 import kuroodo.discordbot.helpers.ChatLogger;
 import kuroodo.discordbot.helpers.JDAHelper;
@@ -62,7 +61,7 @@ public class Init extends ApplicationAdapter {
 				jda.getPresence().setGame(Game.of("Undergoing Testing"));
 			}
 
-			 setupListeners();
+			setupListeners();
 			System.out.println("All Done!");
 		} catch (InterruptedException | LoginException | RateLimitedException e) {
 			System.out.println("ERROR: " + e.getMessage());
@@ -75,11 +74,11 @@ public class Init extends ApplicationAdapter {
 		Gdx.gl.glClearColor(240, 240, 240, 1);
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
-		// if (jda != null) {
-		// for (JDAListener listener : listeners) {
-		// listener.update(Gdx.graphics.getDeltaTime());
-		// }
-		// }
+		if (jda != null) {
+			for (JDAListener listener : listeners) {
+				listener.update(Gdx.graphics.getDeltaTime());
+			}
+		}
 	}
 
 	private static void storeServerOwner() {
@@ -88,8 +87,8 @@ public class Init extends ApplicationAdapter {
 	}
 
 	private static void setupListeners() {
-		//listeners.add(new ChatCommandListener());
-		//listeners.add(new BotCommandListener());
+		listeners.add(new ChatCommandListener());
+		listeners.add(new BotCommandListener());
 		listeners.add(new ChatListener());
 		listeners.add(new ServerListener());
 		listeners.add(new ChannelListener());
@@ -118,22 +117,22 @@ public class Init extends ApplicationAdapter {
 	@Override
 	public void dispose() {
 
-//		System.out.println("Ending all gamesessions");
-//		GlobalGameManager.endAllGameListenerSession();
-//
-//		if (jda != null) {
-//			System.out.println("Shutting Down JDA");
-//			jda.getPresence().setIdle(true);
-//			jda.getPresence().setGame(Game.of("Shutting Down..."));
-//			System.out.println("Disposing and clearing all listeners");
-//			for (JDAListener listener : listeners) {
-//				listener.dispose();
-//			}
-//			listeners.clear();
-//			jda.shutdown(true);
-//		}
-//
-//		ChatLogger.closeLog();
-//		super.dispose();
+		// System.out.println("Ending all gamesessions");
+		// GlobalGameManager.endAllGameListenerSession();
+
+		if (jda != null) {
+			System.out.println("Shutting Down JDA");
+			jda.getPresence().setIdle(true);
+			jda.getPresence().setGame(Game.of("Shutting Down..."));
+			System.out.println("Disposing and clearing all listeners");
+			for (JDAListener listener : listeners) {
+				listener.dispose();
+			}
+			listeners.clear();
+			jda.shutdown(true);
+		}
+
+		ChatLogger.closeLog();
+		super.dispose();
 	}
 }

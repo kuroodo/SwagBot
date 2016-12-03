@@ -104,9 +104,24 @@ public class JDAHelper {
 		System.out.println("ERROR Could Not Get User By Username");
 		return null;
 	}
+	
+	public static Member getMemberByUsername(String username) {
+		for (Member member : getGuild().getMembers()) {
+			if (member.getUser().getName().equals(username)) {
+				return member;
+			}
+		}
+
+		System.out.println("ERROR Could Not Get MEMBER By Username");
+		return null;
+	}
 
 	public static User getUserByID(String ID) {
 		return getGuild().getMemberById(ID).getUser();
+	}
+	
+	public static Member getMemberByID(String ID) {
+		return getGuild().getMemberById(ID);
 	}
 
 	public static String getUsernameById(String ID) {
@@ -154,17 +169,16 @@ public class JDAHelper {
 		return null;
 	}
 
-	public static Boolean isUserAdmin(Member member) {
+	public static Boolean isMemberAdmin(Member member) {
 		for (Role role : member.getRoles()) {
 			if (role.getName().equals("Admin")) {
 				return true;
 			}
 		}
-
 		return false;
 	}
 
-	public static Boolean isUserModerator(Member member) {
+	public static Boolean isMemberModerator(Member member) {
 		for (Role role : member.getRoles()) {
 			if (role.getName().equals("Moderator")) {
 				return true;
@@ -209,7 +223,7 @@ public class JDAHelper {
 	public static GuildController removeUsersRoles(Member member, GuildController controller) {
 		ArrayList<Role> membersRoles = new ArrayList<Role>(member.getRoles());
 
-		controller.removeRolesFromMember(member, membersRoles);
+		controller.removeRolesFromMember(member, membersRoles).queue();
 		return controller;
 	}
 

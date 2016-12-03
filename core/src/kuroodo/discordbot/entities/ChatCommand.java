@@ -44,6 +44,7 @@ public abstract class ChatCommand implements Command {
 	public abstract String info();
 
 	protected void sendMessage(String message) {
+		System.out.println("sending msg");
 		event.getChannel().sendMessage(message).queue();
 	}
 
@@ -94,12 +95,12 @@ public abstract class ChatCommand implements Command {
 	}
 
 	public boolean checkUserHasAccessToCommand() {
-		if (isAdminCommand && !JDAHelper.isUserAdmin(event.getMember()) && event.getAuthor() != Init.getServerOwner()) {
+		if (isAdminCommand && !JDAHelper.isMemberAdmin(event.getMember()) && event.getAuthor() != Init.getServerOwner()) {
 			isUserAuthorized = false;
 			shouldUpdate = false;
 			sendPrivateMessage(event.getAuthor().getAsMention() + " You do not have access to that command!");
 		} else if (isModCommand
-				&& (!JDAHelper.isUserModerator(event.getMember()) && !JDAHelper.isUserAdmin(event.getMember()))
+				&& (!JDAHelper.isMemberModerator(event.getMember()) && !JDAHelper.isMemberAdmin(event.getMember()))
 				&& event.getAuthor() != Init.getServerOwner()) {
 			isUserAuthorized = false;
 			shouldUpdate = false;
@@ -110,11 +111,11 @@ public abstract class ChatCommand implements Command {
 	}
 
 	public boolean checkUserHasAccessToCommand(GuildMessageReceivedEvent event) {
-		if (isAdminCommand && !JDAHelper.isUserAdmin(event.getMember()) && event.getAuthor() != Init.getServerOwner()) {
+		if (isAdminCommand && !JDAHelper.isMemberAdmin(event.getMember()) && event.getAuthor() != Init.getServerOwner()) {
 			isUserAuthorized = false;
 			shouldUpdate = false;
 		} else if (isModCommand
-				&& (!JDAHelper.isUserModerator(event.getMember()) && !JDAHelper.isUserAdmin(event.getMember()))
+				&& (!JDAHelper.isMemberModerator(event.getMember()) && !JDAHelper.isMemberAdmin(event.getMember()))
 				&& event.getAuthor() != Init.getServerOwner()) {
 			isUserAuthorized = false;
 			shouldUpdate = false;
