@@ -3,7 +3,7 @@ package kuroodo.discordbot.chatcommands;
 import java.util.Random;
 
 import kuroodo.discordbot.entities.ChatCommand;
-import net.dv8tion.jda.events.message.guild.GuildMessageReceivedEvent;
+import net.dv8tion.jda.core.events.message.guild.GuildMessageReceivedEvent;
 
 public class CommandFlipCoin extends ChatCommand {
 	private Random rand;
@@ -22,10 +22,10 @@ public class CommandFlipCoin extends ChatCommand {
 
 		if (x == 0) {
 			sendMessage(
-					"```css\n" + event.getAuthor().getAsMention() + " flips a coin and it lands on " + "tails\n ```");
+					event.getAuthor().getAsMention() + " ```css\n" + " flips a coin and it lands on " + "tails\n```");
 		} else {
 			sendMessage(
-					"```css\n" + event.getAuthor().getAsMention() + " flips a coin and it lands on " + "heads\n```");
+					event.getAuthor().getAsMention() + " ```css\n" + " flips a coin and it lands on " + "heads\n```");
 		}
 
 		event.getMessage().deleteMessage();

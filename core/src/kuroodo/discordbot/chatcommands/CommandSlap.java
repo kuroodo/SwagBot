@@ -2,8 +2,8 @@ package kuroodo.discordbot.chatcommands;
 
 import kuroodo.discordbot.entities.ChatCommand;
 import kuroodo.discordbot.helpers.JDAHelper;
-import net.dv8tion.jda.entities.User;
-import net.dv8tion.jda.events.message.guild.GuildMessageReceivedEvent;
+import net.dv8tion.jda.core.entities.User;
+import net.dv8tion.jda.core.events.message.guild.GuildMessageReceivedEvent;
 
 public class CommandSlap extends ChatCommand {
 
@@ -16,7 +16,7 @@ public class CommandSlap extends ChatCommand {
 			user = JDAHelper.getUserByUsername(commandParams);
 			if (user == null) {
 				if (!event.getMessage().getMentionedUsers().isEmpty()) {
-				user = event.getMessage().getMentionedUsers().get(0);
+					user = event.getMessage().getMentionedUsers().get(0);
 				}
 			}
 		}

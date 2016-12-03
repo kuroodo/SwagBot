@@ -12,8 +12,8 @@ import kuroodo.discordbot.enums.ECommands.AdminCommands;
 import kuroodo.discordbot.enums.ECommands.ModeratorCommands;
 import kuroodo.discordbot.helpers.JDAHelper;
 import kuroodo.discordbot.helpers.JSonReader;
-import net.dv8tion.jda.JDAInfo;
-import net.dv8tion.jda.events.message.guild.GuildMessageReceivedEvent;
+import net.dv8tion.jda.core.JDAInfo;
+import net.dv8tion.jda.core.events.message.guild.GuildMessageReceivedEvent;
 
 public class CommandHelp extends ChatCommand {
 
@@ -26,9 +26,9 @@ public class CommandHelp extends ChatCommand {
 		if (message.startsWith("!help")) {
 			if (commandParameters.isEmpty()) {
 				printUserCommands();
-				if (JDAHelper.isUserAdmin(event.getAuthor())) {
+				if (JDAHelper.isMemberAdmin(event.getMember())) {
 					printAdminCommands();
-				} else if (JDAHelper.isUserModerator(event.getAuthor())) {
+				} else if (JDAHelper.isMemberModerator(event.getMember())) {
 					printModeratorCommands();
 				}
 			} else {

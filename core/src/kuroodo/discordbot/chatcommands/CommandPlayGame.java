@@ -6,19 +6,18 @@ import kuroodo.discordbot.entities.ChatCommand;
 import kuroodo.discordbot.enums.EGameList;
 import kuroodo.discordbot.helpers.JDAHelper;
 import kuroodo.discordbot.listeners.GameListener;
-import net.dv8tion.jda.entities.User;
-import net.dv8tion.jda.events.message.guild.GuildMessageReceivedEvent;
+import net.dv8tion.jda.core.entities.User;
+import net.dv8tion.jda.core.events.message.guild.GuildMessageReceivedEvent;
 
 public class CommandPlayGame extends ChatCommand {
 
 	// TODO: Allow user to specify more than 1 players
-	
+
 	@Override
 	public void executeCommand(String commandParameters, GuildMessageReceivedEvent event) {
 		super.executeCommand(commandParameters, event);
 
 		if (GlobalGameManager.isUserInGameSession(event.getAuthor())) {
-			// TODO: Add game session channel name to message
 			sendPrivateMessage("You are already in a game session!");
 			return;
 		}
