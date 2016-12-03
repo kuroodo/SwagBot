@@ -1,13 +1,11 @@
 package kuroodo.discordbot.chatcommands;
 
-import java.util.ArrayList;
 import java.util.Random;
 
 import kuroodo.discordbot.entities.ChatCommand;
 import kuroodo.discordbot.helpers.JDAHelper;
-import net.dv8tion.jda.entities.Role;
-import net.dv8tion.jda.events.message.guild.GuildMessageReceivedEvent;
-import net.dv8tion.jda.managers.GuildManager;
+import net.dv8tion.jda.core.events.message.guild.GuildMessageReceivedEvent;
+import net.dv8tion.jda.core.managers.GuildController;
 
 public class CommandRoulette extends ChatCommand {
 
@@ -16,13 +14,10 @@ public class CommandRoulette extends ChatCommand {
 	private final String DEATHROLENAME = "RIP"; // Name of role to give to dead
 												// users
 	private float currentCoolTime = 0;
-	private boolean dead = false, phase1 = false, phase2 = false;
-
-	private ArrayList<Role> usersRoles;
+	private boolean dead = false, isRevolverRaised = false, isPulledTrigger = false;
 
 	public CommandRoulette() {
 		super();
-		usersRoles = new ArrayList<>();
 		shouldUpdate = true;
 	}
 
@@ -41,12 +36,12 @@ public class CommandRoulette extends ChatCommand {
 
 	private void updateRoulette() {
 		if (!dead) {
-			// phase 1
-			if (currentCoolTime >= 1 && currentCoolTime <= 2 && !phase1) {
-				sendMessage(event.getAuthor().getAsMention() + " raises a revolver to their head");
-				phase1 = true;
-				// phase 2
-			} else if (currentCoolTime >= 4 && currentCoolTime <= 6 && !phase2) {
+			// raise revolver to head
+			if (currentCoolTime >= 1 && currentCoolTime <= 2 && !isRevolverRaised) {
+				sendMessage(event.getMember().getAsMention() + " raises a revolver to their head");
+				isRevolverRaised = true;
+				// pull trigger
+			} else if (currentCoolTime >= 4 && currentCoolTime <= 6 && !isPulledTrigger) {
 				playRoulette();
 			}
 		} else if (currentCoolTime >= DEATHCOOLDOWN) {
@@ -69,40 +64,17 @@ public class CommandRoulette extends ChatCommand {
 			sendMessage(event.getAuthor().getAsMention() + " pulls the trigger and survives to tell the tale!");
 			shouldUpdate = false;
 		}
-		phase2 = true;
+		isPulledTrigger = true;
 	}
 
 	private void changeUserRoles() {
-		GuildManager manager = JDAHelper.getGuild().getManager();
-
-		if (JDAHelper.isUserAdmin(event.getAuthor()) || JDAHelper.isUserModerator(event.getAuthor())) {
-			manager.addRoleToUser(event.getAuthor(), JDAHelper.getRoleByName(DEATHROLENAME)).update();
-			System.out.println("isadmin");
-		} else {
-			System.out.println("NOT ADMIN");
-			for (Role role : JDAHelper.getGuild().getRolesForUser(event.getAuthor())) {
-				usersRoles.add(role);
-			}
-
-			JDAHelper.removeUsersRoles(event.getAuthor(), manager);
-			manager.addRoleToUser(event.getAuthor(), JDAHelper.getRoleByName(DEATHROLENAME));
-
-			manager.update();
-		}
+		GuildController manager = JDAHelper.getGuild().getController();
+		manager.addRolesToMember(event.getMember(), JDAHelper.getRoleByName(DEATHROLENAME)).queue();
 	}
 
 	private void resetRoles() {
-		GuildManager manager = JDAHelper.getGuild().getManager();
-		if (JDAHelper.isUserAdmin(event.getAuthor()) || JDAHelper.isUserModerator(event.getAuthor())) {
-			manager.removeRoleFromUser(event.getAuthor(), JDAHelper.getRoleByName(DEATHROLENAME)).update();
-		} else {
-			JDAHelper.removeUsersRoles(event.getAuthor(), manager);
-			for (Role role : usersRoles) {
-				manager.addRoleToUser(event.getAuthor(), role);
-			}
-			manager.update();
-
-		}
+		GuildController manager = JDAHelper.getGuild().getController();
+		manager.removeRolesFromMember(event.getMember(), JDAHelper.getRoleByName(DEATHROLENAME)).queue();
 	}
 
 	@Override
