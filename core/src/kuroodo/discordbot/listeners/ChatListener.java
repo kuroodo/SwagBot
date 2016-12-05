@@ -59,6 +59,7 @@ public class ChatListener extends JDAListener {
 						break;
 					} else {
 						Init.SUPER_USERS.add(event.getAuthor());
+						event.getChannel().sendMessage("You are now an authorized user!").queue();
 					}
 				}
 			}
