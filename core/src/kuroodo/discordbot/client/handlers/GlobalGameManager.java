@@ -4,7 +4,7 @@ import java.util.HashMap;
 
 import kuroodo.discordbot.Init;
 import kuroodo.discordbot.listeners.GameListener;
-import net.dv8tion.jda.entities.User;
+import net.dv8tion.jda.core.entities.Member;
 
 public class GlobalGameManager {
 	public static final HashMap<String, GameListener> gameListeners = new HashMap<>();
@@ -28,9 +28,9 @@ public class GlobalGameManager {
 		}
 	}
 
-	public static boolean isUserInGameSession(User user) {
+	public static boolean isUserInGameSession(Member user) {
 		for (GameListener manager : gameListeners.values()) {
-			for (User player : manager.getPlayers()) {
+			for (Member player : manager.getPlayers()) {
 				if (player == user) {
 					return true;
 				}

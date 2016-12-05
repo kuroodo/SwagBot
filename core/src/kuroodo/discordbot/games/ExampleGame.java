@@ -3,21 +3,21 @@ package kuroodo.discordbot.games;
 import java.util.ArrayList;
 
 import kuroodo.discordbot.entities.GameSession;
-import net.dv8tion.jda.entities.Message;
-import net.dv8tion.jda.entities.TextChannel;
-import net.dv8tion.jda.entities.User;
+import net.dv8tion.jda.core.entities.Member;
+import net.dv8tion.jda.core.entities.Message;
+import net.dv8tion.jda.core.entities.TextChannel;
 
 public class ExampleGame extends GameSession {
 
-	private User player1, player2;
+	private Member player1, player2;
 	private String magicword = "java";
 
-	public ExampleGame(ArrayList<User> players, boolean hasMultiPLayer, TextChannel gameChannel) {
+	public ExampleGame(ArrayList<Member> players, boolean hasMultiPLayer, TextChannel gameChannel) {
 		super(players, hasMultiPLayer, gameChannel);
 		player1 = currentPlayer;
 
 		if (isMultiplayer) {
-			for (User player : players) {
+			for (Member player : players) {
 				if (player != player1) {
 					player2 = player;
 				}
@@ -26,7 +26,7 @@ public class ExampleGame extends GameSession {
 	}
 
 	@Override
-	public void recievePlayerInput(User player, String input, Message inputMessage) {
+	public void recievePlayerInput(Member player, String input, Message inputMessage) {
 		super.recievePlayerInput(player, input, inputMessage);
 		if (isInputValid) {
 			sendMessage("You said " + input);
@@ -46,8 +46,8 @@ public class ExampleGame extends GameSession {
 	}
 
 	private void rotatePlayers() {
-		final User p1 = player1;
-		final User p2 = player2;
+		final Member p1 = player1;
+		final Member p2 = player2;
 
 		player1 = p2;
 		player2 = p1;

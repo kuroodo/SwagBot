@@ -1,20 +1,20 @@
 package kuroodo.discordbot.entities;
 
-import net.dv8tion.jda.entities.Message;
-import net.dv8tion.jda.entities.User;
+import net.dv8tion.jda.core.entities.Member;
+import net.dv8tion.jda.core.entities.Message;
 
 public interface Game {
 
 	public void update(float delta);
 
-	public void recievePlayerInput(User player, String input, Message inputMessage);
+	public void recievePlayerInput(Member player, String input, Message inputMessage);
 
 	public boolean isMultiplayer();
 
 	public boolean isgameFinished();
 
 	// Return player in current turn/action and has input focus
-	public User getCurrentPlayer();
+	public Member getCurrentPlayer();
 
 	// Called when the GameListener is ending the game
 	public void endGame();

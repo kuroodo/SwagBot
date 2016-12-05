@@ -96,21 +96,23 @@ public class ServerListener extends JDAListener {
 
 	@Override
 	public void onGuildMemberRoleAdd(GuildMemberRoleAddEvent event) {
-		String message = "User " + event.getMember().getUser().getName() + " was just given the following roles: ";
+		if (!(event.getRoles().size() == 1 && event.getRoles().get(0).getName().startsWith("session"))) {
+			String message = "User " + event.getMember().getUser().getName() + " was just given the following roles: ";
 
-		for (Role role : event.getRoles()) {
-			message = message + role.getName() + " ";
+			for (Role role : event.getRoles()) {
+				message = message + role.getName() + " ";
 
-			if (role.getName().equals("Admin") || role.getName().equals("Moderator")) {
+				if (role.getName().equals("Admin") || role.getName().equals("Moderator")) {
 
-				String secondMsg = "Welcome to the staff team for " + event.getGuild().getName()
-						+ ". Please type !commands or !help in the server chat to review the available staff commands";
+					String secondMsg = "Welcome to the staff team for " + event.getGuild().getName()
+							+ ". Please type !commands or !help in the server chat to review the available staff commands";
 
-				event.getMember().getUser().getPrivateChannel().sendMessage(secondMsg).queue();
+					event.getMember().getUser().getPrivateChannel().sendMessage(secondMsg).queue();
+				}
 			}
+			System.out.println(message);
+			Init.getServerOwner().getPrivateChannel().sendMessage(message).queue();
 		}
-		System.out.println(message);
-		Init.getServerOwner().getPrivateChannel().sendMessage(message).queue();
 	}
 
 	@Override
@@ -122,37 +124,42 @@ public class ServerListener extends JDAListener {
 
 		System.out.println(message);
 		Init.getServerOwner().getPrivateChannel().sendMessage(message).queue();
-		;
 	}
 
 	@Override
 	public void onRoleCreate(RoleCreateEvent event) {
-		final String message = "New role " + event.getRole().getName() + " has been created";
-		System.out.println(message);
-		Init.getServerOwner().getPrivateChannel().sendMessage(message).queue();
-		;
+		if (!event.getRole().getName().startsWith("session")) {
+			final String message = "New role " + event.getRole().getName() + " has been created";
+			System.out.println(message);
+			Init.getServerOwner().getPrivateChannel().sendMessage(message).queue();
+		}
 	}
 
 	@Override
 	public void onRoleDelete(RoleDeleteEvent event) {
-		final String message = "The following role was deleted  " + event.getGuild().getName();
-		System.out.println(message);
-		Init.getServerOwner().getPrivateChannel().sendMessage(message).queue();
-		;
+		if (!event.getRole().getName().startsWith("session")) {
+			final String message = "The following role was deleted  " + event.getGuild().getName();
+			System.out.println(message);
+			Init.getServerOwner().getPrivateChannel().sendMessage(message).queue();
+		}
 	}
 
 	@Override
 	public void onRoleUpdatePermissions(RoleUpdatePermissionsEvent event) {
-		final String message = "The following role's permissions were changed  " + event.getRole().getName();
-		System.out.println(message);
-		Init.getServerOwner().getPrivateChannel().sendMessage(message).queue();
+		if (!event.getRole().getName().startsWith("session")) {
+			final String message = "The following role's permissions were changed  " + event.getRole().getName();
+			System.out.println(message);
+			Init.getServerOwner().getPrivateChannel().sendMessage(message).queue();
+		}
 	}
 
 	@Override
 	public void onRoleUpdateName(RoleUpdateNameEvent event) {
-		final String message = "The following role has a new name" + event.getRole().getName();
-		System.out.println(message);
-		Init.getServerOwner().getPrivateChannel().sendMessage(message).queue();
+		if (!event.getRole().getName().startsWith("session")) {
+			final String message = "The following role has a new name " + event.getRole().getName();
+			System.out.println(message);
+			Init.getServerOwner().getPrivateChannel().sendMessage(message).queue();
+		}
 	}
 
 	// TODO: Handle more role events

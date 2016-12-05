@@ -6,15 +6,16 @@ import java.util.Random;
 
 import kuroodo.discordbot.Init;
 import kuroodo.discordbot.entities.GameSession;
-import net.dv8tion.jda.entities.Message;
-import net.dv8tion.jda.entities.TextChannel;
-import net.dv8tion.jda.entities.User;
+import kuroodo.discordbot.helpers.JDAHelper;
+import net.dv8tion.jda.core.entities.Member;
+import net.dv8tion.jda.core.entities.Message;
+import net.dv8tion.jda.core.entities.TextChannel;
 
 public class GameTicTacToe extends GameSession {
 
 	final int boardSize = 9;
 
-	private User player1, player2;
+	private Member player1, player2;
 	private String p1Name, p2Name;
 	private char currentSymbol;
 
@@ -25,23 +26,23 @@ public class GameTicTacToe extends GameSession {
 	private boolean isAITurn = false, isTie = false;
 	private float aiCurrentDelay = 0, aiTotalDelay = 1.5f;
 
-	public GameTicTacToe(ArrayList<User> players, boolean hasMultiPLayer, TextChannel gameChannel) {
+	public GameTicTacToe(ArrayList<Member> players, boolean hasMultiPLayer, TextChannel gameChannel) {
 		super(players, hasMultiPLayer, gameChannel);
 		player1 = currentPlayer;
-		p1Name = player1.getUsername();
+		p1Name = player1.getUser().getName();
 
 		// Setup player 2
-		for (User player : players) {
+		for (Member player : players) {
 			if (player != player1) {
 				player2 = player;
 				break;
 			}
 		}
-		p2Name = player2.getUsername();
+		p2Name = player2.getUser().getName();
 	}
 
 	@Override
-	public void recievePlayerInput(User player, String input, Message inputMessage) {
+	public void recievePlayerInput(Member player, String input, Message inputMessage) {
 		super.recievePlayerInput(player, input, inputMessage);
 
 		if (gameFinished && input.startsWith("playagain")) {
@@ -81,8 +82,8 @@ public class GameTicTacToe extends GameSession {
 	}
 
 	private void rotatePlayers() {
-		final User p1 = player1;
-		final User p2 = player2;
+		final Member p1 = player1;
+		final Member p2 = player2;
 
 		player1 = p2;
 		player2 = p1;
@@ -268,7 +269,7 @@ public class GameTicTacToe extends GameSession {
 		if (isTie) {
 			sendMessage("The match was a tie! Would you like to play again? (type !game playagain)");
 		} else {
-			if (currentPlayer.getUsername().equals(p1Name)) {
+			if (currentPlayer.getUser().getName().equals(p1Name)) {
 				p1Score++;
 			} else {
 				p2Score++;
@@ -301,7 +302,7 @@ public class GameTicTacToe extends GameSession {
 		showBoard();
 
 		// If player1 is the bot
-		if (player1 == Init.getJDA().getSelfInfo()) {
+		if (player1 == JDAHelper.getGuild().getMember(Init.getJDA().getSelfUser())) {
 			isAITurn = true;
 		}
 

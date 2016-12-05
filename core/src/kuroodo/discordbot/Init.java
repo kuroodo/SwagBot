@@ -8,6 +8,7 @@ import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.GL20;
 
+import kuroodo.discordbot.client.handlers.GlobalGameManager;
 import kuroodo.discordbot.entities.JDAListener;
 import kuroodo.discordbot.helpers.ChatLogger;
 import kuroodo.discordbot.helpers.JDAHelper;
@@ -31,13 +32,13 @@ public class Init extends ApplicationAdapter {
 	public static final ArrayList<User> SUPER_USERS = new ArrayList<>();
 
 	public static String gameMessage = "";
-	
+
 	private static JDA jda;
 
 	private static ArrayList<JDAListener> listeners;
 
 	private static String botName = "";
-	
+
 	private static User serverOwner;
 
 	@Override
@@ -121,8 +122,8 @@ public class Init extends ApplicationAdapter {
 	@Override
 	public void dispose() {
 
-		// System.out.println("Ending all gamesessions");
-		// GlobalGameManager.endAllGameListenerSession();
+		System.out.println("Ending all gamesessions");
+		GlobalGameManager.endAllGameListenerSession();
 
 		if (jda != null) {
 			System.out.println("Shutting Down JDA");

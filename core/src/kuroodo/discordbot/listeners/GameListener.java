@@ -1,6 +1,7 @@
 package kuroodo.discordbot.listeners;
 
 import java.util.ArrayList;
+import java.util.function.Consumer;
 
 import kuroodo.discordbot.Init;
 import kuroodo.discordbot.chatcommands.moderator.CommandClearChat;
@@ -10,15 +11,16 @@ import kuroodo.discordbot.entities.JDAListener;
 import kuroodo.discordbot.games.ExampleGame;
 import kuroodo.discordbot.games.tictactoe.GameTicTacToe;
 import kuroodo.discordbot.helpers.JDAHelper;
-import net.dv8tion.jda.Permission;
-import net.dv8tion.jda.entities.Message;
-import net.dv8tion.jda.entities.Role;
-import net.dv8tion.jda.entities.TextChannel;
-import net.dv8tion.jda.entities.User;
-import net.dv8tion.jda.events.message.guild.GuildMessageReceivedEvent;
-import net.dv8tion.jda.managers.ChannelManager;
-import net.dv8tion.jda.managers.GuildManager;
-import net.dv8tion.jda.managers.RoleManager;
+import net.dv8tion.jda.core.Permission;
+import net.dv8tion.jda.core.entities.Member;
+import net.dv8tion.jda.core.entities.PermissionOverride;
+import net.dv8tion.jda.core.entities.Role;
+import net.dv8tion.jda.core.entities.TextChannel;
+import net.dv8tion.jda.core.events.message.guild.GuildMessageReceivedEvent;
+import net.dv8tion.jda.core.managers.ChannelManager;
+import net.dv8tion.jda.core.managers.GuildController;
+import net.dv8tion.jda.core.managers.RoleManager;
+import net.dv8tion.jda.core.managers.RoleManagerUpdatable;
 
 public class GameListener extends JDAListener {
 	private TextChannel gameChannel;
@@ -26,11 +28,11 @@ public class GameListener extends JDAListener {
 
 	private int sessionID;
 
-	private ArrayList<User> players;
-	private boolean isMP = false;
+	private ArrayList<Member> players;
+	private boolean isMP = false, isSessionStarted = false;
 	private String gameName;
 
-	public GameListener(String gameName, User playerOne, User playerTwo, int sessionId, boolean isMP) {
+	public GameListener(String gameName, Member playerOne, Member playerTwo, int sessionId, boolean isMP) {
 		this.sessionID = sessionId;
 		this.gameName = gameName;
 		this.isMP = isMP;
@@ -45,14 +47,6 @@ public class GameListener extends JDAListener {
 
 		setUpGameChannel(sessionId);
 
-		if (isMP) {
-			final String message = playerTwo.getAsMention() + "You have been challanged to a game of " + gameName
-					+ " by " + playerOne.getAsMention() + "\n type !accept to join!";
-
-			sendMessage(message);
-		} else {
-			startSPSession();
-		}
 	}
 
 	@Override
@@ -61,7 +55,7 @@ public class GameListener extends JDAListener {
 
 		if (event.getAuthor() != null) {
 			if (event.getChannel() == gameChannel) {
-				if (event.getMessage().getRawContent().startsWith("!end") && players.contains(event.getAuthor())) {
+				if (event.getMessage().getRawContent().startsWith("!end") && players.contains(event.getMember())) {
 					endGameSession();
 					return;
 
@@ -69,26 +63,42 @@ public class GameListener extends JDAListener {
 					gameSession.gameHelpInfo();
 					return;
 				} else {
-					sendGameInput(event.getAuthor(), event.getMessage().getRawContent(), event.getMessage());
+					sendGameInput(event, event.getMessage().getRawContent());
 				}
 			}
 		}
 	}
 
-	private void sendGameInput(User sender, String message, Message eventMessage) {
+	private void sendGameInput(GuildMessageReceivedEvent event, String message) {
 		if (gameSession != null) {
 			if (message.startsWith("!game")) {
 				// send everything after !game
-				gameSession.recievePlayerInput(sender, JDAHelper.splitString(message)[1], eventMessage);
+				gameSession.recievePlayerInput(event.getMember(), JDAHelper.splitString(message)[1],
+						event.getMessage());
 			}
 		} else if (isMP && message.equals("!accept")) {
-			if (sender == players.get(1)) {
-				startMPSession();
+			if (event.getMember() == players.get(1)) {
+				startMPSession(event);
 			}
 		}
 	}
 
 	public void update(float delta) {
+
+		if (!isSessionStarted) {
+			if (gameChannel != null) {
+				isSessionStarted = true;
+				if (isMP) {
+					final String message = players.get(1).getAsMention() + "You have been challanged to a game of "
+							+ gameName + " by " + players.get(0).getAsMention() + "\n type !accept to join!";
+
+					sendMessage(message);
+				} else {
+					startSPSession();
+				}
+			}
+		}
+
 		if (gameSession != null) {
 			gameSession.update(delta);
 		}
@@ -108,55 +118,106 @@ public class GameListener extends JDAListener {
 	}
 
 	private void setUpGameChannel(int sessionId) {
-		final ChannelManager chManager = JDAHelper.getGuild().createTextChannel("gamesession_" + sessionId);
-		chManager.update();
 
-		setUpChannelPermissions(chManager);
+		JDAHelper.getGuild().getController().createTextChannel("gamesession_" + sessionId)
+				.queue(new Consumer<TextChannel>() {
 
-		gameChannel = (TextChannel) chManager.getChannel();
+					@Override
+					public void accept(TextChannel t) {
+						final ChannelManager chManager = t.getManager();
+
+						setUpChannelPermissions(chManager);
+
+						gameChannel = (TextChannel) chManager.getChannel();
+
+						if (gameChannel == null) {
+							System.out.println("YES");
+						} else {
+							System.out.println("NO");
+						}
+					}
+				});
+
+		if (gameChannel == null) {
+			System.out.println("YES2");
+		} else {
+			System.out.println("NO2");
+		}
+
 	}
 
 	private void setUpChannelPermissions(ChannelManager chManager) {
 		Role role = JDAHelper.getRoleByName("gameroleexample");
 
-		final RoleManager roleManager = JDAHelper.getGuild().createRole();
-		roleManager.setName("session" + sessionID);
+		JDAHelper.getGuild().getController().createRole().queue(new Consumer<Role>() {
 
-		for (Permission permission : roleManager.getRole().getPermissions()) {
-			roleManager.revoke(permission);
-		}
+			@Override
+			public void accept(Role t) {
+				final RoleManagerUpdatable roleManager = t.getManagerUpdatable();
 
-		for (Permission permission : role.getPermissions()) {
-			roleManager.give(permission);
-		}
+				roleManager.getNameField().setValue("session" + sessionID);
 
-		roleManager.update();
+				// TODO: Try to use Permissions.getValues() instead
+				for (Permission permission : roleManager.getRole().getPermissions()) {
+					roleManager.getPermissionField().revokePermissions(permission);
+				}
 
-		Role sessionRole = roleManager.getRole();
+				for (Permission permission : role.getPermissions()) {
+					roleManager.getPermissionField().givePermissions(permission);
+				}
 
-		chManager.getChannel().createPermissionOverride(sessionRole).grant(Permission.MESSAGE_READ)
-				.grant(Permission.MESSAGE_WRITE).grant(Permission.MESSAGE_TTS).update();
+				roleManager.update().queue();
 
-		chManager.getChannel().createPermissionOverride(JDAHelper.getRoleByName("@everyone"))
-				.deny(Permission.CREATE_INSTANT_INVITE).deny(Permission.MESSAGE_WRITE).deny(Permission.MESSAGE_READ)
-				.deny(Permission.MESSAGE_MANAGE).update();
+				Role sessionRole = roleManager.getRole();
 
-		chManager.getChannel().createPermissionOverride(JDAHelper.getRoleByName("Admin"))
-				.deny(Permission.MANAGE_PERMISSIONS).deny(Permission.MESSAGE_READ).update();
+				chManager.getChannel().createPermissionOverride(sessionRole).queue(new Consumer<PermissionOverride>() {
 
-		final GuildManager gManager = JDAHelper.getGuild().getManager();
+					@Override
+					public void accept(PermissionOverride t) {
+						t.getManager().grant(Permission.MESSAGE_READ).queue();
+						// t.getManager().grant(Permission.MESSAGE_WRITE).queue();
+						// t.getManager().grant(Permission.MESSAGE_TTS).queue();
+					}
+				});
 
-		for (User player : players) {
-			gManager.addRoleToUser(player, sessionRole);
-		}
-		gManager.addRoleToUser(Init.getJDA().getSelfInfo(), sessionRole);
+				chManager.getChannel().createPermissionOverride(JDAHelper.getRoleByName("@everyone"))
+						.queue(new Consumer<PermissionOverride>() {
 
-		gManager.update();
+							@Override
+							public void accept(PermissionOverride t) {
+								// t.getManager().deny(Permission.CREATE_INSTANT_INVITE).queue();
+								// t.getManager().deny(Permission.MESSAGE_WRITE).queue();
+								t.getManager().deny(Permission.MESSAGE_READ).queue();
+								// t.getManager().deny(Permission.MESSAGE_MANAGE).queue();
+							}
+						});
+
+				chManager.getChannel().createPermissionOverride(JDAHelper.getRoleByName("Admin"))
+						.queue(new Consumer<PermissionOverride>() {
+
+							@Override
+							public void accept(PermissionOverride t) {
+								t.getManager().deny(Permission.MANAGE_PERMISSIONS).queue();
+								t.getManager().deny(Permission.MESSAGE_READ).queue();
+
+							}
+						});
+
+				final GuildController gController = JDAHelper.getGuild().getController();
+
+				for (Member player : players) {
+					gController.addRolesToMember(player, sessionRole).queue();
+				}
+				gController.addRolesToMember(JDAHelper.getGuild().getMember(Init.getJDA().getSelfUser()), sessionRole)
+						.queue();
+			}
+		});
+
 	}
 
-	private void startMPSession() {
+	private void startMPSession(GuildMessageReceivedEvent event) {
 		gameSession = getNewGameInstance(gameName, true);
-		deleteMessages();
+		deleteMessages(event);
 		gameSession.gameStart();
 	}
 
@@ -167,20 +228,21 @@ public class GameListener extends JDAListener {
 
 	private void sendMessage(String message) {
 		if (gameChannel != null) {
-			gameChannel.sendMessageAsync(message, null);
+			gameChannel.sendMessage(message).queue();
 		}
 	}
 
-	private void deleteMessages() {
-		CommandClearChat chatClearer = new CommandClearChat();
-		chatClearer.executeCommand("all", gameChannel);
+	// TODO: Make it so the user that all users can only type the accept,
+	// decline, etc message
+	private void deleteMessages(GuildMessageReceivedEvent event) {
+		CommandClearChat.deleteMessages(event);
 	}
 
 	public void endGameSession() {
 		final ChannelManager chManager = gameChannel.getManager();
-		chManager.delete();
+		chManager.getChannel().delete().queue();
 		final RoleManager roleManager = JDAHelper.getRoleByName("session" + sessionID).getManager();
-		roleManager.delete();
+		roleManager.getRole().delete().queue();
 
 		GlobalGameManager.removeGameListener("session" + sessionID);
 
@@ -193,7 +255,7 @@ public class GameListener extends JDAListener {
 		return sessionID;
 	}
 
-	public ArrayList<User> getPlayers() {
+	public ArrayList<Member> getPlayers() {
 		return players;
 	}
 }

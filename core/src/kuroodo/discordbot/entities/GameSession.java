@@ -3,15 +3,15 @@ package kuroodo.discordbot.entities;
 import java.util.ArrayList;
 import java.util.Random;
 
-import net.dv8tion.jda.entities.Message;
-import net.dv8tion.jda.entities.TextChannel;
-import net.dv8tion.jda.entities.User;
-import net.dv8tion.jda.managers.ChannelManager;
+import net.dv8tion.jda.core.entities.Member;
+import net.dv8tion.jda.core.entities.Message;
+import net.dv8tion.jda.core.entities.TextChannel;
+import net.dv8tion.jda.core.managers.ChannelManager;
 
 public abstract class GameSession implements Game {
-	protected ArrayList<User> players;
+	protected ArrayList<Member> players;
 	// The player having the turn or action and input focus
-	protected User currentPlayer;
+	protected Member currentPlayer;
 
 	protected TextChannel gameChannel;
 	protected Message latestMessage;
@@ -20,7 +20,7 @@ public abstract class GameSession implements Game {
 
 	protected boolean isInputValid;
 
-	public GameSession(ArrayList<User> players, boolean hasMultiPLayer, TextChannel gameChannel) {
+	public GameSession(ArrayList<Member> players, boolean hasMultiPLayer, TextChannel gameChannel) {
 		this.players = players;
 		isMultiplayer = hasMultiPLayer;
 		this.gameChannel = gameChannel;
@@ -35,7 +35,7 @@ public abstract class GameSession implements Game {
 	public abstract void update(float delta);
 
 	@Override
-	public void recievePlayerInput(User playerWhoSentInput, String input, Message inputMessage) {
+	public void recievePlayerInput(Member playerWhoSentInput, String input, Message inputMessage) {
 		latestMessage = inputMessage;
 		if (playerWhoSentInput != currentPlayer) {
 			isInputValid = false;
@@ -45,7 +45,7 @@ public abstract class GameSession implements Game {
 	}
 
 	protected void sendMessage(String message) {
-		gameChannel.sendMessageAsync(message, null);
+		gameChannel.sendMessage(message).queue();
 	}
 
 	@Override
@@ -58,12 +58,12 @@ public abstract class GameSession implements Game {
 		return gameFinished;
 	}
 
-	protected void setCurrentPlayer(User player) {
+	protected void setCurrentPlayer(Member player) {
 		currentPlayer = player;
 	}
 
 	@Override
-	public User getCurrentPlayer() {
+	public Member getCurrentPlayer() {
 		return currentPlayer;
 	}
 

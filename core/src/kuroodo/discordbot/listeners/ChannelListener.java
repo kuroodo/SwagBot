@@ -29,23 +29,29 @@ public class ChannelListener extends JDAListener {
 
 	@Override
 	public void onTextChannelDelete(TextChannelDeleteEvent event) {
-		String message = "A TextChannel named: " + event.getChannel().getName() + " was deleted";
-		Init.getServerOwner().getPrivateChannel().sendMessage(message).queue();
-		System.out.println("EVENT: " + message);
+		if (!event.getChannel().getName().startsWith("gamesession")) {
+			String message = "A TextChannel named: " + event.getChannel().getName() + " was deleted";
+			Init.getServerOwner().getPrivateChannel().sendMessage(message).queue();
+			System.out.println("EVENT: " + message);
+		}
 	}
 
 	@Override
 	public void onTextChannelUpdateName(TextChannelUpdateNameEvent event) {
-		String message = "TextChannel " + event.getOldName() + " was renamed: " + event.getChannel().getName();
-		Init.getServerOwner().getPrivateChannel().sendMessage(message).queue();
-		System.out.println("EVENT: " + message);
+		if (!event.getChannel().getName().startsWith("gamesession")) {
+			String message = "TextChannel " + event.getOldName() + " was renamed: " + event.getChannel().getName();
+			Init.getServerOwner().getPrivateChannel().sendMessage(message).queue();
+			System.out.println("EVENT: " + message);
+		}
 	}
 
 	@Override
 	public void onTextChannelUpdatePermissions(TextChannelUpdatePermissionsEvent event) {
-		String message = "The permissions for " + event.getChannel().getName() + " were changed";
-		Init.getServerOwner().getPrivateChannel().sendMessage(message).queue();
-		System.out.println("EVENT: " + message);
+		if (!event.getChannel().getName().startsWith("gamesession")) {
+			String message = "The permissions for " + event.getChannel().getName() + " were changed";
+			Init.getServerOwner().getPrivateChannel().sendMessage(message).queue();
+			System.out.println("EVENT: " + message);
+		}
 	}
 
 	// ------------------------------
