@@ -19,3 +19,7 @@ public class DesktopLauncher {
 // (unblockable by others)
 // TODO: Add super-users to json file
 // TODO: Add ability to stop message deletion with a command or something
+// TODO: Add GetMember method in JDAHelper
+// TODO: Notify user via PM if a game session was terminated and by who
+// TODO: If a player in a gamesession loses their roll (or is missing) end the
+// game session and notify all players why the session ended
