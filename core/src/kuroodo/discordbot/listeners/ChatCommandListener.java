@@ -45,14 +45,7 @@ public class ChatCommandListener extends JDAListener {
 			String commandName = JDAHelper.splitString(event.getMessage().getRawContent())[0].toLowerCase();
 
 			try {
-				if (event.getMessage().getRawContent().substring(0, 1).equals("!")
-						&& ChatCommandHandler.isContainsCommand(commandName)) {
-					startupCommand(event);
-
-					// If user mentioned the bot at the beginning of message
-				} else if (!event.getMessage().getMentionedUsers().isEmpty()
-						&& event.getMessage().getRawContent().substring(0, 1).equals("@")
-						&& event.getMessage().getMentionedUsers().get(0) == Init.getJDA().getSelfUser()) {
+				if (ChatCommandHandler.isContainsCommand(commandName)) {
 					startupCommand(event);
 				}
 			} catch (StringIndexOutOfBoundsException e) {
@@ -103,9 +96,12 @@ public class ChatCommandListener extends JDAListener {
 		// User Commands
 		ChatCommandHandler.registerCommand("!avatar", CommandAvatar.class);
 		ChatCommandHandler.registerCommand("!flipcoin", CommandFlipCoin.class);
+
 		ChatCommandHandler.registerCommand("!magicball", CommandMagicBall.class);
 		ChatCommandHandler.registerCommand("@" + Init.getJDA().getSelfUser().getName().toLowerCase(),
 				CommandMagicBall.class);
+		ChatCommandHandler.registerCommand(Init.getJDA().getSelfUser().getAsMention(), CommandMagicBall.class);
+
 		ChatCommandHandler.registerCommand("!poke", CommandPoke.class);
 		ChatCommandHandler.registerCommand("!roast", CommandRoast.class);
 		ChatCommandHandler.registerCommand("!roulette", CommandRoulette.class);

@@ -29,9 +29,7 @@ public class BotCommandListener extends JDAListener {
 
 			try {
 
-				if (event.getMessage().getRawContent().substring(0, 1).equals("!")
-						&& BotCommandHandler.isContainsCommand(commandName)) {
-
+				if (BotCommandHandler.isContainsCommand(commandName)) {
 					if (Init.SUPER_USERS.contains(event.getAuthor())) {
 						startupCommand(event);
 					}
