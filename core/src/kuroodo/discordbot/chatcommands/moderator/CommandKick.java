@@ -46,7 +46,7 @@ public class CommandKick extends ChatCommand {
 				event.getChannel()
 						.sendMessage(event.getAuthor().getAsMention() + " You dare to conspire against the server?")
 						.queue();
-			} else if (JDAHelper.isMemberAdmin(JDAHelper.getGuild().getMember(event.getAuthor()))) {
+			} else if (JDAHelper.isMemberAdmin(JDAHelper.getMember(event.getAuthor()))) {
 				if (adminChannel != null) {
 					adminChannel.sendMessage(member.getUser().getName() + " has been kicked for " + reasonForKick)
 							.queue();
@@ -58,7 +58,7 @@ public class CommandKick extends ChatCommand {
 						.queue();
 				JDAHelper.getGuild().getController().kick(member).queue();
 
-			} else if (JDAHelper.isMemberModerator(JDAHelper.getGuild().getMember(event.getAuthor()))) {
+			} else if (JDAHelper.isMemberModerator(JDAHelper.getMember(event.getAuthor()))) {
 				// Check if moderator is trying to kick an admin
 				if (JDAHelper.isMemberAdmin(member)) {
 					Init.getServerOwner().getPrivateChannel()
@@ -88,7 +88,7 @@ public class CommandKick extends ChatCommand {
 		if (member == null) {
 			member = JDAHelper.getMemberByUsername(JDAHelper.splitString(commandParameters)[0]);
 			if (member == null) {
-				member = JDAHelper.getGuild().getMember(event.getMessage().getMentionedUsers().get(0));
+				member = JDAHelper.getMember(event.getMessage().getMentionedUsers().get(0));
 			}
 		}
 		return member;

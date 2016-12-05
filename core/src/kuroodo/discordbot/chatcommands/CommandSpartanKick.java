@@ -43,7 +43,7 @@ public class CommandSpartanKick extends ChatCommand {
 			member = JDAHelper.getMemberByUsername(commandParameters);
 			if (member == null) {
 				if (!event.getMessage().getMentionedUsers().isEmpty()) {
-					member = JDAHelper.getGuild().getMember(event.getMessage().getMentionedUsers().get(0));
+					member = JDAHelper.getMember(event.getMessage().getMentionedUsers().get(0));
 				}
 			}
 		}

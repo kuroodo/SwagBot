@@ -209,6 +209,10 @@ public class JDAHelper {
 		return Init.getJDA().getGuilds().get(0);
 	}
 
+	public static Member getMember(User user) {
+		return getGuild().getMember(user);
+	}
+
 	/**
 	 * Checks the list of audioqueues to find out if a command/message is an
 	 * audioqueue

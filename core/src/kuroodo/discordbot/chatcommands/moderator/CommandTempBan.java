@@ -25,7 +25,7 @@ public class CommandTempBan extends ChatCommand {
 			return;
 		}
 
-		Member memberToTempBan = JDAHelper.getGuild().getMember(event.getMessage().getMentionedUsers().get(0));// ChatHelper.getUserByID(ChatHelper.splitString(commandParameters)[0]);
+		Member memberToTempBan = JDAHelper.getMember(event.getMessage().getMentionedUsers().get(0));// ChatHelper.getUserByID(ChatHelper.splitString(commandParameters)[0]);
 		String reasonForTempBan = JDAHelper.splitString(commandParameters)[1];
 
 		if (memberToTempBan != null) {
@@ -45,16 +45,17 @@ public class CommandTempBan extends ChatCommand {
 						.sendMessage(event.getAuthor().getAsMention() + " You dare to conspire against the server?")
 						.queue();
 
-			} else if (JDAHelper.isMemberAdmin(JDAHelper.getGuild().getMember(event.getAuthor()))) {
+			} else if (JDAHelper.isMemberAdmin(JDAHelper.getMember(event.getAuthor()))) {
 				sendBanNotifications(memberToTempBan, reasonForTempBan);
 				tempBanUser(memberToTempBan);
-			} else if (JDAHelper.isMemberModerator(JDAHelper.getGuild().getMember(event.getAuthor()))) {
+			} else if (JDAHelper.isMemberModerator(JDAHelper.getMember(event.getAuthor()))) {
 
 				// Check if moderator is trying to ban an admin
 				if (JDAHelper.isMemberAdmin(memberToTempBan)) {
 					Init.getServerOwner().getPrivateChannel()
 							.sendMessage(event.getAuthor().getName() + " Just tried to temp ban an admin").queue();
-					event.getChannel().sendMessage(event.getAuthor().getAsMention() + " Moderators cannot temp ban admins!")
+					event.getChannel()
+							.sendMessage(event.getAuthor().getAsMention() + " Moderators cannot temp ban admins!")
 							.queue();
 				} else {
 					sendBanNotifications(memberToTempBan, reasonForTempBan);

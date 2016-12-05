@@ -302,7 +302,7 @@ public class GameTicTacToe extends GameSession {
 		showBoard();
 
 		// If player1 is the bot
-		if (player1 == JDAHelper.getGuild().getMember(Init.getJDA().getSelfUser())) {
+		if (player1 == JDAHelper.getMember(Init.getJDA().getSelfUser())) {
 			isAITurn = true;
 		}
 

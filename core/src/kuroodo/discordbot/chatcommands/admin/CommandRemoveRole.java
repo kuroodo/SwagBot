@@ -47,7 +47,7 @@ public class CommandRemoveRole extends ChatCommand {
 		if (member == null) {
 			member = JDAHelper.getMemberByUsername(JDAHelper.splitString(commandParameters)[1]);
 			if (member == null) {
-				member = JDAHelper.getGuild().getMember(event.getMessage().getMentionedUsers().get(0));
+				member = JDAHelper.getMember(event.getMessage().getMentionedUsers().get(0));
 			}
 		}
 		return member;

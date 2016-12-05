@@ -38,7 +38,7 @@ public class CommandPlayGame extends ChatCommand {
 				Member multiPlayerUser = findMultiplayerUser(JDAHelper.splitString(commandParameters)[1]);
 
 				if (multiPlayerUser != null && !GlobalGameManager.isUserInGameSession(multiPlayerUser)) {
-					if (multiPlayerUser == JDAHelper.getGuild().getMember(Init.getJDA().getSelfUser())) {
+					if (multiPlayerUser == JDAHelper.getMember(Init.getJDA().getSelfUser())) {
 						sendPrivateMessage("To play alone against " + Init.getBotName() + " type: !playgame gamename");
 					} else {
 						loadMP(gameName, multiPlayerUser);
@@ -56,7 +56,7 @@ public class CommandPlayGame extends ChatCommand {
 	private void loadMP(String gameName, Member multiPlayerUser) {
 		GameListener newGameListener;
 
-		newGameListener = new GameListener(gameName, JDAHelper.getGuild().getMember(event.getAuthor()), multiPlayerUser,
+		newGameListener = new GameListener(gameName, JDAHelper.getMember(event.getAuthor()), multiPlayerUser,
 				GlobalGameManager.gameListeners.size(), true);
 
 		Init.getJDA().addEventListener(newGameListener);
@@ -66,8 +66,7 @@ public class CommandPlayGame extends ChatCommand {
 	// Singleplayer
 	private void loadSP(String gameName) {
 		GameListener newGameListener = new GameListener(gameName, event.getMember(),
-				JDAHelper.getGuild().getMember(Init.getJDA().getSelfUser()), GlobalGameManager.gameListeners.size(),
-				false);
+				JDAHelper.getMember(Init.getJDA().getSelfUser()), GlobalGameManager.gameListeners.size(), false);
 
 		Init.getJDA().addEventListener(newGameListener);
 		Init.getListeners().add(newGameListener);
@@ -89,7 +88,7 @@ public class CommandPlayGame extends ChatCommand {
 			userToFind = JDAHelper.getMemberByUsername(sUserToFind);
 			if (userToFind == null) {
 				if (!event.getMessage().getMentionedUsers().isEmpty()) {
-					userToFind = JDAHelper.getGuild().getMember(event.getMessage().getMentionedUsers().get(0));
+					userToFind = JDAHelper.getMember(event.getMessage().getMentionedUsers().get(0));
 				}
 			}
 		}

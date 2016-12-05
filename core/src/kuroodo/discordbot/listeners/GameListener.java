@@ -208,8 +208,7 @@ public class GameListener extends JDAListener {
 				for (Member player : players) {
 					gController.addRolesToMember(player, sessionRole).queue();
 				}
-				gController.addRolesToMember(JDAHelper.getGuild().getMember(Init.getJDA().getSelfUser()), sessionRole)
-						.queue();
+				gController.addRolesToMember(JDAHelper.getMember(Init.getJDA().getSelfUser()), sessionRole).queue();
 			}
 		});
 

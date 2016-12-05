@@ -49,7 +49,7 @@ public class CommandBan extends ChatCommand {
 						.sendMessage(event.getAuthor().getAsMention() + " You dare to conspire against the server?")
 						.queue();
 
-			} else if (JDAHelper.isMemberAdmin(JDAHelper.getGuild().getMember(event.getAuthor()))) {
+			} else if (JDAHelper.isMemberAdmin(JDAHelper.getMember(event.getAuthor()))) {
 
 				if (adminChannel != null) {
 					adminChannel.sendMessage(memberToBan.getUser().getName() + " has been banned for " + banReason)
@@ -63,7 +63,7 @@ public class CommandBan extends ChatCommand {
 
 				JDAHelper.getGuild().getController().ban(memberToBan, BAN_DAYS).queue();
 
-			} else if (JDAHelper.isMemberModerator(JDAHelper.getGuild().getMember(event.getAuthor()))) {
+			} else if (JDAHelper.isMemberModerator(JDAHelper.getMember(event.getAuthor()))) {
 
 				// Check if moderator is trying to ban an admin
 				if (JDAHelper.isMemberAdmin(memberToBan)) {
@@ -96,7 +96,7 @@ public class CommandBan extends ChatCommand {
 		if (member == null) {
 			member = JDAHelper.getMemberByUsername(JDAHelper.splitString(commandParameters)[0]);
 			if (member == null) {
-				member = JDAHelper.getGuild().getMember(event.getMessage().getMentionedUsers().get(0));
+				member = JDAHelper.getMember(event.getMessage().getMentionedUsers().get(0));
 			}
 		}
 		return member;

@@ -158,7 +158,7 @@ public class CommandClearChat extends ChatCommand {
 
 			if (member == null) {
 				if (!event.getMessage().getMentionedUsers().isEmpty()) {
-					member = JDAHelper.getGuild().getMember(event.getMessage().getMentionedUsers().get(0));
+					member = JDAHelper.getMember(event.getMessage().getMentionedUsers().get(0));
 				}
 			}
 		}
