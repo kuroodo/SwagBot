@@ -1,20 +1,96 @@
 package kuroodo.discordbot.chatcommands.moderator;
 
 import java.util.ArrayList;
+import java.util.function.Consumer;
 
 import kuroodo.discordbot.Init;
 import kuroodo.discordbot.entities.ChatCommand;
 import kuroodo.discordbot.helpers.JDAHelper;
-import net.dv8tion.jda.MessageHistory;
-import net.dv8tion.jda.entities.Message;
-import net.dv8tion.jda.entities.TextChannel;
-import net.dv8tion.jda.entities.User;
-import net.dv8tion.jda.events.message.guild.GuildMessageReceivedEvent;
+import net.dv8tion.jda.core.MessageHistory;
+import net.dv8tion.jda.core.entities.Game;
+import net.dv8tion.jda.core.entities.Member;
+import net.dv8tion.jda.core.entities.Message;
+import net.dv8tion.jda.core.events.message.guild.GuildMessageReceivedEvent;
 
 public class CommandClearChat extends ChatCommand {
-	// TODO: Properly implement this feature and make code clean
+
+	// Discord only allows bulk deletion of max 100 messages
+	private static final int MAX_DELETE_LIMIT = 100;
+
+	private final float DELETE_WAIT_TIME = 2f;
+	private float deleteTimeCount = 2f;
+
+	private boolean isTimerActive = false;
+
+	private Member memberToFocus;
+
+	private int messageDeleteCount = 0;
+
 	public CommandClearChat() {
 		isModCommand = true;
+		// TODO: Consider other execute command method compatability
+	}
+
+	@Override
+	public void update(float delta) {
+		super.update(delta);
+
+		deleteTimeCount += delta;
+
+		// Every 2 seconds...
+		if (deleteTimeCount >= DELETE_WAIT_TIME && isTimerActive) {
+
+			if (memberToFocus != null) {
+				isTimerActive = false;
+				MessageHistory.getHistoryAround(event.getChannel(), event.getMessage(), MAX_DELETE_LIMIT)
+						.queue(new Consumer<MessageHistory>() {
+
+							@Override
+							public void accept(MessageHistory t) {
+
+								ArrayList<Message> messagesToDelete = getMemberMessages(t);
+
+								if (messagesToDelete.size() > 1) {
+									messageDeleteCount += messagesToDelete.size();
+									event.getChannel().deleteMessages(messagesToDelete).queue();
+
+									deleteTimeCount = 0f;
+									isTimerActive = true;
+								} else if (messagesToDelete.size() != 0) {
+									messageDeleteCount++;
+									messagesToDelete.get(0).deleteMessage().queue();
+
+									onDeleteFinish();
+									shouldUpdate = false;
+								} else {
+									onDeleteFinish();
+									shouldUpdate = false;
+								}
+							}
+						});
+			} else {
+				isTimerActive = false;
+				MessageHistory.getHistoryAround(event.getChannel(), event.getMessage(), MAX_DELETE_LIMIT)
+						.queue(new Consumer<MessageHistory>() {
+
+							@Override
+							public void accept(MessageHistory t) {
+								if (t.getCachedHistory().size() > 1) {
+									messageDeleteCount += t.getCachedHistory().size();
+									event.getChannel().deleteMessages(t.getCachedHistory()).queue();
+
+									deleteTimeCount = 0f;
+									isTimerActive = true;
+								} else {
+									onDeleteFinish();
+									shouldUpdate = false;
+								}
+							}
+						});
+			}
+
+		}
+
 	}
 
 	@Override
@@ -25,90 +101,77 @@ public class CommandClearChat extends ChatCommand {
 			return;
 		}
 
-		Init.getJDA().getAccountManager().setGame("Busy...");
-		Init.getJDA().getAccountManager().setIdle(true);
+		// This is what the base code will look like
+		memberToFocus = getMember();
 
-		MessageHistory messageHistory1 = getMsgHistory();
-		MessageHistory messageHistory2 = getMsgHistory();
-		System.out.println("clear: " + commandParameters);
-
-		if (commandParameters.equals("all")) {
-			int totalMessages = messageHistory1.retrieveAll().size();
-			final int deleteLimit = 100;
-			if (totalMessages > deleteLimit) {
-				// int timesToLoop = totalMessages / deleteLimit;
-				// for (int loopCount = 0; loopCount < timesToLoop; loopCount++)
-				// {
-				// try {
-				// event.getChannel().deleteMessages(messageHistory2.retrieve(deleteLimit));
-				// messageHistory2 = getMsgHistory();
-				// } catch (RateLimitedException e) {
-				// System.out.println("Got rate limited while deleting.");
-				// loopCount--;
-				// }
-				//
-				// }
-
-				event.getChannel().deleteMessages(messageHistory2.retrieve(deleteLimit));
-			} else {
-				event.getChannel().deleteMessages(messageHistory2.retrieveAll());
-			}
-
-			// for (Message msg : messageHistory.retrieveAll()) {
-			// msg.deleteMessage();
-			// deletedMsgCount++;
-			// }
-
-			sendMessage("Deleted " + totalMessages + " messages!");
+		if (commandParameters.equals("all") || memberToFocus != null) {
+			onDeleteStart();
+			isTimerActive = true;
+			shouldUpdate = true;
 		} else {
-			User user = JDAHelper.getUserByID(commandParams);
-
-			if (user == null) {
-				user = JDAHelper.getUserByUsername(commandParams);
-
-				if (user == null) {
-					if (!event.getMessage().getMentionedUsers().isEmpty()) {
-						user = event.getMessage().getMentionedUsers().get(0);
-					}
-				}
-			}
-
-			if (user != null) {
-				System.out.println("In");
-				ArrayList<Message> messages = new ArrayList<>();
-				for (Message msg : messageHistory1.retrieveAll()) {
-					if (msg.getAuthor() == user) {
-						messages.add(msg);
-					}
-				}
-
-				event.getChannel().deleteMessages(messages);
-
-			}
+			sendMessage("The User you have specified does not exist or you have specified an invalid parameter");
 		}
-		System.out.println("out");
-		Init.getJDA().getAccountManager().setGame("Type !help For Help (;");
-		Init.getJDA().getAccountManager().setIdle(false);
+
 	}
 
-	private MessageHistory getMsgHistory() {
-		return new MessageHistory(event.getChannel());
+	// Used for external classes or commands
+	public static void deleteMessages(GuildMessageReceivedEvent event) {
+		MessageHistory.getHistoryAround(event.getChannel(), event.getMessage(), MAX_DELETE_LIMIT)
+				.queue(new Consumer<MessageHistory>() {
+
+					@Override
+					public void accept(MessageHistory t) {
+						if (t.getCachedHistory().size() > 1) {
+							event.getChannel().deleteMessages(t.getCachedHistory()).queue();
+						} else {
+							event.getMessage().deleteMessage().queue();
+						}
+					}
+				});
 	}
 
-	// Used for none-command purposes
-	public void executeCommand(String commandParams, TextChannel channel) {
-		MessageHistory messageHistory = new MessageHistory(channel);
-		if (commandParams.equals("all")) {
-			for (Message msg : messageHistory.retrieveAll()) {
-				msg.deleteMessage();
+	private void onDeleteStart() {
+		Init.getJDA().getPresence().setGame(Game.of("Busy..."));
+		Init.getJDA().getPresence().setIdle(true);
+	}
+
+	private void onDeleteFinish() {
+		Init.getJDA().getPresence().setGame(Game.of("Type !help For Help (;"));
+		Init.getJDA().getPresence().setIdle(false);
+
+		sendMessage("DELETED " + messageDeleteCount + " MESSAGES!");
+	}
+
+	private ArrayList<Message> getMemberMessages(MessageHistory history) {
+		ArrayList<Message> messagesToDelete = new ArrayList<>();
+		for (Message msg : history.getCachedHistory()) {
+			if (msg.getAuthor() == memberToFocus.getUser()) {
+				messagesToDelete.add(msg);
 			}
 		}
+		return messagesToDelete;
+	}
+
+	private Member getMember() {
+		Member member = JDAHelper.getMemberByID(commandParameters);
+
+		if (member == null) {
+			member = JDAHelper.getMemberByUsername(commandParameters);
+
+			if (member == null) {
+				if (!event.getMessage().getMentionedUsers().isEmpty()) {
+					member = JDAHelper.getGuild().getMember(event.getMessage().getMentionedUsers().get(0));
+				}
+			}
+		}
+
+		return member;
 	}
 
 	@Override
 	public String info() {
-		return "Clear the chat (or a specific users messages) for the channel the command was sent on.\n"
-				+ "Usage: !clearchat all/username \nExample: !clearchat all or !clearchat somefaggot123";
+		return "Clear the chat (or a specific users messages (Note: Only deletes a users messages in last 100 messages) ) for the channel the command was sent on.\n"
+				+ "Usage: !clearchat all/username \nExample: !clearchat all or !clearchat someUser123";
 	}
 
 }
