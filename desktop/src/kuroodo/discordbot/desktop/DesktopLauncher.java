@@ -18,3 +18,4 @@ public class DesktopLauncher {
 // TODO: Server owner can enabled a permanent voice channel block command
 // (unblockable by others)
 // TODO: Add super-users to json file
+// TODO: Add ability to stop message deletion with a command or something

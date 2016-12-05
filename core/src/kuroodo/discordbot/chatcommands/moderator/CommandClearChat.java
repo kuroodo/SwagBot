@@ -134,7 +134,7 @@ public class CommandClearChat extends ChatCommand {
 	}
 
 	private void onDeleteFinish() {
-		Init.getJDA().getPresence().setGame(Game.of("Type !help For Help (;"));
+		Init.getJDA().getPresence().setGame(Game.of(Init.gameMessage));
 		Init.getJDA().getPresence().setIdle(false);
 
 		sendMessage("DELETED " + messageDeleteCount + " MESSAGES!");

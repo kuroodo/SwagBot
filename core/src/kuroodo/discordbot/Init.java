@@ -30,12 +30,14 @@ public class Init extends ApplicationAdapter {
 	// Users that have special bot commands and access
 	public static final ArrayList<User> SUPER_USERS = new ArrayList<>();
 
+	public static String gameMessage = "";
+	
 	private static JDA jda;
 
 	private static ArrayList<JDAListener> listeners;
 
 	private static String botName = "";
-
+	
 	private static User serverOwner;
 
 	@Override
@@ -56,9 +58,11 @@ public class Init extends ApplicationAdapter {
 			storeServerOwner();
 
 			if (!JSonReader.getIsDevMode()) {
-				jda.getPresence().setGame(Game.of("Type !help For Help (;"));
+				gameMessage = "Type !help For Help (;";
+				jda.getPresence().setGame(Game.of(gameMessage));
 			} else {
-				jda.getPresence().setGame(Game.of("Undergoing Testing"));
+				gameMessage = "Undergoing Testing";
+				jda.getPresence().setGame(Game.of(gameMessage));
 			}
 
 			setupListeners();
