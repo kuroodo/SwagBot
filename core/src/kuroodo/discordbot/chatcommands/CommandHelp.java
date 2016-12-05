@@ -91,6 +91,7 @@ public class CommandHelp extends ChatCommand {
 			commandWord = "!" + commandParameters;
 		}
 
+		// TODO: Find better way to implement this
 		if (ChatCommandHandler.isContainsCommand(commandWord)) {
 			ChatCommand command;
 			try {

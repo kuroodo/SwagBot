@@ -28,7 +28,6 @@ public class CommandClearChat extends ChatCommand {
 
 	public CommandClearChat() {
 		isModCommand = true;
-		// TODO: Consider other execute command method compatability
 	}
 
 	@Override
@@ -101,7 +100,6 @@ public class CommandClearChat extends ChatCommand {
 			return;
 		}
 
-		// This is what the base code will look like
 		memberToFocus = getMember();
 
 		if (commandParameters.equals("all") || memberToFocus != null) {
