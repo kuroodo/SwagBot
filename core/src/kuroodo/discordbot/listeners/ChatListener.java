@@ -23,24 +23,24 @@ public class ChatListener extends JDAListener {
 
 			String message = "";
 
-			if (event.getAuthor() != null) {
-				message = "[" + event.getGuild().getName() + " [" + channelName + "]" + "] " + event.getAuthor().getName()
-						+ ":" + event.getMessage().getContent();
+			if (event.getMessage().isWebhookMessage()) {
+				message = "[" + event.getGuild().getName() + " [" + channelName + "]" + "] " + "WebHook" + ":"
+						+ event.getMessage().getContent();
 			} else {
 				message = "[" + event.getGuild().getName() + " [" + channelName + "]" + "] "
-						+ "Null User Or Unknown Bot" + ":" + event.getMessage().getContent();
+						+ event.getAuthor().getName() + ":" + event.getMessage().getContent();
 			}
 
 			System.out.println(message);
 			ChatLogger.logMessage(message);
 
 		} catch (StringIndexOutOfBoundsException e) {
-			if (event.getAuthor() == null) {
-				System.out.println(
-						"[" + event.getChannel().getName() + "]" + "A null user or unknown bot has sent a message");
+
+			if (event.getMessage().isWebhookMessage()) {
+				System.out.println("[" + event.getChannel().getName() + "]" + "A webhook message was sent");
 			} else {
-				System.out.println("[" + event.getChannel().getName() + "]" + "[" + event.getAuthor().getName()
-						+ "] " + " has sent an image/file or some other form of media or unsupported text");
+				System.out.println("[" + event.getChannel().getName() + "]" + "[" + event.getAuthor().getName() + "] "
+						+ " has sent an image/file or some other form of media or unsupported text");
 			}
 		}
 	}
