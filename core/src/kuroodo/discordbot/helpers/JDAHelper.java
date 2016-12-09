@@ -7,6 +7,7 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
+import java.util.regex.PatternSyntaxException;
 
 import kuroodo.discordbot.Init;
 import net.dv8tion.jda.core.OnlineStatus;
@@ -238,20 +239,25 @@ public class JDAHelper {
 	// Split a string in 2
 	public static String[] splitString(String stringToSplit) {
 		String[] splittedMessage = { "", "" };
-		splittedMessage[1] = stringToSplit;
 
-		if (stringToSplit.contains(" ")) {
-			splittedMessage[0] = stringToSplit.split(" ", -1)[0];
-			splittedMessage[1] = splittedMessage[1].replaceAll(splittedMessage[0] + " ", "");
+		try {
+			splittedMessage[1] = stringToSplit;
 
-		} else {
-			splittedMessage[0] = stringToSplit;
-			splittedMessage[1] = "";
+			if (stringToSplit.contains(" ")) {
+				splittedMessage[0] = stringToSplit.split(" ", -1)[0];
+				splittedMessage[1] = splittedMessage[1].replaceAll(splittedMessage[0] + " ", "");
+
+			} else {
+				splittedMessage[0] = stringToSplit;
+				splittedMessage[1] = "";
+			}
+
+			// System.out.println("debug");
+			// System.out.println(splittedMessage[0]);
+			// System.out.println(splittedMessage[1]);
+		} catch (PatternSyntaxException e) {
+			System.out.println("PatternSyntaxException when splitting string. Returning blank strings");
 		}
-
-		// System.out.println("debug");
-		// System.out.println(splittedMessage[0]);
-		// System.out.println(splittedMessage[1]);
 
 		return splittedMessage;
 	}
