@@ -8,6 +8,7 @@ import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.GL20;
 
+import kuroodo.discordbot.audio.AudioPlayer;
 import kuroodo.discordbot.client.handlers.GlobalGameManager;
 import kuroodo.discordbot.entities.JDAListener;
 import kuroodo.discordbot.helpers.ChatLogger;
@@ -27,7 +28,7 @@ import net.dv8tion.jda.core.exceptions.RateLimitedException;
 
 public class Init extends ApplicationAdapter {
 
-	public static final String SUPERUSER_PASSWORD = JSonReader.getSuperUserPassword(), VERSION = "1.9.5";
+	public static final String SUPERUSER_PASSWORD = JSonReader.getSuperUserPassword(), VERSION = "1.9.6";
 	// Users that have special bot commands and access
 	public static final ArrayList<User> SUPER_USERS = new ArrayList<>();
 
@@ -92,6 +93,7 @@ public class Init extends ApplicationAdapter {
 	}
 
 	private static void setupListeners() {
+		listeners.add(new AudioPlayer());
 		listeners.add(new ChatCommandListener());
 		listeners.add(new BotCommandListener());
 		listeners.add(new ChatListener());

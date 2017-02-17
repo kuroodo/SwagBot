@@ -4,8 +4,10 @@ import java.util.ArrayList;
 import java.util.ConcurrentModificationException;
 
 import kuroodo.discordbot.Init;
+import kuroodo.discordbot.botcommands.BotCommandBlock;
 import kuroodo.discordbot.botcommands.BotCommandSay;
 import kuroodo.discordbot.botcommands.BotCommandSetGame;
+import kuroodo.discordbot.botcommands.BotCommandUnblock;
 import kuroodo.discordbot.client.handlers.BotCommandHandler;
 import kuroodo.discordbot.entities.BotCommand;
 import kuroodo.discordbot.entities.JDAListener;
@@ -83,5 +85,7 @@ public class BotCommandListener extends JDAListener {
 	private void registerCommands() {
 		BotCommandHandler.registerCommand("!say", BotCommandSay.class);
 		BotCommandHandler.registerCommand("!setgame", BotCommandSetGame.class);
+		BotCommandHandler.registerCommand("!block", BotCommandBlock.class);
+		BotCommandHandler.registerCommand("!unblock", BotCommandUnblock.class);
 	}
 }
