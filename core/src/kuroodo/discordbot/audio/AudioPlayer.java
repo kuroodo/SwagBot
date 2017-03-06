@@ -79,7 +79,14 @@ public class AudioPlayer extends JDAListener {
 			} else if ("!stop".equals(command[0])) {
 				GuildMusicManager musicManager = getGuildAudioPlayer(event.getGuild());
 				musicManager.player.stopTrack();
+			} else if ("!pause".equals(command[0])) {
+				GuildMusicManager musicManager = getGuildAudioPlayer(event.getGuild());
+				musicManager.player.setPaused(true);
+			} else if ("!resume".equals(command[0])) {
+				GuildMusicManager musicManager = getGuildAudioPlayer(event.getGuild());
+				musicManager.player.setPaused(false);
 			}
+
 		}
 
 		super.onMessageReceived(event);
@@ -108,16 +115,15 @@ public class AudioPlayer extends JDAListener {
 
 			@Override
 			public void playlistLoaded(AudioPlaylist playlist) {
-				AudioTrack firstTrack = playlist.getSelectedTrack();
+				// AudioTrack firstTrack = playlist.getSelectedTrack();
+				//
+				// if (firstTrack == null) {
+				// firstTrack = playlist.getTracks().get(0);
+				// }
 
-				if (firstTrack == null) {
-					firstTrack = playlist.getTracks().get(0);
-				}
+				channel.sendMessage("Adding playlist " + playlist.getName()).queue();
 
-				channel.sendMessage("Adding to queue " + firstTrack.getInfo().title + " (first track of playlist "
-						+ playlist.getName() + ")").queue();
-
-				play(channel.getGuild(), userVoiceChannel, musicManager, firstTrack);
+				play(channel.getGuild(), userVoiceChannel, musicManager, playlist);
 			}
 
 			@Override
@@ -137,6 +143,17 @@ public class AudioPlayer extends JDAListener {
 		// connectToFirstVoiceChannel();
 
 		musicManager.scheduler.queue(track);
+	}
+
+	private void play(Guild guild, VoiceChannel userVoiceChannel, GuildMusicManager musicManager,
+			AudioPlaylist playlist) {
+		guild.getAudioManager().openAudioConnection(userVoiceChannel);
+		// connectToFirstVoiceChannel();
+
+		for (AudioTrack track : playlist.getTracks()) {
+			musicManager.scheduler.queue(track);
+		}
+
 	}
 
 	private void skipTrack(TextChannel channel) {
