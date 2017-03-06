@@ -5,8 +5,10 @@
 package kuroodo.discordbot.audio;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Random;
 
 import com.sedmelluq.discord.lavaplayer.player.AudioLoadResultHandler;
 import com.sedmelluq.discord.lavaplayer.player.AudioPlayerManager;
@@ -64,15 +66,10 @@ public class AudioPlayer extends JDAListener {
 
 		if (guild != null) {
 			if ("!play".equals(command[0]) && command.length == 2) {
+				setupPlay(event.getAuthor(), event.getTextChannel(), command, false);
 
-				VoiceChannel userChannel = JDAHelper.getUserVoiceChannel(event.getAuthor().getName());
-
-				if (!isVoiceChannelBlocked(event.getAuthor())) {
-					connected = true;
-					loadAndPlay(event.getTextChannel(), userChannel, command[1]);
-				} else {
-					event.getChannel().sendMessage("Unable to join '" + userChannel.getName() + "'").queue();
-				}
+			} else if ("!playrandom".equals(command[0]) && command.length == 2) {
+				setupPlay(event.getAuthor(), event.getTextChannel(), command, true);
 
 			} else if ("!skip".equals(command[0])) {
 				skipTrack(event.getTextChannel());
@@ -92,6 +89,17 @@ public class AudioPlayer extends JDAListener {
 		super.onMessageReceived(event);
 	}
 
+	private void setupPlay(User author, TextChannel textchannel, String[] command, boolean isRandomized) {
+		VoiceChannel userChannel = JDAHelper.getUserVoiceChannel(author.getName());
+
+		if (!isVoiceChannelBlocked(author)) {
+			connected = true;
+			loadAndPlay(textchannel, userChannel, command[1], isRandomized);
+		} else {
+			textchannel.sendMessage("Unable to join '" + userChannel.getName() + "'").queue();
+		}
+	}
+
 	private boolean isVoiceChannelBlocked(User user) {
 		VoiceChannel userChannel = JDAHelper.getUserVoiceChannel(user.getName());
 		for (VoiceChannel channel : blockedChannels) {
@@ -102,7 +110,8 @@ public class AudioPlayer extends JDAListener {
 		return false;
 	}
 
-	private void loadAndPlay(final TextChannel channel, final VoiceChannel userVoiceChannel, final String trackUrl) {
+	private void loadAndPlay(final TextChannel channel, final VoiceChannel userVoiceChannel, final String trackUrl,
+			boolean isRandomized) {
 		GuildMusicManager musicManager = getGuildAudioPlayer(channel.getGuild());
 
 		playerManager.loadItemOrdered(musicManager, trackUrl, new AudioLoadResultHandler() {
@@ -123,7 +132,7 @@ public class AudioPlayer extends JDAListener {
 
 				channel.sendMessage("Adding playlist " + playlist.getName()).queue();
 
-				play(channel.getGuild(), userVoiceChannel, musicManager, playlist);
+				play(channel.getGuild(), userVoiceChannel, musicManager, playlist, isRandomized);
 			}
 
 			@Override
@@ -146,9 +155,14 @@ public class AudioPlayer extends JDAListener {
 	}
 
 	private void play(Guild guild, VoiceChannel userVoiceChannel, GuildMusicManager musicManager,
-			AudioPlaylist playlist) {
+			AudioPlaylist playlist, boolean isRandomized) {
 		guild.getAudioManager().openAudioConnection(userVoiceChannel);
 		// connectToFirstVoiceChannel();
+
+		if (isRandomized) {
+			long seed = System.nanoTime();
+			Collections.shuffle(playlist.getTracks(), new Random(seed));
+		}
 
 		for (AudioTrack track : playlist.getTracks()) {
 			musicManager.scheduler.queue(track);
