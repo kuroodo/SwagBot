@@ -16,7 +16,6 @@ public class CommandBan extends ChatCommand {
 		isModCommand = true;
 	}
 
-	// TODO: Cleanup some of this code by putting it into methods
 	@Override
 	public void executeCommand(String commandParams, GuildMessageReceivedEvent event) {
 		super.executeCommand(commandParams, event);
@@ -30,7 +29,6 @@ public class CommandBan extends ChatCommand {
 		String banReason = JDAHelper.splitString(commandParameters)[1];
 
 		if (memberToBan != null) {
-			TextChannel adminChannel = JDAHelper.getTextChannelByName(JSonReader.getPreferencesValue("adminchannel"));
 
 			// Check if trying to ban bot
 			if (memberToBan.getUser() == Init.getJDA().getSelfUser()) {
@@ -50,19 +48,8 @@ public class CommandBan extends ChatCommand {
 						.queue();
 
 			} else if (JDAHelper.isMemberAdmin(JDAHelper.getMember(event.getAuthor()))) {
-
-				if (adminChannel != null) {
-					adminChannel.sendMessage(memberToBan.getUser().getName() + " has been banned for " + banReason)
-							.queue();
-				}
-
-				memberToBan.getUser().getPrivateChannel()
-						.sendMessage(
-								"You have been banned from " + JDAHelper.getGuild().getName() + " for " + banReason)
-						.queue();
-
-				JDAHelper.getGuild().getController().ban(memberToBan, BAN_DAYS).queue();
-
+				sendBanNotifications(memberToBan, banReason);
+				banMember(memberToBan);
 			} else if (JDAHelper.isMemberModerator(JDAHelper.getMember(event.getAuthor()))) {
 
 				// Check if moderator is trying to ban an admin
@@ -73,30 +60,43 @@ public class CommandBan extends ChatCommand {
 					event.getChannel().sendMessage(event.getAuthor().getAsMention() + " Moderators cannot ban admins!")
 							.queue();
 				} else {
-
-					if (adminChannel != null) {
-						adminChannel.sendMessage(memberToBan.getUser().getName() + " has been banned for " + banReason)
-								.queue();
-					}
-
-					memberToBan.getUser().getPrivateChannel()
-							.sendMessage(
-									"You have been banned from " + JDAHelper.getGuild().getName() + " for " + banReason)
-							.queue();
-					JDAHelper.getGuild().getController().ban(memberToBan, BAN_DAYS).queue();
+					sendBanNotifications(memberToBan, banReason);
+					banMember(memberToBan);
 				}
 			}
 		}
 		event.getMessage().deleteMessage();
 	}
 
+	private void banMember(Member memberToBan) {
+		JDAHelper.getGuild().getController().ban(memberToBan, BAN_DAYS).queue();
+	}
+
+	private void sendBanNotifications(Member memberToBan, String reason) {
+		TextChannel adminChannel = JDAHelper.getTextChannelByName(JSonReader.getPreferencesValue("adminchannel"));
+
+		if (adminChannel != null) {
+			adminChannel.sendMessage(memberToBan.getUser().getName() + " has been banned for " + reason).queue();
+		}
+
+		try {
+			memberToBan.getUser().getPrivateChannel()
+					.sendMessage("You have been banned from " + JDAHelper.getGuild().getName() + " for " + reason)
+					.queue();
+		} catch (IllegalStateException e) {
+			System.out.println(
+					"Pending kick member " + memberToBan.getUser().getName() + " does not have a private channel");
+		}
+	}
+
 	private Member findMember() {
-		Member member = JDAHelper.getMemberByID(JDAHelper.splitString(commandParameters)[0]);
+
+		Member member = JDAHelper.getMember(event.getMessage().getMentionedUsers().get(0));
 
 		if (member == null) {
-			member = JDAHelper.getMemberByUsername(JDAHelper.splitString(commandParameters)[0]);
+			member = JDAHelper.getMemberByID(JDAHelper.splitString(commandParameters)[0]);
 			if (member == null) {
-				member = JDAHelper.getMember(event.getMessage().getMentionedUsers().get(0));
+				member = JDAHelper.getMemberByUsername(JDAHelper.splitString(commandParameters)[0]);
 			}
 		}
 		return member;

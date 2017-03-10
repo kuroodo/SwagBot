@@ -16,7 +16,6 @@ public class CommandTempBan extends ChatCommand {
 		isModCommand = true;
 	}
 
-	// TODO: Cleanup some of this code by putting it into methods
 	@Override
 	public void executeCommand(String commandParams, GuildMessageReceivedEvent event) {
 		super.executeCommand(commandParams, event);
@@ -67,22 +66,23 @@ public class CommandTempBan extends ChatCommand {
 
 	}
 
-	private void tempBanUser(Member member) {
+	private void tempBanUser(Member memberToTempBan) {
 		final String DEATHROLENAME = "TempBan";
 		GuildController controller = JDAHelper.getGuild().getController();
 
-		JDAHelper.removeUsersRoles(member, controller);
-		controller.addRolesToMember(member, JDAHelper.getRoleByName(DEATHROLENAME)).queue();
+		JDAHelper.removeUsersRoles(memberToTempBan, controller);
+		controller.addRolesToMember(memberToTempBan, JDAHelper.getRoleByName(DEATHROLENAME)).queue();
 	}
 
-	private void sendBanNotifications(Member member, String reason) {
+	private void sendBanNotifications(Member memberToTempBan, String reason) {
 		TextChannel adminChannel = JDAHelper.getTextChannelByName(JSonReader.getPreferencesValue("adminchannel"));
 
 		if (adminChannel != null) {
-			adminChannel.sendMessage(member.getUser().getName() + " has been temporarily banned for " + reason).queue();
+			adminChannel.sendMessage(memberToTempBan.getUser().getName() + " has been temporarily banned for " + reason)
+					.queue();
 		}
 
-		member.getUser().getPrivateChannel().sendMessage(
+		memberToTempBan.getUser().getPrivateChannel().sendMessage(
 				"You have been temporarily banned/silenced from " + JDAHelper.getGuild().getName() + " for " + reason)
 				.queue();
 		;
