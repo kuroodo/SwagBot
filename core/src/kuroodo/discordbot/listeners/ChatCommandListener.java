@@ -14,6 +14,7 @@ import kuroodo.discordbot.chatcommands.CommandRoast;
 import kuroodo.discordbot.chatcommands.CommandRoulette;
 import kuroodo.discordbot.chatcommands.CommandSlap;
 import kuroodo.discordbot.chatcommands.CommandSpartanKick;
+import kuroodo.discordbot.chatcommands.CommandTrivia;
 import kuroodo.discordbot.chatcommands.admin.CommandDeleteRole;
 import kuroodo.discordbot.chatcommands.admin.CommandEditRoleColor;
 import kuroodo.discordbot.chatcommands.admin.CommandGiveRole;
@@ -107,6 +108,7 @@ public class ChatCommandListener extends JDAListener {
 		ChatCommandHandler.registerCommand("!roulette", CommandRoulette.class);
 		ChatCommandHandler.registerCommand("!spartankick", CommandSpartanKick.class);
 		ChatCommandHandler.registerCommand("!slap", CommandSlap.class);
+		ChatCommandHandler.registerCommand("!trivia", CommandTrivia.class);
 		ChatCommandHandler.registerCommand("!playgame", CommandPlayGame.class);
 		ChatCommandHandler.registerCommand("!help", CommandHelp.class);
 		ChatCommandHandler.registerCommand("!info", CommandHelp.class);
