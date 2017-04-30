@@ -67,3 +67,4 @@ build/
 config.json
 html/
 desktop/preferences.json
+core/src/kuroodo/discordbot/chatcommands/CommandEmbedTest.java

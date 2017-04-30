@@ -22,3 +22,6 @@ public class DesktopLauncher {
 // TODO: Notify user via PM if a game session was terminated and by who
 // TODO: If a player in a gamesession loses their roll (or is missing) end the
 // game session and notify all players why the session ended
+
+// TODO: Battleship end game stuff and rematch
+// TODO: Battleship new game setup check for valid ship placement
