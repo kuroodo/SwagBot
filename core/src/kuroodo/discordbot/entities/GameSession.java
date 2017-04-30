@@ -37,11 +37,12 @@ public abstract class GameSession implements Game {
 	@Override
 	public void recievePlayerInput(Member playerWhoSentInput, String input, Message inputMessage) {
 		latestMessage = inputMessage;
-		if (playerWhoSentInput != currentPlayer) {
-			isInputValid = false;
-		} else {
-			isInputValid = true;
-		}
+		isInputValid = (playerWhoSentInput == currentPlayer);
+	}
+
+	@Override
+	public void recievePrivatePlayerInput(Member playerWhoSentInput, String input, Message inputMessage) {
+		latestMessage = inputMessage;
 	}
 
 	protected void sendMessage(String message) {

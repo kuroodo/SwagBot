@@ -67,4 +67,8 @@ build/
 config.json
 html/
 desktop/preferences.json
+<<<<<<< .merge_file_a08264
 core/src/kuroodo/discordbot/chatcommands/CommandEmbedTest.java
+=======
+desktop/trivia/
+>>>>>>> .merge_file_a09820

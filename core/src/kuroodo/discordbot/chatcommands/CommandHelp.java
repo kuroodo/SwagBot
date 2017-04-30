@@ -113,20 +113,23 @@ public class CommandHelp extends ChatCommand {
 
 	private void printHiddenCommands(String commandWord) {
 		switch (commandWord) {
-		case "!join":
 		case "!play":
+		case "!playrandom":
 		case "!stop":
+		case "!skip":
 		case "!pause":
-		case "!restart":
+		case "!resume":
+		case "trackinfo":
 			sendPrivateMessage("A hidden command, these commands are for using the audio player\n\n"
-					+ "!join [voicechannelname] makes bot join a specific voice channel. Example: !join General\n"
-					+ "!play [file/url] [filelocation/url] OR !play makes the bot play an audio file from 2 different sources. "
-					+ "Audio files that are not from a url are currently only supported by the system running the bot\n"
-					+ "Example: !play url https://someurl.com/audiofile.mp3 OR !play file c:\\somefilelocation\\audiofile.mp3\n"
-					+ "When trying to play a file after it's beened paused, just use !play\n\n"
-					+ "!stop, !pause, !restart. !stop stops the audio stream, use !restart to start the stream again.\n"
-					+ "!pause pauses the audio. Use !play to start playing again\n"
-					+ "!restart plays the audio stream from the beginning");
+					+ "!play [filelocation/url] makes the bot play a audio from a specified source"
+					+ "Example: !play https://someurl.com/audiofile.mp3 OR !play c:\\somefilelocation\\audiofile.mp3\n"
+					+ "YouTube videos and playlists are supported\n"
+					+ "When trying to play a file after it's beened paused, just use !resume\n\n"
+					+ "!playrandom works the same way as !play, except that it randomly shuffles audio in a specified playlist (like a youtube playlist)"
+					+ "!stop, !pause, !restart. !stop stops the audio stream, use !play to start the stream again.\n"
+					+ "!pause pauses the audio. Use !resume to start playing again"
+					+ "!trackinfo gives information on the currently playing or paused track");
+
 			break;
 		case "!soundboard":
 			ArrayList<String> soundList = new ArrayList<>();
