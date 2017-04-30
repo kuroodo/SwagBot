@@ -25,6 +25,7 @@ public class TriviaSession extends JDAListener {
 
 	private TextChannel triviaChannel;
 	private String questionPretext, question, answer;
+	private boolean isAnswered = false;
 
 	private XmlReader xmlReader;
 	private Element root;
@@ -38,9 +39,11 @@ public class TriviaSession extends JDAListener {
 
 			@Override
 			public void run() {
-				triviaChannel.sendMessage("Times up! Nobody got the answer...\nThe answer was: '" + answer + "'\n")
-						.queue();
-				endTriviaSession();
+				if (!isAnswered) {
+					triviaChannel.sendMessage("Times up! Nobody got the answer...\nThe answer was: '" + answer + "'\n")
+							.queue();
+					endTriviaSession();
+				}
 			}
 		}, 15);
 	}
@@ -87,8 +90,8 @@ public class TriviaSession extends JDAListener {
 
 			if (event.getMessage().getRawContent().toLowerCase().equals(answer.toLowerCase())) {
 				if (triviaChannel != null) {
-
-					manageMemberStats(event.getMember().getUser().getId(), true);
+					isAnswered = true;
+					manageMemberStats(event.getMember().getUser().getId());
 
 					triviaChannel.sendMessage(event.getAuthor().getAsMention() + " Answered correctly!\nAnswer: '"
 							+ answer + "'\n" + event.getMember().getEffectiveName() + "'s ScoreBoard: ```"
@@ -98,9 +101,6 @@ public class TriviaSession extends JDAListener {
 				} else {
 					endTriviaSession();
 				}
-
-			} else {
-				manageMemberStats(event.getMember().getUser().getId(), false);
 			}
 		}
 
@@ -113,14 +113,12 @@ public class TriviaSession extends JDAListener {
 		return "Score: " + totalScore + ", Answers: " + totalAnswers;
 	}
 
-	private void manageMemberStats(String userID, boolean answeredQuestion) {
+	private void manageMemberStats(String userID) {
 		int totalAnswers = Integer.parseInt(PlayerBoardConfigurator.getplayerTotalAnswers(userID));
 		int totalScore = Integer.parseInt(PlayerBoardConfigurator.getPlayerTotalScore(userID));
 
-		if (answeredQuestion) {
-			totalAnswers += 1;
-			totalScore += 1;
-		}
+		totalAnswers += 1;
+		totalScore += 1;
 
 		PlayerBoardConfigurator.changePlayerData(userID, EXmlAttributes.ANSWERS, String.valueOf(totalAnswers));
 		PlayerBoardConfigurator.changePlayerData(userID, EXmlAttributes.SCORE, String.valueOf(totalScore));
