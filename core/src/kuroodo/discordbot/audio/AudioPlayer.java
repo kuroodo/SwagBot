@@ -9,6 +9,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
+import java.util.concurrent.TimeUnit;
 
 import com.sedmelluq.discord.lavaplayer.player.AudioLoadResultHandler;
 import com.sedmelluq.discord.lavaplayer.player.AudioPlayerManager;
@@ -82,6 +83,22 @@ public class AudioPlayer extends JDAListener {
 			} else if ("!resume".equals(command[0])) {
 				GuildMusicManager musicManager = getGuildAudioPlayer(event.getGuild());
 				musicManager.player.setPaused(false);
+			} else if ("!trackinfo".equals(command[0])) {
+				String message = "";
+				String trackTime = "";
+
+				GuildMusicManager musicManager = getGuildAudioPlayer(event.getGuild());
+				message = message + musicManager.player.getPlayingTrack().getInfo().title;
+
+				long milliseconds = Long.valueOf(musicManager.player.getPlayingTrack().getInfo().length);
+
+				trackTime = String.format("%02d:%02d:%02d", TimeUnit.MILLISECONDS.toHours(milliseconds),
+						TimeUnit.MILLISECONDS.toMinutes(milliseconds), TimeUnit.MILLISECONDS.toSeconds(milliseconds)
+								- TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.toMinutes(milliseconds)));
+
+				message = message + " (" + trackTime + ")";
+
+				event.getChannel().sendMessage(message).queue();
 			}
 
 		}
