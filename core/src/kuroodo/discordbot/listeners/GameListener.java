@@ -9,6 +9,7 @@ import kuroodo.discordbot.client.handlers.GlobalGameManager;
 import kuroodo.discordbot.entities.GameSession;
 import kuroodo.discordbot.entities.JDAListener;
 import kuroodo.discordbot.games.ExampleGame;
+import kuroodo.discordbot.games.battleship.BattleShip;
 import kuroodo.discordbot.games.tictactoe.GameTicTacToe;
 import kuroodo.discordbot.helpers.JDAHelper;
 import net.dv8tion.jda.core.Permission;
@@ -17,6 +18,7 @@ import net.dv8tion.jda.core.entities.PermissionOverride;
 import net.dv8tion.jda.core.entities.Role;
 import net.dv8tion.jda.core.entities.TextChannel;
 import net.dv8tion.jda.core.events.message.guild.GuildMessageReceivedEvent;
+import net.dv8tion.jda.core.events.message.priv.PrivateMessageReceivedEvent;
 import net.dv8tion.jda.core.managers.ChannelManager;
 import net.dv8tion.jda.core.managers.GuildController;
 import net.dv8tion.jda.core.managers.RoleManager;
@@ -69,6 +71,14 @@ public class GameListener extends JDAListener {
 		}
 	}
 
+	@Override
+	public void onPrivateMessageReceived(PrivateMessageReceivedEvent event) {
+		super.onPrivateMessageReceived(event);
+		if (event.getAuthor() != null) {
+			sendPrivateGameInput(event, event.getMessage().getRawContent());
+		}
+	}
+
 	private void sendGameInput(GuildMessageReceivedEvent event, String message) {
 		if (gameSession != null) {
 			if (message.startsWith("!game")) {
@@ -79,6 +89,16 @@ public class GameListener extends JDAListener {
 		} else if (isMP && message.equals("!accept")) {
 			if (event.getMember() == players.get(1)) {
 				startMPSession(event);
+			}
+		}
+	}
+
+	private void sendPrivateGameInput(PrivateMessageReceivedEvent event, String message) {
+		if (gameSession != null) {
+			if (message.startsWith("!game")) {
+				// send everything after !game
+				gameSession.recievePrivatePlayerInput(JDAHelper.getGuild().getMember(event.getAuthor()),
+						JDAHelper.splitString(message)[1], event.getMessage());
 			}
 		}
 	}
@@ -112,6 +132,8 @@ public class GameListener extends JDAListener {
 			return new ExampleGame(players, multiplayer, gameChannel);
 		case "tictactoe":
 			return new GameTicTacToe(players, multiplayer, gameChannel);
+		case "battleship":
+			return new BattleShip(players, multiplayer, gameChannel);
 		default:
 			return null;
 		}

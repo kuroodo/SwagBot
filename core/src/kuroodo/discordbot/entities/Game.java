@@ -9,6 +9,8 @@ public interface Game {
 
 	public void recievePlayerInput(Member player, String input, Message inputMessage);
 
+	public void recievePrivatePlayerInput(Member player, String input, Message inputMessage);
+
 	public boolean isMultiplayer();
 
 	public boolean isgameFinished();
