@@ -54,6 +54,7 @@ public class Init extends ApplicationAdapter {
 
 		try {
 			jda = new JDABuilder(AccountType.BOT).setToken(BOTTOKEN).buildBlocking();
+
 			botName = jda.getSelfUser().getName();
 			System.out.println("Hello, I Am " + botName + " v" + VERSION);
 
@@ -115,6 +116,16 @@ public class Init extends ApplicationAdapter {
 
 	public static String getBotName() {
 		return botName;
+	}
+
+	public static void removeListener(JDAListener listenerToRemove) {
+		jda.removeEventListener(listenerToRemove);
+		listeners.remove(listenerToRemove);
+	}
+
+	public static void addNewListener(JDAListener newListener) {
+		listeners.add(newListener);
+		jda.addEventListener(newListener);
 	}
 
 	public static ArrayList<JDAListener> getListeners() {
