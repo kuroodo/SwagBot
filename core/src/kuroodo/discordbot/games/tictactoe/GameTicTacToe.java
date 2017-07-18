@@ -60,7 +60,7 @@ public class GameTicTacToe extends GameSession {
 			}
 		} else {
 			// Delete any irrelevant/illegal !game messages
-			inputMessage.deleteMessage();
+			inputMessage.delete();
 		}
 	}
 

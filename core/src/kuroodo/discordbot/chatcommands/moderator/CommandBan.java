@@ -33,16 +33,15 @@ public class CommandBan extends ChatCommand {
 			// Check if trying to ban bot
 			if (memberToBan.getUser() == Init.getJDA().getSelfUser()) {
 
-				Init.getServerOwner().getPrivateChannel()
-						.sendMessage(event.getAuthor().getName() + " Just tried to ban me!").queue();
+				sendPrivateMessage(Init.getServerOwner(), event.getAuthor().getName() + " Just tried to ban me!");
+
 				event.getChannel().sendMessage(event.getAuthor().getAsMention() + " You dare to conspire against me?")
 						.queue();
 
 				// Check if trying to ban server owner
 			} else if (memberToBan.getUser() == Init.getServerOwner()) {
 
-				Init.getServerOwner().getPrivateChannel()
-						.sendMessage(event.getAuthor().getName() + " Just tried to ban you!").queue();
+				sendPrivateMessage(Init.getServerOwner(), event.getAuthor().getName() + " Just tried to ban you!");
 				event.getChannel()
 						.sendMessage(event.getAuthor().getAsMention() + " You dare to conspire against the server?")
 						.queue();
@@ -54,8 +53,8 @@ public class CommandBan extends ChatCommand {
 
 				// Check if moderator is trying to ban an admin
 				if (JDAHelper.isMemberAdmin(memberToBan)) {
-					Init.getServerOwner().getPrivateChannel()
-							.sendMessage(event.getAuthor().getName() + " Just tried to ban an admin").queue();
+					sendPrivateMessage(Init.getServerOwner(),
+							event.getAuthor().getName() + " Just tried to ban an admin");
 
 					event.getChannel().sendMessage(event.getAuthor().getAsMention() + " Moderators cannot ban admins!")
 							.queue();
@@ -65,7 +64,7 @@ public class CommandBan extends ChatCommand {
 				}
 			}
 		}
-		event.getMessage().deleteMessage();
+		event.getMessage().delete();
 	}
 
 	private void banMember(Member memberToBan) {
@@ -80,9 +79,9 @@ public class CommandBan extends ChatCommand {
 		}
 
 		try {
-			memberToBan.getUser().getPrivateChannel()
-					.sendMessage("You have been banned from " + JDAHelper.getGuild().getName() + " for " + reason)
-					.queue();
+
+			sendPrivateMessage(memberToBan.getUser(),
+					"You have been banned from " + JDAHelper.getGuild().getName() + " for " + reason);
 		} catch (IllegalStateException e) {
 			System.out.println(
 					"Pending kick member " + memberToBan.getUser().getName() + " does not have a private channel");

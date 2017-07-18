@@ -136,19 +136,12 @@ public class BattleShip extends GameSession {
 	}
 
 	public void sendPrivateMessage(Member member, String message) {
-		if (member.getUser().hasPrivateChannel()) {
-			member.getUser().getPrivateChannel().sendMessage(message).queue();
-
-		} else {
-			member.getUser().openPrivateChannel().queue(new Consumer<PrivateChannel>() {
-
-				@Override
-				public void accept(PrivateChannel t) {
-					t.sendMessage(message).queue();
-				}
-			});
-		}
-
+		member.getUser().openPrivateChannel().queue(new Consumer<PrivateChannel>() {
+			@Override
+			public void accept(PrivateChannel t) {
+				t.sendMessage(message).queue();
+			}
+		});
 	}
 
 	private void onBothPlayersReady() {
@@ -186,7 +179,6 @@ public class BattleShip extends GameSession {
 		sendPrivateMessage(player1, "**This is the other players Board**");
 		sendPrivateMessage(player1, player1SitBoard.getBoardAsString());
 
-		
 		sendPrivateMessage(player2, "**X** = Hit , **#** = MISS , **" + BSData.CARRIER_MARKER + "** = Carrier , **"
 				+ BSData.BATTLESHIP_MARKER + "** = Battleship , **" + BSData.SUBARMINE_MARKER + "** = Submarine , **"
 				+ BSData.CRUISER_MARKER + "** = Cruiser , **" + BSData.DESTROYER_MARKER + "** = Destroyer");

@@ -3,12 +3,16 @@
  */
 package kuroodo.discordbot.listeners;
 
+import java.util.function.Consumer;
+
 import kuroodo.discordbot.Init;
 import kuroodo.discordbot.entities.JDAListener;
 import kuroodo.discordbot.helpers.JDAHelper;
 import kuroodo.discordbot.helpers.JSonReader;
 import net.dv8tion.jda.core.entities.Game;
+import net.dv8tion.jda.core.entities.PrivateChannel;
 import net.dv8tion.jda.core.entities.Role;
+import net.dv8tion.jda.core.entities.User;
 import net.dv8tion.jda.core.events.DisconnectEvent;
 import net.dv8tion.jda.core.events.ReconnectedEvent;
 import net.dv8tion.jda.core.events.guild.GuildBanEvent;
@@ -53,8 +57,10 @@ public class ServerListener extends JDAListener {
 		}
 
 		String message = " User " + event.getMember().getUser().getName() + " joined the server";
+
 		System.out.println(message);
-		Init.getServerOwner().getPrivateChannel().sendMessage(message).queue();
+
+		sendPrivateMessage(Init.getServerOwner(), message);
 
 		// Send welcome message to channel if permitted
 		if (JSonReader.getPreferencesValue("sendwelcomemessage").equalsIgnoreCase("true")) {
@@ -76,22 +82,24 @@ public class ServerListener extends JDAListener {
 	public void onGuildBan(GuildBanEvent event) {
 		String message = "User " + event.getUser().getName() + " was banned from the server";
 		System.out.println(message);
-		Init.getServerOwner().getPrivateChannel().sendMessage(message).queue();
+
+		sendPrivateMessage(Init.getServerOwner(), message);
 	}
 
 	@Override
 	public void onGuildUnban(GuildUnbanEvent event) {
 		final String message = "User " + event.getUser().getName() + " was unbanned from the server";
 		System.out.println(message);
-		Init.getServerOwner().getPrivateChannel().sendMessage(message).queue();
-		;
+
+		sendPrivateMessage(Init.getServerOwner(), message);
 	}
 
 	@Override
 	public void onGuildMemberLeave(GuildMemberLeaveEvent event) {
 		final String message = "User " + event.getMember().getUser().getName() + " has left server, or been kicked";
 		System.out.println(message);
-		Init.getServerOwner().getPrivateChannel().sendMessage(message).queue();
+
+		sendPrivateMessage(Init.getServerOwner(), message);
 	}
 
 	@Override
@@ -107,11 +115,11 @@ public class ServerListener extends JDAListener {
 					String secondMsg = "Welcome to the staff team for " + event.getGuild().getName()
 							+ ". Please type !commands or !help in the server chat to review the available staff commands";
 
-					event.getMember().getUser().getPrivateChannel().sendMessage(secondMsg).queue();
+					sendPrivateMessage(event.getMember().getUser(), secondMsg);
 				}
 			}
 			System.out.println(message);
-			Init.getServerOwner().getPrivateChannel().sendMessage(message).queue();
+			sendPrivateMessage(Init.getServerOwner(), message);
 		}
 	}
 
@@ -123,7 +131,7 @@ public class ServerListener extends JDAListener {
 		}
 
 		System.out.println(message);
-		Init.getServerOwner().getPrivateChannel().sendMessage(message).queue();
+		sendPrivateMessage(Init.getServerOwner(), message);
 	}
 
 	@Override
@@ -131,7 +139,7 @@ public class ServerListener extends JDAListener {
 		if (!event.getRole().getName().startsWith("session")) {
 			final String message = "New role " + event.getRole().getName() + " has been created";
 			System.out.println(message);
-			Init.getServerOwner().getPrivateChannel().sendMessage(message).queue();
+			sendPrivateMessage(Init.getServerOwner(), message);
 		}
 	}
 
@@ -140,7 +148,7 @@ public class ServerListener extends JDAListener {
 		if (!event.getRole().getName().startsWith("session")) {
 			final String message = "The following role was deleted  " + event.getGuild().getName();
 			System.out.println(message);
-			Init.getServerOwner().getPrivateChannel().sendMessage(message).queue();
+			sendPrivateMessage(Init.getServerOwner(), message);
 		}
 	}
 
@@ -149,7 +157,7 @@ public class ServerListener extends JDAListener {
 		if (!event.getRole().getName().startsWith("session")) {
 			final String message = "The following role's permissions were changed  " + event.getRole().getName();
 			System.out.println(message);
-			Init.getServerOwner().getPrivateChannel().sendMessage(message).queue();
+			sendPrivateMessage(Init.getServerOwner(), message);
 		}
 	}
 
@@ -158,8 +166,17 @@ public class ServerListener extends JDAListener {
 		if (!event.getRole().getName().startsWith("session")) {
 			final String message = "The following role has a new name " + event.getRole().getName();
 			System.out.println(message);
-			Init.getServerOwner().getPrivateChannel().sendMessage(message).queue();
+			sendPrivateMessage(Init.getServerOwner(), message);
 		}
+	}
+
+	private void sendPrivateMessage(User user, String message) {
+		user.openPrivateChannel().queue(new Consumer<PrivateChannel>() {
+			@Override
+			public void accept(PrivateChannel t) {
+				t.sendMessage(message).queue();
+			}
+		});
 	}
 
 	// TODO: Handle more role events

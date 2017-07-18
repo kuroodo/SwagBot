@@ -26,7 +26,7 @@ public class CommandRoast extends ChatCommand {
 		}
 
 		if (user != null) {
-			event.getMessage().deleteMessage();
+			event.getMessage().delete();
 			sendMessage(user.getAsMention() + " https://www.youtube.com/watch?v=_tWC5qtfby4");
 		}
 	}

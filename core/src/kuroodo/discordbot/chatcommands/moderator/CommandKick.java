@@ -30,16 +30,15 @@ public class CommandKick extends ChatCommand {
 			// Check if trying to kick bot
 			if (memberToKick.getUser() == Init.getJDA().getSelfUser()) {
 
-				Init.getServerOwner().getPrivateChannel()
-						.sendMessage(event.getAuthor().getName() + " Just tried to kick me!").queue();
+				sendPrivateMessage(Init.getServerOwner(), event.getAuthor().getName() + " Just tried to kick me!");
 				event.getChannel().sendMessage(event.getAuthor().getAsMention() + " You dare to conspire against me?")
 						.queue();
 
 				// Check if trying to kick server owner
 			} else if (memberToKick.getUser() == Init.getServerOwner()) {
 
-				Init.getServerOwner().getPrivateChannel()
-						.sendMessage(event.getAuthor().getName() + " Just tried to kick you!").queue();
+				sendPrivateMessage(Init.getServerOwner(), event.getAuthor().getName() + " Just tried to kick you!");
+
 				event.getChannel()
 						.sendMessage(event.getAuthor().getAsMention() + " You dare to conspire against the server?")
 						.queue();
@@ -48,11 +47,11 @@ public class CommandKick extends ChatCommand {
 				sendKickNotifications(memberToKick, reasonForKick);
 				kickMember(memberToKick);
 			} else if (JDAHelper.isMemberModerator(JDAHelper.getMember(event.getAuthor()))) {
-				
+
 				// Check if moderator is trying to kick an admin
 				if (JDAHelper.isMemberAdmin(memberToKick)) {
-					Init.getServerOwner().getPrivateChannel()
-							.sendMessage(event.getAuthor().getName() + " Just tried to kick an admin").queue();
+					sendPrivateMessage(Init.getServerOwner(),
+							event.getAuthor().getName() + " Just tried to kick an admin");
 
 					event.getChannel().sendMessage(event.getAuthor().getAsMention() + " Moderators cannot kick admins!")
 							.queue();
@@ -62,7 +61,7 @@ public class CommandKick extends ChatCommand {
 				}
 			}
 		}
-		event.getMessage().deleteMessage();
+		event.getMessage().delete();
 	}
 
 	private void kickMember(Member memberToKick) {
@@ -77,9 +76,8 @@ public class CommandKick extends ChatCommand {
 		}
 
 		try {
-			memberToKick.getUser().getPrivateChannel()
-					.sendMessage("You have been kicked from " + JDAHelper.getGuild().getName() + " for " + reason)
-					.queue();
+			sendPrivateMessage(memberToKick.getUser(),
+					"You have been kicked from " + JDAHelper.getGuild().getName() + " for " + reason);
 		} catch (IllegalStateException e) {
 			System.out.println(
 					"Pending kick member " + memberToKick.getUser().getName() + " does not have a private channel");

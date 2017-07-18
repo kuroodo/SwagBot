@@ -28,7 +28,7 @@ public class CommandPoke extends ChatCommand {
 
 		if (user != null) {
 			sendMessage(event.getAuthor().getAsMention() + " poked " + user.getAsMention());
-			event.getMessage().deleteMessage();
+			event.getMessage().delete();
 		}
 	}
 

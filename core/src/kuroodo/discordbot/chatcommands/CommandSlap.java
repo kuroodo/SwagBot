@@ -23,7 +23,7 @@ public class CommandSlap extends ChatCommand {
 
 		if (user != null) {
 			sendMessage(event.getAuthor().getAsMention() + " slapped " + user.getAsMention());
-			event.getMessage().deleteMessage();
+			event.getMessage().delete();
 		}
 	}
 

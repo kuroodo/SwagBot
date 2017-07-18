@@ -28,7 +28,7 @@ public class CommandFlipCoin extends ChatCommand {
 					event.getAuthor().getAsMention() + " ```css\n" + " flips a coin and it lands on " + "heads\n```");
 		}
 
-		event.getMessage().deleteMessage();
+		event.getMessage().delete();
 	}
 
 	@Override

@@ -41,7 +41,7 @@ public class ExampleGame extends GameSession {
 				rotatePlayers();
 			}
 		} else {
-			inputMessage.deleteMessage();
+			inputMessage.delete();
 		}
 	}
 

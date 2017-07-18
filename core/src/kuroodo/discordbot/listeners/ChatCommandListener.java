@@ -21,7 +21,6 @@ import kuroodo.discordbot.chatcommands.admin.CommandGiveRole;
 import kuroodo.discordbot.chatcommands.admin.CommandMakeRole;
 import kuroodo.discordbot.chatcommands.admin.CommandRemoveRole;
 import kuroodo.discordbot.chatcommands.moderator.CommandBan;
-import kuroodo.discordbot.chatcommands.moderator.CommandClearChat;
 import kuroodo.discordbot.chatcommands.moderator.CommandKick;
 import kuroodo.discordbot.chatcommands.moderator.CommandTempBan;
 import kuroodo.discordbot.client.handlers.ChatCommandHandler;
@@ -115,7 +114,7 @@ public class ChatCommandListener extends JDAListener {
 
 		// Moderator Commands
 		ChatCommandHandler.registerCommand("!ban", CommandBan.class);
-		ChatCommandHandler.registerCommand("!clearchat", CommandClearChat.class);
+		//ChatCommandHandler.registerCommand("!clearchat", CommandClearChat.class);
 		ChatCommandHandler.registerCommand("!kick", CommandKick.class);
 		ChatCommandHandler.registerCommand("!tempban", CommandTempBan.class);
 

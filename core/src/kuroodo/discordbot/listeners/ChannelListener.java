@@ -3,8 +3,12 @@
  */
 package kuroodo.discordbot.listeners;
 
+import java.util.function.Consumer;
+
 import kuroodo.discordbot.Init;
 import kuroodo.discordbot.entities.JDAListener;
+import net.dv8tion.jda.core.entities.PrivateChannel;
+import net.dv8tion.jda.core.entities.User;
 import net.dv8tion.jda.core.events.channel.text.TextChannelCreateEvent;
 import net.dv8tion.jda.core.events.channel.text.TextChannelDeleteEvent;
 import net.dv8tion.jda.core.events.channel.text.update.TextChannelUpdateNameEvent;
@@ -23,7 +27,9 @@ public class ChannelListener extends JDAListener {
 	@Override
 	public void onTextChannelCreate(TextChannelCreateEvent event) {
 		String message = "A TextChannel named: " + event.getChannel().getName() + " was created";
-		Init.getServerOwner().getPrivateChannel().sendMessage(message).queue();
+
+		sendPrivateMessage(Init.getServerOwner(), message);
+
 		System.out.println("EVENT: " + message);
 	}
 
@@ -31,7 +37,9 @@ public class ChannelListener extends JDAListener {
 	public void onTextChannelDelete(TextChannelDeleteEvent event) {
 		if (!event.getChannel().getName().startsWith("gamesession")) {
 			String message = "A TextChannel named: " + event.getChannel().getName() + " was deleted";
-			Init.getServerOwner().getPrivateChannel().sendMessage(message).queue();
+
+			sendPrivateMessage(Init.getServerOwner(), message);
+
 			System.out.println("EVENT: " + message);
 		}
 	}
@@ -40,7 +48,9 @@ public class ChannelListener extends JDAListener {
 	public void onTextChannelUpdateName(TextChannelUpdateNameEvent event) {
 		if (!event.getChannel().getName().startsWith("gamesession")) {
 			String message = "TextChannel " + event.getOldName() + " was renamed: " + event.getChannel().getName();
-			Init.getServerOwner().getPrivateChannel().sendMessage(message).queue();
+
+			sendPrivateMessage(Init.getServerOwner(), message);
+
 			System.out.println("EVENT: " + message);
 		}
 	}
@@ -49,7 +59,9 @@ public class ChannelListener extends JDAListener {
 	public void onTextChannelUpdatePermissions(TextChannelUpdatePermissionsEvent event) {
 		if (!event.getChannel().getName().startsWith("gamesession")) {
 			String message = "The permissions for " + event.getChannel().getName() + " were changed";
-			Init.getServerOwner().getPrivateChannel().sendMessage(message).queue();
+
+			sendPrivateMessage(Init.getServerOwner(), message);
+
 			System.out.println("EVENT: " + message);
 		}
 	}
@@ -60,28 +72,46 @@ public class ChannelListener extends JDAListener {
 	@Override
 	public void onVoiceChannelCreate(VoiceChannelCreateEvent event) {
 		String message = "A VoiceChannel named: " + event.getChannel().getName() + " was created";
-		Init.getServerOwner().getPrivateChannel().sendMessage(message).queue();
+
+		sendPrivateMessage(Init.getServerOwner(), message);
+
 		System.out.println("EVENT: " + message);
 	}
 
 	@Override
 	public void onVoiceChannelDelete(VoiceChannelDeleteEvent event) {
 		String message = "A VoiceChannel named: " + event.getChannel().getName() + " was deleted";
-		Init.getServerOwner().getPrivateChannel().sendMessage(message).queue();
+
+		sendPrivateMessage(Init.getServerOwner(), message);
+
 		System.out.println("EVENT: " + message);
 	}
 
 	@Override
 	public void onVoiceChannelUpdateName(VoiceChannelUpdateNameEvent event) {
 		String message = "VoiceChannel " + event.getOldName() + " was renamed: " + event.getChannel().getName();
-		Init.getServerOwner().getPrivateChannel().sendMessage(message).queue();
+
+		sendPrivateMessage(Init.getServerOwner(), message);
+
 		System.out.println("EVENT: " + message);
 	}
 
 	@Override
 	public void onVoiceChannelUpdatePermissions(VoiceChannelUpdatePermissionsEvent event) {
 		String message = "The permissions for " + event.getChannel().getName() + " were changed";
-		Init.getServerOwner().getPrivateChannel().sendMessage(message).queue();
+
+		sendPrivateMessage(Init.getServerOwner(), message);
+
 		System.out.println("EVENT: " + message);
 	}
+
+	private void sendPrivateMessage(User user, String message) {
+		user.openPrivateChannel().queue(new Consumer<PrivateChannel>() {
+			@Override
+			public void accept(PrivateChannel t) {
+				t.sendMessage(message).queue();
+			}
+		});
+	}
+
 }

@@ -31,15 +31,15 @@ public class CommandTempBan extends ChatCommand {
 			// Check if trying to ban bot
 			if (memberToTempBan.getUser() == Init.getJDA().getSelfUser()) {
 
-				Init.getServerOwner().getPrivateChannel()
-						.sendMessage(event.getAuthor().getName() + " Just tried to temp ban me!").queue();
+				sendPrivateMessage(Init.getServerOwner(), event.getAuthor().getName() + " Just tried to temp ban me!");
+
 				event.getChannel().sendMessage(event.getAuthor().getAsMention() + " You dare to conspire against me?")
 						.queue();
 
 				// Check if trying to ban server owner
 			} else if (memberToTempBan.getUser() == Init.getServerOwner()) {
-				Init.getServerOwner().getPrivateChannel()
-						.sendMessage(event.getAuthor().getName() + " Just tried to temp ban you!").queue();
+				sendPrivateMessage(Init.getServerOwner(), event.getAuthor().getName() + " Just tried to temp ban you!");
+
 				event.getChannel()
 						.sendMessage(event.getAuthor().getAsMention() + " You dare to conspire against the server?")
 						.queue();
@@ -51,8 +51,9 @@ public class CommandTempBan extends ChatCommand {
 
 				// Check if moderator is trying to ban an admin
 				if (JDAHelper.isMemberAdmin(memberToTempBan)) {
-					Init.getServerOwner().getPrivateChannel()
-							.sendMessage(event.getAuthor().getName() + " Just tried to temp ban an admin").queue();
+					sendPrivateMessage(Init.getServerOwner(),
+							event.getAuthor().getName() + " Just tried to temp ban an admin");
+
 					event.getChannel()
 							.sendMessage(event.getAuthor().getAsMention() + " Moderators cannot temp ban admins!")
 							.queue();
@@ -62,7 +63,7 @@ public class CommandTempBan extends ChatCommand {
 				}
 			}
 		}
-		event.getMessage().deleteMessage();
+		event.getMessage().delete();
 
 	}
 
@@ -82,9 +83,8 @@ public class CommandTempBan extends ChatCommand {
 					.queue();
 		}
 
-		memberToTempBan.getUser().getPrivateChannel().sendMessage(
-				"You have been temporarily banned/silenced from " + JDAHelper.getGuild().getName() + " for " + reason)
-				.queue();
+		sendPrivateMessage(memberToTempBan.getUser(),
+				"You have been temporarily banned/silenced from " + JDAHelper.getGuild().getName() + " for " + reason);
 		;
 	}
 

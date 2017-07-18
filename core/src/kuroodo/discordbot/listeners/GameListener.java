@@ -13,6 +13,7 @@ import kuroodo.discordbot.games.battleship.BattleShip;
 import kuroodo.discordbot.games.tictactoe.GameTicTacToe;
 import kuroodo.discordbot.helpers.JDAHelper;
 import net.dv8tion.jda.core.Permission;
+import net.dv8tion.jda.core.entities.Channel;
 import net.dv8tion.jda.core.entities.Member;
 import net.dv8tion.jda.core.entities.PermissionOverride;
 import net.dv8tion.jda.core.entities.Role;
@@ -141,11 +142,11 @@ public class GameListener extends JDAListener {
 
 	private void setUpGameChannel(int sessionId) {
 
-		JDAHelper.getGuild().getController().createTextChannel("gamesession_" + sessionId)
-				.queue(new Consumer<TextChannel>() {
+		JDAHelper.getGuild().getController().createTextChannel("gamesession_" + sessionID)
+				.queue(new Consumer<Channel>() {
 
 					@Override
-					public void accept(TextChannel t) {
+					public void accept(Channel t) {
 						final ChannelManager chManager = t.getManager();
 
 						setUpChannelPermissions(chManager);
@@ -157,6 +158,7 @@ public class GameListener extends JDAListener {
 						} else {
 							System.out.println("NO");
 						}
+
 					}
 				});
 

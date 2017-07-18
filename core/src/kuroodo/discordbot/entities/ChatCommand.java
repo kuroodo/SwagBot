@@ -1,7 +1,12 @@
 package kuroodo.discordbot.entities;
 
+import java.util.function.Consumer;
+
 import kuroodo.discordbot.Init;
 import kuroodo.discordbot.helpers.JDAHelper;
+import net.dv8tion.jda.core.entities.PrivateChannel;
+import net.dv8tion.jda.core.entities.TextChannel;
+import net.dv8tion.jda.core.entities.User;
 import net.dv8tion.jda.core.events.message.guild.GuildMessageReceivedEvent;
 import net.dv8tion.jda.core.events.message.priv.PrivateMessageReceivedEvent;
 
@@ -49,7 +54,26 @@ public abstract class ChatCommand implements Command {
 	}
 
 	protected void sendPrivateMessage(String message) {
-		event.getAuthor().getPrivateChannel().sendMessage(message).queue();
+		event.getAuthor().openPrivateChannel().queue(new Consumer<PrivateChannel>() {
+			@Override
+			public void accept(PrivateChannel t) {
+				t.sendMessage(message).queue();
+			}
+		});
+	}
+
+	protected void sendMessage(TextChannel txtChan, String message) {
+		System.out.println("sending msg");
+		txtChan.sendMessage(message).queue();
+	}
+
+	protected void sendPrivateMessage(User user, String message) {
+		user.openPrivateChannel().queue(new Consumer<PrivateChannel>() {
+			@Override
+			public void accept(PrivateChannel t) {
+				t.sendMessage(message).queue();
+			}
+		});
 	}
 
 	// Method being kept for temporary reference
