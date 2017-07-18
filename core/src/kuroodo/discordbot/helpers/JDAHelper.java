@@ -96,14 +96,7 @@ public class JDAHelper {
 	}
 
 	public static User getUserByUsername(String username) {
-		for (Member member : getGuild().getMembers()) {
-			if (member.getUser().getName().equals(username)) {
-				return member.getUser();
-			}
-		}
-
-		System.out.println("ERROR Could Not Get User By Username");
-		return null;
+		return getMemberByUsername(username).getUser();
 	}
 
 	public static Member getMemberByUsername(String username) {
@@ -113,27 +106,27 @@ public class JDAHelper {
 			}
 		}
 
-		System.out.println("ERROR Could Not Get MEMBER By Username");
+		System.out.println("ERROR Could Not Get Member/User By Username");
 		return null;
 	}
 
-	public static User getUserByID(String ID) {
-		Member memberToGet = getGuild().getMemberById(ID);
-		if (memberToGet != null) {
-			return getGuild().getMemberById(ID).getUser();
-		} else {
-			System.out.println("ERROR could not get user by ID!");
-			return null;
-		}
-	}
+	// public static User getUserByID(String ID) {
+	// Member memberToGet = getGuild().getMemberById(ID);
+	// if (memberToGet != null) {
+	// return getGuild().getMemberById(ID).getUser();
+	// } else {
+	// System.out.println("ERROR could not get user by ID!");
+	// return null;
+	// }
+	// }
 
-	public static Member getMemberByID(String ID) {
-		return getGuild().getMemberById(ID);
-	}
+	// public static Member getMemberByID(String ID) {
+	// return getGuild().getMemberById(ID);
+	// }
 
-	public static String getUsernameById(String ID) {
-		return getUserByID(ID).getName();
-	}
+	// public static String getUsernameById(String ID) {
+	// return getUserByID(ID).getName();
+	// }
 
 	public static User getRandomOnlineUser() {
 		Random rand = new Random();
@@ -192,10 +185,6 @@ public class JDAHelper {
 			}
 		}
 		return false;
-	}
-
-	public static boolean isUsernameValidUser(String userName) {
-		return getUserByUsername(userName) != null;
 	}
 
 	public static int getUserCount() {
