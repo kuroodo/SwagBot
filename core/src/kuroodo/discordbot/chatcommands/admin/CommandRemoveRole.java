@@ -42,15 +42,12 @@ public class CommandRemoveRole extends ChatCommand {
 	}
 
 	private Member findMember() {
-		Member member = JDAHelper.getMemberByID(JDAHelper.splitString(commandParameters)[1]);
-
-		if (member == null) {
-			member = JDAHelper.getMemberByUsername(JDAHelper.splitString(commandParameters)[1]);
-			if (member == null) {
-				member = JDAHelper.getMember(event.getMessage().getMentionedUsers().get(0));
-			}
+		if (!event.getMessage().getMentionedUsers().isEmpty()) {
+			return JDAHelper.getMember(event.getMessage().getMentionedUsers().get(0));
 		}
-		return member;
+
+		sendMessage("Please mention a valid user");
+		return null;
 	}
 
 	@Override

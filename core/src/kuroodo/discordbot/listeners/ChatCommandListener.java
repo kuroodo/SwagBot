@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.ConcurrentModificationException;
 
 import kuroodo.discordbot.Init;
+import kuroodo.discordbot.chatcommands.ChatCommandTest;
 import kuroodo.discordbot.chatcommands.CommandAvatar;
 import kuroodo.discordbot.chatcommands.CommandFlipCoin;
 import kuroodo.discordbot.chatcommands.CommandHelp;
@@ -104,6 +105,7 @@ public class ChatCommandListener extends JDAListener {
 
 		ChatCommandHandler.registerCommand("!poke", CommandPoke.class);
 		ChatCommandHandler.registerCommand("!roast", CommandRoast.class);
+		ChatCommandHandler.registerCommand("!roasted", CommandRoast.class);
 		ChatCommandHandler.registerCommand("!roulette", CommandRoulette.class);
 		ChatCommandHandler.registerCommand("!spartankick", CommandSpartanKick.class);
 		ChatCommandHandler.registerCommand("!slap", CommandSlap.class);

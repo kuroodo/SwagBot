@@ -6,12 +6,13 @@ import java.util.function.Consumer;
 import kuroodo.discordbot.Init;
 import kuroodo.discordbot.entities.ChatCommand;
 import kuroodo.discordbot.helpers.JDAHelper;
-import net.dv8tion.jda.core.MessageHistory;
 import net.dv8tion.jda.core.entities.Game;
 import net.dv8tion.jda.core.entities.Member;
 import net.dv8tion.jda.core.entities.Message;
+import net.dv8tion.jda.core.entities.MessageHistory;
 import net.dv8tion.jda.core.events.message.guild.GuildMessageReceivedEvent;
 
+// TODO: Update to new JDA versions and improve on code
 public class CommandClearChat extends ChatCommand {
 
 	// Discord only allows bulk deletion of max 100 messages

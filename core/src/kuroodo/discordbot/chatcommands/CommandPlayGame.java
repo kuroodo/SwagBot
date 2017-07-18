@@ -34,8 +34,7 @@ public class CommandPlayGame extends ChatCommand {
 			// Check if user specified a user to play with
 			if (!JDAHelper.splitString(commandParameters)[1].isEmpty()) {
 
-				// Check if the specified user is a real user
-				Member multiPlayerUser = findMultiplayerUser(JDAHelper.splitString(commandParameters)[1]);
+				Member multiPlayerUser = findMultiplayerUser(event);
 
 				if (multiPlayerUser != null && !GlobalGameManager.isUserInGameSession(multiPlayerUser)) {
 					if (multiPlayerUser == JDAHelper.getMember(Init.getJDA().getSelfUser())) {
@@ -81,18 +80,14 @@ public class CommandPlayGame extends ChatCommand {
 		return false;
 	}
 
-	private Member findMultiplayerUser(String sUserToFind) {
-		Member userToFind = JDAHelper.getMemberByID(sUserToFind);
+	private Member findMultiplayerUser(GuildMessageReceivedEvent event) {
 
-		if (userToFind == null) {
-			userToFind = JDAHelper.getMemberByUsername(sUserToFind);
-			if (userToFind == null) {
-				if (!event.getMessage().getMentionedUsers().isEmpty()) {
-					userToFind = JDAHelper.getMember(event.getMessage().getMentionedUsers().get(0));
-				}
-			}
+		if (!event.getMessage().getMentionedUsers().isEmpty()) {
+			return JDAHelper.getMember(event.getMessage().getMentionedUsers().get(0));
 		}
-		return userToFind;
+
+		sendMessage("Error: Could not find member to play with");
+		return null;
 	}
 
 	@Override

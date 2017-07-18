@@ -1,7 +1,6 @@
 package kuroodo.discordbot.chatcommands;
 
 import kuroodo.discordbot.entities.ChatCommand;
-import kuroodo.discordbot.helpers.JDAHelper;
 import net.dv8tion.jda.core.entities.User;
 import net.dv8tion.jda.core.events.message.guild.GuildMessageReceivedEvent;
 
@@ -14,27 +13,24 @@ public class CommandRoast extends ChatCommand {
 	@Override
 	public void executeCommand(String commandParams, GuildMessageReceivedEvent event) {
 		super.executeCommand(commandParams, event);
-		User user = JDAHelper.getUserByID(commandParameters);
 
-		if (user == null) {
-			user = JDAHelper.getUserByUsername(commandParameters);
-			if (user == null) {
-				if (!event.getMessage().getMentionedUsers().isEmpty()) {
-					user = event.getMessage().getMentionedUsers().get(0);
-				}
+		if (!event.getMessage().getMentionedUsers().isEmpty()) {
+			User user = event.getMessage().getMentionedUsers().get(0);
+
+			if (user != null) {
+				event.getMessage().delete();
+				sendMessage(user.getAsMention() + " https://www.youtube.com/watch?v=_tWC5qtfby4");
 			}
+		} else {
+			sendMessage("Please mention a valid user");
 		}
 
-		if (user != null) {
-			event.getMessage().delete();
-			sendMessage(user.getAsMention() + " https://www.youtube.com/watch?v=_tWC5qtfby4");
-		}
 	}
 
 	@Override
 	public String info() {
-		return "A hidden command, send a video notifying a victim that they got roasted. Usage: roasted [username]"
-				+ "\nExample: !roasted Daniel";
+		return "A hidden command, send a video notifying a victim that they got roasted. Usage: !roasted [user]"
+				+ "\nExample: !roasted @user";
 	}
 
 }

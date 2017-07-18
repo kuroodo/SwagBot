@@ -6,11 +6,13 @@ import net.dv8tion.jda.core.entities.Member;
 import net.dv8tion.jda.core.events.message.guild.GuildMessageReceivedEvent;
 
 public class CommandSpartanKick extends ChatCommand {
+
+	// TODO: User a timer instead of sleeping thread
 	@Override
 	public void executeCommand(String commandParams, GuildMessageReceivedEvent event) {
 		super.executeCommand(commandParams, event);
 
-		Member member = findMember();
+		Member member = findMember(event);
 
 		if (member != null && JDAHelper.getUserVoiceChannel(member.getUser().getName()) != null) {
 			int voiceChannelSize = JDAHelper.getVoiceChannelCount() - 1;
@@ -36,23 +38,17 @@ public class CommandSpartanKick extends ChatCommand {
 		}
 	}
 
-	private Member findMember() {
-		Member member = JDAHelper.getMemberByID(commandParameters);
-
-		if (member == null) {
-			member = JDAHelper.getMemberByUsername(commandParameters);
-			if (member == null) {
-				if (!event.getMessage().getMentionedUsers().isEmpty()) {
-					member = JDAHelper.getMember(event.getMessage().getMentionedUsers().get(0));
-				}
-			}
+	private Member findMember(GuildMessageReceivedEvent event) {
+		if (!event.getMessage().getMentionedUsers().isEmpty()) {
+			return JDAHelper.getMember(event.getMessage().getMentionedUsers().get(0));
 		}
 
-		return member;
+		sendMessage("Please mention a valid user");
+		return null;
 	}
 
 	@Override
 	public String info() {
-		return "Spartankick someone across voice channels. usage !spartankick [user] example: !spartankick faggottron9000";
+		return "Spartankick someone across voice channels. usage !spartankick [user] example: !spartankick @user";
 	}
 }
