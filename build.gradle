@@ -41,7 +41,7 @@ project(":desktop") {
         compile "com.badlogicgames.gdx:gdx-platform:$gdxVersion:natives-desktop"
         compile "com.badlogicgames.gdx:gdx-box2d-platform:$gdxVersion:natives-desktop"
         compile "com.badlogicgames.gdx:gdx-tools:$gdxVersion"
-        compile 'com.sedmelluq:lavaplayer:1.2.9'
+        compile 'com.sedmelluq:lavaplayer:1.2.42'
     }
 }
 

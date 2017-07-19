@@ -28,7 +28,7 @@ import net.dv8tion.jda.core.exceptions.RateLimitedException;
 
 public class Init extends ApplicationAdapter {
 
-	public static final String SUPERUSER_PASSWORD = JSonReader.getSuperUserPassword(), VERSION = "1.9.6.8";
+	public static final String SUPERUSER_PASSWORD = JSonReader.getSuperUserPassword(), VERSION = "1.9.7";
 	// Users that have special bot commands and access
 	public static final ArrayList<User> SUPER_USERS = new ArrayList<>();
 
@@ -147,7 +147,7 @@ public class Init extends ApplicationAdapter {
 				listener.dispose();
 			}
 			listeners.clear();
-			jda.shutdown(true);
+			jda.shutdown();
 		}
 
 		ChatLogger.closeLog();
