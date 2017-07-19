@@ -12,7 +12,7 @@ public enum ECommands {
 	}
 
 	public enum ModeratorCommands {
-		BAN, KICK, CLEARCHAT, TEMPBAN;
+		BAN, KICK, CLEARCHAT, SILENCE;
 	}
 
 }

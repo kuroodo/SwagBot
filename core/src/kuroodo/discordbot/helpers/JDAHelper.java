@@ -250,4 +250,9 @@ public class JDAHelper {
 
 		return splittedMessage;
 	}
+
+	// Split a string each space
+	public static String[] splitStringSpaces(String stringToSplit) {
+		return stringToSplit.split("\\s+");
+	}
 }
