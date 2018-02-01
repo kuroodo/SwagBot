@@ -20,6 +20,8 @@ import net.dv8tion.jda.core.entities.VoiceChannel;
 import net.dv8tion.jda.core.managers.GuildController;
 
 public class JDAHelper {
+	
+	// TODO: Add more or better methods in order to refactor all code for clean code
 
 	public static TextChannel getTextChannelByName(String channelName) {
 		for (TextChannel channel : getGuild().getTextChannels()) {
@@ -159,6 +161,14 @@ public class JDAHelper {
 		// guildManager.addRoleToUser(user, role).update();
 	}
 
+	public static void removeRoleFromMember(Role role, Member member) {
+		if (member == null || role == null) {
+			System.out.println("ERROR: COULD NOT GIVE USER A ROLE");
+			return;
+		}
+		getGuild().getController().removeSingleRoleFromMember(member, role).queue();
+	}
+
 	public static Role getRoleByName(String roleName) {
 		for (Role role : getGuild().getRoles()) {
 			if (role.getName().equals(roleName)) {
@@ -167,6 +177,23 @@ public class JDAHelper {
 		}
 		System.out.println("Error, could not get role by name");
 		return null;
+	}
+
+	public static boolean memerHasRole(Member member, String roleName) {
+		return memberHasRole(member, getRoleByName(roleName));
+	}
+
+	public static boolean memberHasRole(Member member, Role role) {
+		if (member != null && role != null) {
+			for (Role memberRoles : member.getRoles()) {
+				if (memberRoles == role) {
+					return true;
+				}
+			}
+		} else {
+			System.out.println("Error, could not check memberHasRole");
+		}
+		return false;
 	}
 
 	public static Boolean isMemberAdmin(Member member) {
@@ -181,6 +208,16 @@ public class JDAHelper {
 	public static Boolean isMemberModerator(Member member) {
 		for (Role role : member.getRoles()) {
 			if (role.getName().equals("Moderator")) {
+				return true;
+			}
+		}
+		return false;
+	}
+	
+	// Special role for my server
+	public static Boolean isMemberSeer(Member member) {
+		for (Role role : member.getRoles()) {
+			if (role.getName().equals("Seer")) {
 				return true;
 			}
 		}

@@ -18,6 +18,7 @@ import kuroodo.discordbot.listeners.BotCommandListener;
 import kuroodo.discordbot.listeners.ChannelListener;
 import kuroodo.discordbot.listeners.ChatCommandListener;
 import kuroodo.discordbot.listeners.ChatListener;
+import kuroodo.discordbot.listeners.VoiceChannelListener;
 import kuroodo.discordbot.listeners.ServerListener;
 import net.dv8tion.jda.core.AccountType;
 import net.dv8tion.jda.core.JDA;
@@ -28,7 +29,7 @@ import net.dv8tion.jda.core.exceptions.RateLimitedException;
 
 public class Init extends ApplicationAdapter {
 
-	public static final String SUPERUSER_PASSWORD = JSonReader.getSuperUserPassword(), VERSION = "1.9.7";
+	public static final String SUPERUSER_PASSWORD = JSonReader.getSuperUserPassword(), VERSION = "1.9.71";
 	// Users that have special bot commands and access
 	public static final ArrayList<User> SUPER_USERS = new ArrayList<>();
 
@@ -100,6 +101,7 @@ public class Init extends ApplicationAdapter {
 		listeners.add(new ChatListener());
 		listeners.add(new ServerListener());
 		listeners.add(new ChannelListener());
+		listeners.add(new VoiceChannelListener());
 
 		for (JDAListener listener : listeners) {
 			jda.addEventListener(listener);
