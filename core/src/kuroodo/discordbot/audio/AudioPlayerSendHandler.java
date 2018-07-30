@@ -2,47 +2,50 @@ package kuroodo.discordbot.audio;
 
 import com.sedmelluq.discord.lavaplayer.player.AudioPlayer;
 import com.sedmelluq.discord.lavaplayer.track.playback.AudioFrame;
+
 import net.dv8tion.jda.core.audio.AudioSendHandler;
 
 /**
- * This is a wrapper around AudioPlayer which makes it behave as an AudioSendHandler for JDA. As JDA calls canProvide
- * before every call to provide20MsAudio(), we pull the frame in canProvide() and use the frame we already pulled in
- * provide20MsAudio().
+ * This is a wrapper around AudioPlayer which makes it behave as an
+ * AudioSendHandler for JDA. As JDA calls canProvide before every call to
+ * provide20MsAudio(), we pull the frame in canProvide() and use the frame we
+ * already pulled in provide20MsAudio().
  */
 public class AudioPlayerSendHandler implements AudioSendHandler {
-  private final AudioPlayer audioPlayer;
-  private AudioFrame lastFrame;
+	private final AudioPlayer audioPlayer;
+	private AudioFrame lastFrame;
 
-  /**
-   * @param audioPlayer Audio player to wrap.
-   */
-  public AudioPlayerSendHandler(AudioPlayer audioPlayer) {
-    this.audioPlayer = audioPlayer;
-  }
+	/**
+	 * @param audioPlayer
+	 *            Audio player to wrap.
+	 */
+	public AudioPlayerSendHandler(AudioPlayer audioPlayer) {
+		this.audioPlayer = audioPlayer;
+	}
 
-  @Override
-  public boolean canProvide() {
-    if (lastFrame == null) {
-      lastFrame = audioPlayer.provide();
-    }
+	@Override
+	public boolean canProvide() {
+		if (lastFrame == null) {
+			lastFrame = audioPlayer.provide();
+		}
 
-    return lastFrame != null;
-  }
+		return lastFrame != null;
+	}
 
-  @Override
-  public byte[] provide20MsAudio() {
-    if (lastFrame == null) {
-      lastFrame = audioPlayer.provide();
-    }
+	@Override
+	public byte[] provide20MsAudio() {
+		if (lastFrame == null) {
+			lastFrame = audioPlayer.provide();
+		}
 
-    byte[] data = lastFrame != null ? lastFrame.data : null;
-    lastFrame = null;
+		byte[] data = lastFrame != null ? lastFrame.getData() : null;
+		lastFrame = null;
 
-    return data;
-  }
+		return data;
+	}
 
-  @Override
-  public boolean isOpus() {
-    return true;
-  }
+	@Override
+	public boolean isOpus() {
+		return true;
+	}
 }

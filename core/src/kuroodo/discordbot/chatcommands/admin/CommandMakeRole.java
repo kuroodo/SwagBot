@@ -8,7 +8,7 @@ import kuroodo.discordbot.helpers.JSonReader;
 import net.dv8tion.jda.core.entities.Role;
 import net.dv8tion.jda.core.entities.TextChannel;
 import net.dv8tion.jda.core.events.message.guild.GuildMessageReceivedEvent;
-import net.dv8tion.jda.core.managers.RoleManagerUpdatable;
+import net.dv8tion.jda.core.managers.RoleManager;
 
 public class CommandMakeRole extends ChatCommand {
 
@@ -31,11 +31,11 @@ public class CommandMakeRole extends ChatCommand {
 
 				@Override
 				public void accept(Role t) {
-					RoleManagerUpdatable roleManager = t.getManagerUpdatable();
+					RoleManager roleManager = t.getManager();
 
-					roleManager.getNameField().setValue(commandParameters);
-					roleManager.getPermissionField().revokePermissions(t.getPermissions());
-					roleManager.update().queue();
+					roleManager.setName(commandParameters);
+					roleManager.revokePermissions(t.getPermissions());
+					roleManager.submit();
 				}
 			});
 

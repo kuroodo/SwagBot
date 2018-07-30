@@ -41,7 +41,7 @@ project(":desktop") {
         compile "com.badlogicgames.gdx:gdx-platform:$gdxVersion:natives-desktop"
         compile "com.badlogicgames.gdx:gdx-box2d-platform:$gdxVersion:natives-desktop"
         compile "com.badlogicgames.gdx:gdx-tools:$gdxVersion"
-        compile 'com.sedmelluq:lavaplayer:1.2.42'
+        compile 'com.sedmelluq:lavaplayer:1.3.7'
     }
 }
 
@@ -74,7 +74,7 @@ project(":html") {
         compile "net.dermetfan.libgdx-utils:libgdx-utils:0.13.2:sources"
         compile "net.dermetfan.libgdx-utils:libgdx-utils:0.13.2:sources"
         compile "net.dermetfan.libgdx-utils:libgdx-utils-box2d:0.13.2:sources"
-        compile 'com.sedmelluq:lavaplayer:1.2.9'
+        compile 'com.sedmelluq:lavaplayer:1.3.7'
     }
 }
 
@@ -92,7 +92,7 @@ project(":core") {
         compile "com.kotcrab.vis:vis-runtime:0.3.1"
         compile "net.dermetfan.libgdx-utils:libgdx-utils:0.13.2"
         compile "net.dermetfan.libgdx-utils:libgdx-utils-box2d:0.13.2"
-        compile 'com.sedmelluq:lavaplayer:1.2.9'
+        compile 'com.sedmelluq:lavaplayer:1.3.7'
     }
 }
 

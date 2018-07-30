@@ -1,5 +1,7 @@
 package kuroodo.discordbot.chatcommands.moderator;
 
+import java.util.concurrent.TimeUnit;
+
 import kuroodo.discordbot.Init;
 import kuroodo.discordbot.entities.ChatCommand;
 import kuroodo.discordbot.helpers.JDAHelper;
@@ -65,7 +67,8 @@ public class CommandKick extends ChatCommand {
 	}
 
 	private void kickMember(Member memberToKick) {
-		JDAHelper.getGuild().getController().kick(memberToKick).queue();
+		// Delay for 1 second so kick message can be sent
+		JDAHelper.getGuild().getController().kick(memberToKick).queueAfter(1, TimeUnit.SECONDS);
 	}
 
 	private void sendKickNotifications(Member memberToKick, String reason) {

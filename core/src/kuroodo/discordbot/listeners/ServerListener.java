@@ -10,6 +10,7 @@ import kuroodo.discordbot.entities.JDAListener;
 import kuroodo.discordbot.helpers.JDAHelper;
 import kuroodo.discordbot.helpers.JSonReader;
 import net.dv8tion.jda.core.entities.Game;
+import net.dv8tion.jda.core.entities.Game.GameType;
 import net.dv8tion.jda.core.entities.PrivateChannel;
 import net.dv8tion.jda.core.entities.Role;
 import net.dv8tion.jda.core.entities.User;
@@ -38,7 +39,7 @@ public class ServerListener extends JDAListener {
 
 	@Override
 	public void onReconnect(ReconnectedEvent event) {
-		Init.getJDA().getPresence().setGame(Game.of("Type !help For Help (;"));
+		Init.getJDA().getPresence().setGame(Game.of(GameType.WATCHING, "Type !help For Help (;"));
 		super.onReconnect(event);
 	}
 
@@ -170,7 +171,7 @@ public class ServerListener extends JDAListener {
 		}
 	}
 
-	private void sendPrivateMessage(User user, String message) {
+	private void sendPrivateMessage(User user, final String message) {
 		user.openPrivateChannel().queue(new Consumer<PrivateChannel>() {
 			@Override
 			public void accept(PrivateChannel t) {

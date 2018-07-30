@@ -88,7 +88,7 @@ public class TriviaSession extends JDAListener {
 
 			checkUserBoardExists(event.getMember());
 
-			if (event.getMessage().getRawContent().toLowerCase().equals(answer.toLowerCase())) {
+			if (event.getMessage().getContentRaw().toLowerCase().equals(answer.toLowerCase())) {
 				if (triviaChannel != null) {
 					isAnswered = true;
 					manageMemberStats(event.getMember().getUser().getId());

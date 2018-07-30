@@ -18,18 +18,18 @@ import kuroodo.discordbot.listeners.BotCommandListener;
 import kuroodo.discordbot.listeners.ChannelListener;
 import kuroodo.discordbot.listeners.ChatCommandListener;
 import kuroodo.discordbot.listeners.ChatListener;
-import kuroodo.discordbot.listeners.VoiceChannelListener;
 import kuroodo.discordbot.listeners.ServerListener;
+import kuroodo.discordbot.listeners.VoiceChannelListener;
 import net.dv8tion.jda.core.AccountType;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.JDABuilder;
 import net.dv8tion.jda.core.entities.Game;
+import net.dv8tion.jda.core.entities.Game.GameType;
 import net.dv8tion.jda.core.entities.User;
-import net.dv8tion.jda.core.exceptions.RateLimitedException;
 
 public class Init extends ApplicationAdapter {
 
-	public static final String SUPERUSER_PASSWORD = JSonReader.getSuperUserPassword(), VERSION = "1.9.71";
+	public static final String SUPERUSER_PASSWORD = JSonReader.getSuperUserPassword(), VERSION = "1.9.75";
 	// Users that have special bot commands and access
 	public static final ArrayList<User> SUPER_USERS = new ArrayList<>();
 
@@ -63,15 +63,15 @@ public class Init extends ApplicationAdapter {
 
 			if (!JSonReader.getIsDevMode()) {
 				gameMessage = "Type !help For Help (;";
-				jda.getPresence().setGame(Game.of(gameMessage));
+				jda.getPresence().setGame(Game.of(GameType.WATCHING, gameMessage));
 			} else {
 				gameMessage = "Undergoing Testing";
-				jda.getPresence().setGame(Game.of(gameMessage));
+				jda.getPresence().setGame(Game.of(GameType.WATCHING, gameMessage));
 			}
 
 			setupListeners();
 			System.out.println("All Done!");
-		} catch (InterruptedException | LoginException | RateLimitedException e) {
+		} catch (InterruptedException | LoginException e) {
 			System.out.println("ERROR: " + e.getMessage());
 		}
 
@@ -143,7 +143,7 @@ public class Init extends ApplicationAdapter {
 		if (jda != null) {
 			System.out.println("Shutting Down JDA");
 			jda.getPresence().setIdle(true);
-			jda.getPresence().setGame(Game.of("Shutting Down..."));
+			jda.getPresence().setGame(Game.of(GameType.DEFAULT, "Shutting Down..."));
 			System.out.println("Disposing and clearing all listeners");
 			for (JDAListener listener : listeners) {
 				listener.dispose();

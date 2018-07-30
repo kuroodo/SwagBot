@@ -86,7 +86,7 @@ public class CommandSilence extends ChatCommand {
 
 	}
 
-	private void silenceUser(Member memberToSilence) {
+	private void silenceUser(final Member memberToSilence) {
 		final String SILENCEROLENAME = "Silenced";
 		float duration = 0;
 
@@ -101,7 +101,7 @@ public class CommandSilence extends ChatCommand {
 
 		userRoles = memberToSilence.getRoles();
 
-		GuildController manager = JDAHelper.getGuild().getController();
+		final GuildController manager = JDAHelper.getGuild().getController();
 
 		manager.removeRolesFromMember(memberToSilence, memberToSilence.getRoles()).queue(new Consumer<Void>() {
 
@@ -116,7 +116,7 @@ public class CommandSilence extends ChatCommand {
 		}
 	}
 
-	private void startSilenceTimer(Member memberToTempBan, float duration) {
+	private void startSilenceTimer(final Member memberToTempBan, float duration) {
 		Timer.schedule(new Task() {
 
 			@Override
@@ -126,8 +126,8 @@ public class CommandSilence extends ChatCommand {
 		}, duration);
 	}
 
-	private void finishSilenceTimer(Member member) {
-		GuildController manager = JDAHelper.getGuild().getController();
+	private void finishSilenceTimer(final Member member) {
+		final GuildController manager = JDAHelper.getGuild().getController();
 
 		manager.removeRolesFromMember(member, member.getRoles()).queue(new Consumer<Void>() {
 

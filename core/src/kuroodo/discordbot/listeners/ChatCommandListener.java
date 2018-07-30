@@ -42,7 +42,7 @@ public class ChatCommandListener extends JDAListener {
 		super.onGuildMessageReceived(event);
 
 		if (event.getAuthor() != null) {
-			String commandName = JDAHelper.splitString(event.getMessage().getRawContent())[0].toLowerCase();
+			String commandName = JDAHelper.splitString(event.getMessage().getContentRaw())[0].toLowerCase();
 
 			try {
 				if (ChatCommandHandler.isContainsCommand(commandName)) {
@@ -59,13 +59,13 @@ public class ChatCommandListener extends JDAListener {
 		try {
 
 			command = (ChatCommand) ChatCommandHandler
-					.getCommand(JDAHelper.splitString(event.getMessage().getContent())[0].toLowerCase()).newInstance();
+					.getCommand(JDAHelper.splitString(event.getMessage().getContentDisplay())[0].toLowerCase()).newInstance();
 
 			// System.out.println("CommandListener: " +
 			// ChatHelper.splitString(event.getMessage().getRawContent())[1]);
 
 			// Execute command and give it any parameters specified by user
-			command.executeCommand(JDAHelper.splitString(event.getMessage().getRawContent())[1], event);
+			command.executeCommand(JDAHelper.splitString(event.getMessage().getContentRaw())[1], event);
 			if (command.shouldUpdate()) {
 				commandsToUpdateQueue.add(command);
 			}

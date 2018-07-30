@@ -105,7 +105,7 @@ public class ChannelListener extends JDAListener {
 		System.out.println("EVENT: " + message);
 	}
 
-	private void sendPrivateMessage(User user, String message) {
+	private void sendPrivateMessage(User user, final String message) {
 		user.openPrivateChannel().queue(new Consumer<PrivateChannel>() {
 			@Override
 			public void accept(PrivateChannel t) {

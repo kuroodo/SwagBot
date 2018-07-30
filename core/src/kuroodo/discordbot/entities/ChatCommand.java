@@ -53,7 +53,7 @@ public abstract class ChatCommand implements Command {
 		event.getChannel().sendMessage(message).queue();
 	}
 
-	protected void sendPrivateMessage(String message) {
+	protected void sendPrivateMessage(final String message) {
 		event.getAuthor().openPrivateChannel().queue(new Consumer<PrivateChannel>() {
 			@Override
 			public void accept(PrivateChannel t) {
@@ -67,7 +67,7 @@ public abstract class ChatCommand implements Command {
 		txtChan.sendMessage(message).queue();
 	}
 
-	protected void sendPrivateMessage(User user, String message) {
+	protected void sendPrivateMessage(User user, final String message) {
 		user.openPrivateChannel().queue(new Consumer<PrivateChannel>() {
 			@Override
 			public void accept(PrivateChannel t) {

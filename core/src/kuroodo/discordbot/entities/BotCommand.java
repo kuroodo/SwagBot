@@ -43,7 +43,7 @@ public abstract class BotCommand implements Command {
 		event.getChannel().sendMessage(message).queue();
 	}
 
-	protected void sendPrivateMessage(String message) {
+	protected void sendPrivateMessage(final String message) {
 		event.getAuthor().openPrivateChannel().queue(new Consumer<PrivateChannel>() {
 			@Override
 			public void accept(PrivateChannel t) {

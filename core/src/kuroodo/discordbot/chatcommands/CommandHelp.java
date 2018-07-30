@@ -17,7 +17,7 @@ public class CommandHelp extends ChatCommand {
 	public void executeCommand(String commandParams, GuildMessageReceivedEvent event) {
 		super.executeCommand(commandParams, event);
 
-		String message = event.getMessage().getRawContent();
+		String message = event.getMessage().getContentRaw();
 
 		if (message.startsWith("!help")) {
 			if (commandParameters.isEmpty()) {
@@ -110,6 +110,7 @@ public class CommandHelp extends ChatCommand {
 	private void printHiddenCommands(String commandWord) {
 		switch (commandWord) {
 		case "!audioplayer":
+		case "!queue":
 		case "!play":
 		case "!playrandom":
 		case "!stop":
@@ -118,11 +119,12 @@ public class CommandHelp extends ChatCommand {
 		case "!resume":
 		case "!trackinfo":
 			sendPrivateMessage("A hidden command, these commands are for using the audio player\n\n"
-					+ "!play [filelocation/url] makes the bot play a audio from a specified source"
-					+ "Example: !play https://someurl.com/audiofile.mp3 OR !play c:\\somefilelocation\\audiofile.mp3\n"
+					+ "!queue [filelocation/url] makes the bot queue audio from a specified source. "
+					+ "Will start playing automatically unless waiting for an already playing audio"
+					+ "Example: !queue https://someurl.com/audiofile.mp3 OR !play c:\\somefilelocation\\audiofile.mp3\n"
 					+ "YouTube videos and playlists are supported\n"
 					+ "When trying to play a file after it's beened paused, just use !resume\n\n"
-					+ "!playrandom works the same way as !play, except that it randomly shuffles audio in a specified playlist (like a youtube playlist)"
+					+ "!playrandom works the same way as !queue, except that it randomly shuffles audio in a specified playlist (like a youtube playlist)"
 					+ "!stop, !pause, !restart. !stop stops the audio stream, use !play to start the stream again.\n"
 					+ "!pause pauses the audio. Use !resume to start playing again"
 					+ "!trackinfo gives information on the currently playing or paused track");

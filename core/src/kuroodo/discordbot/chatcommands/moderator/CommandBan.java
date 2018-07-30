@@ -1,5 +1,7 @@
 package kuroodo.discordbot.chatcommands.moderator;
 
+import java.util.concurrent.TimeUnit;
+
 import kuroodo.discordbot.Init;
 import kuroodo.discordbot.entities.ChatCommand;
 import kuroodo.discordbot.helpers.JDAHelper;
@@ -68,7 +70,8 @@ public class CommandBan extends ChatCommand {
 	}
 
 	private void banMember(Member memberToBan) {
-		JDAHelper.getGuild().getController().ban(memberToBan, BAN_DAYS).queue();
+		// Delay for 1 second so ban message can be sent
+		JDAHelper.getGuild().getController().ban(memberToBan, BAN_DAYS).queueAfter(1, TimeUnit.SECONDS);
 	}
 
 	private void sendBanNotifications(Member memberToBan, String reason) {

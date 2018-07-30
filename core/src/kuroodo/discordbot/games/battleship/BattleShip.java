@@ -135,7 +135,7 @@ public class BattleShip extends GameSession {
 
 	}
 
-	public void sendPrivateMessage(Member member, String message) {
+	public void sendPrivateMessage(Member member, final String message) {
 		member.getUser().openPrivateChannel().queue(new Consumer<PrivateChannel>() {
 			@Override
 			public void accept(PrivateChannel t) {

@@ -23,7 +23,6 @@ import net.dv8tion.jda.core.events.message.priv.PrivateMessageReceivedEvent;
 import net.dv8tion.jda.core.managers.ChannelManager;
 import net.dv8tion.jda.core.managers.GuildController;
 import net.dv8tion.jda.core.managers.RoleManager;
-import net.dv8tion.jda.core.managers.RoleManagerUpdatable;
 
 public class GameListener extends JDAListener {
 	private TextChannel gameChannel;
@@ -58,15 +57,15 @@ public class GameListener extends JDAListener {
 
 		if (event.getAuthor() != null) {
 			if (event.getChannel() == gameChannel) {
-				if (event.getMessage().getRawContent().startsWith("!end") && players.contains(event.getMember())) {
+				if (event.getMessage().getContentRaw().startsWith("!end") && players.contains(event.getMember())) {
 					endGameSession();
 					return;
 
-				} else if (event.getMessage().getRawContent().startsWith("!gamehelp") && gameSession != null) {
+				} else if (event.getMessage().getContentRaw().startsWith("!gamehelp") && gameSession != null) {
 					gameSession.gameHelpInfo();
 					return;
 				} else {
-					sendGameInput(event, event.getMessage().getRawContent());
+					sendGameInput(event, event.getMessage().getContentRaw());
 				}
 			}
 		}
@@ -76,7 +75,7 @@ public class GameListener extends JDAListener {
 	public void onPrivateMessageReceived(PrivateMessageReceivedEvent event) {
 		super.onPrivateMessageReceived(event);
 		if (event.getAuthor() != null) {
-			sendPrivateGameInput(event, event.getMessage().getRawContent());
+			sendPrivateGameInput(event, event.getMessage().getContentRaw());
 		}
 	}
 
@@ -170,27 +169,27 @@ public class GameListener extends JDAListener {
 
 	}
 
-	private void setUpChannelPermissions(ChannelManager chManager) {
-		Role role = JDAHelper.getRoleByName("gameroleexample");
+	private void setUpChannelPermissions(final ChannelManager chManager) {
+		final Role role = JDAHelper.getRoleByName("gameroleexample");
 
 		JDAHelper.getGuild().getController().createRole().queue(new Consumer<Role>() {
 
 			@Override
 			public void accept(Role t) {
-				final RoleManagerUpdatable roleManager = t.getManagerUpdatable();
+				final RoleManager roleManager = t.getManager();
 
-				roleManager.getNameField().setValue("session" + sessionID);
+				roleManager.setName("session" + sessionID);
 
 				// TODO: Try to use Permissions.getValues() instead
 				for (Permission permission : roleManager.getRole().getPermissions()) {
-					roleManager.getPermissionField().revokePermissions(permission);
+					roleManager.revokePermissions(permission);
 				}
 
 				for (Permission permission : role.getPermissions()) {
-					roleManager.getPermissionField().givePermissions(permission);
+					roleManager.givePermissions(permission);
 				}
 
-				roleManager.update().queue();
+				roleManager.submit();
 
 				Role sessionRole = roleManager.getRole();
 

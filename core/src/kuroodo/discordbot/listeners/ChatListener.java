@@ -25,10 +25,10 @@ public class ChatListener extends JDAListener {
 
 			if (event.getMessage().isWebhookMessage()) {
 				message = "[" + event.getGuild().getName() + " [" + channelName + "]" + "] " + "WebHook" + ":"
-						+ event.getMessage().getContent();
+						+ event.getMessage().getContentDisplay();
 			} else {
 				message = "[" + event.getGuild().getName() + " [" + channelName + "]" + "] "
-						+ event.getAuthor().getName() + ":" + event.getMessage().getContent();
+						+ event.getAuthor().getName() + ":" + event.getMessage().getContentDisplay();
 			}
 
 			System.out.println(message);
@@ -52,7 +52,7 @@ public class ChatListener extends JDAListener {
 		// Check if enter authorization password and if already authorized
 		try {
 			if (!Init.SUPERUSER_PASSWORD.isEmpty()
-					&& event.getMessage().getRawContent().equals(Init.SUPERUSER_PASSWORD)) {
+					&& event.getMessage().getContentRaw().equals(Init.SUPERUSER_PASSWORD)) {
 				for (User authorizedUser : Init.SUPER_USERS) {
 					if (authorizedUser == event.getAuthor()) {
 						event.getChannel().sendMessage("You're already an authorized user!").queue();
@@ -68,7 +68,7 @@ public class ChatListener extends JDAListener {
 		}
 
 		ChatLogger.logMessage(
-				"[PRIVATE MESSAGE] " + event.getAuthor().getName() + ":" + event.getMessage().getRawContent());
+				"[PRIVATE MESSAGE] " + event.getAuthor().getName() + ":" + event.getMessage().getContentRaw());
 
 	}
 }

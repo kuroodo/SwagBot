@@ -62,11 +62,11 @@ public class AudioPlayer extends JDAListener {
 
 	@Override
 	public void onMessageReceived(MessageReceivedEvent event) {
-		String[] command = event.getMessage().getContent().split(" ", 2);
+		String[] command = event.getMessage().getContentDisplay().split(" ", 2);
 		Guild guild = event.getGuild();
 
 		if (guild != null) {
-			if ("!play".equals(command[0]) && command.length == 2) {
+			if ("!queue".equals(command[0]) && command.length == 2) {
 				setupPlay(event.getAuthor(), event.getTextChannel(), command, false);
 
 			} else if ("!playrandom".equals(command[0]) && command.length == 2) {
@@ -128,8 +128,8 @@ public class AudioPlayer extends JDAListener {
 	}
 
 	private void loadAndPlay(final TextChannel channel, final VoiceChannel userVoiceChannel, final String trackUrl,
-			boolean isRandomized) {
-		GuildMusicManager musicManager = getGuildAudioPlayer(channel.getGuild());
+			final boolean isRandomized) {
+		final GuildMusicManager musicManager = getGuildAudioPlayer(channel.getGuild());
 
 		playerManager.loadItemOrdered(musicManager, trackUrl, new AudioLoadResultHandler() {
 			@Override
